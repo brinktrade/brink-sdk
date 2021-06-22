@@ -1,0 +1,42 @@
+{
+  "name": "@brinkninja/sdk",
+  "version": "0.3.4",
+  "devDependencies": {
+    "@brinkninja/solidity": "^0.1.2",
+    "@openzeppelin/cli": "^2.8.0",
+    "@openzeppelin/test-environment": "^0.1.2",
+    "@openzeppelin/test-helpers": "^0.5.5",
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-json": "^4.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "bip39": "^3.0.2",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.0",
+    "redis-server": "^1.2.2",
+    "rollup": "^2.3.3"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/react-fontawesome": "^0.1.11",
+    "bootstrap": "^4.5.2",
+    "eth-lib": "^0.1.29",
+    "eth-sig-util": "^2.5.3",
+    "ethereumjs-abi": "^0.6.8",
+    "ethereumjs-util": "^6.2.0",
+    "lodash": "^4.17.15",
+    "react-bootstrap": "^1.3.0",
+    "web3-eth-abi": "^1.2.6",
+    "web3-utils": "^1.2.6"
+  },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "main": "lib/bundle.js",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "test": "mocha --exit --recursive --file ./test/setupTeardown.js --timeout 5000",
+    "postinstall": "yarn run build"
+  }
+}
