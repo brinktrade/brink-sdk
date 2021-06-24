@@ -7,7 +7,6 @@ const { Account } = require('../src')
 
 describe('Account with PrivateKeySigner', function () {
   beforeEach(async function () {
-    console.log("Doing this")
     const SingletonFactory = await ethers.getContractFactory('SingletonFactory')
     const singletonFactory = await SingletonFactory.deploy()
     const signers = await ethers.getSigners()
@@ -32,16 +31,15 @@ describe('Account with PrivateKeySigner', function () {
       chainId: chainId,
       ethersProvider: ethers,
       ethersSigner: ethersSigner,
-      deployerAddress: ethersSigner.address,
-      deployAndExecuteAddress: deployAndExecute.address,
-      create2CallerAddress: singletonFactory.address
+      deployerAddress: singletonFactory.address,
+      deployAndExecuteAddress: deployAndExecute.address
     })
     
   })
 
   it.only('Deploys the proxy contract', async function () {
     await this.account.loadFromParams(this.accountContract.address, this.ownerAddress)
-    console.log(await this.account.deploy())
+    await this.account.deploy()
     expect(await this.account.isDeployed()).to.be.true
   })
 })
