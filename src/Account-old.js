@@ -23,7 +23,7 @@ const _abiMap = {
   ERC20: require('./contracts/ERC20.abi')
 }
 
-class Account {
+class AccountOld {
   
   constructor ({
     accountVersion,
@@ -580,4 +580,4 @@ function _verifySignedFunctionName(signedFunctionCall, expectedFunctionName) {
   }
 }
 
-module.exports = Account
+module.exports = AccountOld
