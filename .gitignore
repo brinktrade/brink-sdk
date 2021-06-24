@@ -1,2 +1,6 @@
 node_modules
 lib
+artifacts
+cache
+test/cache
+test/artifacts
