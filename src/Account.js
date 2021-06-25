@@ -56,7 +56,26 @@ class Account {
       this._accountDeploymentSalt
     )
 
-    this._accountLogicImpl = this._ethersContract('Account', implementationAddress)
+    this._accountImpl = this._ethersContract('Account', implementationAddress)
+  }
+
+  async loadFromAddress(address) {
+    this.address = address
+
+    if (!await this.isDeployed()) {
+      throw new Error(`Error: Account.loadFromAddress(): No code at contract address ${address}`)
+    }
+
+    const account = await this.account()
+    const implAddress = await account.implementation()
+    this._accountImpl = this._ethersContract('Account', implAddress)
+  }
+
+  async account () {
+    if (!this._account && this.address && await this.isDeployed()) {
+      this._account = this._ethersContract('Account', this.address)
+    }
+    return this._account
   }
 
   _getDeployer () {
