@@ -71,6 +71,12 @@ class Account {
     this._accountImpl = this._ethersContract('Account', implAddress)
   }
 
+  async loadAndDeploy (implementationAddress, ownerAddress) {
+    this.loadFromParams(implementationAddress, ownerAddress)
+    const promiEvent = await this.deploy()
+    return promiEvent
+  }
+
   async account () {
     if (!this._account && this.address && await this.isDeployed()) {
       this._account = this._ethersContract('Account', this.address)

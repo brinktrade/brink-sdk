@@ -6,6 +6,7 @@ const Deployer = require('./helpers/Deployer')
 const { Account } = require('../src')
 const deployAccount = require('./helpers/deployAccount')
 const expectAsyncError = require('./helpers/expectAsyncError')
+const computeAccountAddress = require('../src/computeAccountAddress')
 
 describe('Account with PrivateKeySigner', function () {
   beforeEach(async function () {
@@ -79,6 +80,29 @@ describe('Account with PrivateKeySigner', function () {
           chainId
         )
         await expectAsyncError(this.account.loadFromAddress(accountAddress))
+      })
+    })
+  })
+
+  describe('deploy', function () {
+    describe('when given valid params', function () {
+      beforeEach(async function () {
+        await this.account.loadAndDeploy(this.accountContract.address, this.ownerAddress)
+      })
+
+      it('should deploy the account', async function () {
+        expect(await this.account.isDeployed()).to.be.true
+      })
+
+      it('should set the account address', function () {
+        const expectedAccountAddress = computeAccountAddress(
+          this.singletonFactory.address,
+          this.accountContract.address,
+          this.ownerAddress,
+          chainId,
+          this.accountSalt
+        )
+        expect(this.account.address).to.equal(expectedAccountAddress)
       })
     })
   })
