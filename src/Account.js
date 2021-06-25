@@ -1,5 +1,19 @@
 const computeAccountBytecode = require('./computeAccountBytecode')
 const computeAccountAddress = require('./computeAccountAddress')
+const { toBN: BN, padLeft } = require('web3-utils')
+const ethJsUtil = require('ethereumjs-util')
+const typedDataEIP712 = require('./typedDataEIP712')
+const recoverSigner = require('./recoverSigner')
+const encodeFunctionCall = require('./encodeFunctionCall')
+const Transfer = require('./Transfer')
+const { ZERO_ADDRESS, swapFunctionNames, transferTypes } = require('./constants')
+
+
+const { 
+  verifyTransferEth,
+  verifyTransferToken
+ } = require('./callVerifiers')
+
 
 const _abiMap = {
   Account: require('./contracts/Account.abi'),
@@ -13,7 +27,7 @@ class Account {
     accountVersion,
     accountDeploymentSalt,
     chainId,
-    ethersProvider,
+    ethers,
     ethersSigner,
     deployerAddress,
     deployAndExecuteAddress
@@ -21,7 +35,7 @@ class Account {
     this._accountVersion = accountVersion
     this._accountDeploymentSalt = accountDeploymentSalt
     this._chainId = chainId
-    this._ethersProvider = ethersProvider
+    this._ethers = ethers
     this._ethersSigner = ethersSigner
     this._deployerAddress = deployerAddress
     this._deployAndExecuteAddress = deployAndExecuteAddress
@@ -37,9 +51,40 @@ class Account {
     return promiEvent
   }
 
+  async deployAndTransfer (signedFunctionCall) {
+    if (await this.isDeployed()) {
+      throw new Error(`Error: Account.deployAndTransfer(): Account contract already deployed`)
+    }
+
+    const bytecode = this._getAccountBytecode()
+    const deployAndExecute = this._getDeployAndExecute()
+
+    await this._verifySignedFnCall(signedFunctionCall)
+    const callData = this._getFunctionCallData(signedFunctionCall)
+
+    const transfer = new Transfer({ ethers: this._ethers, signedFunctionCall })
+    if (transfer.type() == transferTypes.ETH) {
+      await this.transferEthSuccessCheck(signedFunctionCall)
+    } else if (transfer.type() == transferTypes.TOKEN) {
+      await this.transferTokenSuccessCheck(signedFunctionCall)
+    } else {
+      throw new Error(`Error: Account.deployAndTransfer(): transfer type unknown`)
+    }
+
+    const data = (await deployAndExecute.populateTransaction.deployAndExecute.apply(this, [
+      bytecode, this._accountDeploymentSalt, callData
+    ])).data
+
+    const promiEvent = this._ethersSigner.sendTransaction({
+      to: deployAndExecute.address,
+      data
+    })
+    return promiEvent
+  }
+
   async isDeployed () {
     if (!this.address) { throw new Error('Error: Account.isDeployed(): Account not loaded') }
-    const code = await this._ethersProvider.provider.getCode(this.address)
+    const code = await this._ethers.provider.getCode(this.address)
     return code !== '0x'
   }
 
@@ -84,6 +129,90 @@ class Account {
     return this._account
   }
 
+  async nextBit () {
+    let bitmapIndex = BN(0)
+    let bit = BN(1)
+    if (await this.isDeployed()) {
+      const account = await this.account()
+      let curBitmap, curBitmapBinStr
+      let curBitmapIndex = -1
+      let nextBitIndex = -1
+      while(nextBitIndex < 0) {
+        curBitmapIndex++
+        curBitmap = await account.getReplayProtectionBitmap(curBitmapIndex)
+        curBitmapBinStr = padLeft(BN(curBitmap).toString(2), 256, '0')
+        curBitmapBinStr = curBitmapBinStr.split("").reverse().join("")
+        for (let i = 0; i < curBitmapBinStr.length; i++) {
+          if (curBitmapBinStr.charAt(i) == '0') {
+            nextBitIndex = i
+            break
+          }
+        }
+      }
+      bitmapIndex = BN(curBitmapIndex)
+      bit = BN(2).pow(BN(nextBitIndex))
+    }
+    return { bitmapIndex, bit }
+  }
+
+  async bitUsed (bitmapIndex, bit) {
+    let bitUsed = false
+    if (await this.isDeployed()) {
+      const account = await this.account()
+      bitUsed = await account.replayProtectionBitUsed(
+        bitmapIndex.toString(),
+        bit.toString()
+      )
+    }
+    return bitUsed
+  }
+
+  async isProxyOwner (address) {
+    if (!await this.isDeployed()) {
+      if (!this._initOwnerAddress) {
+        throw new Error(`Error: Account.isProxyOwner(): Account not loaded`)
+      }
+      return address.toLowerCase() == this._initOwnerAddress.toLowerCase()
+    } else {
+      const account = await this.account()
+      const isProxyOwner = await account.isProxyOwner(address)
+      return isProxyOwner
+    }
+  }
+
+  async transferEthSuccessCheck (signedFunctionCall) {
+    const [ value, to, data ] = signedFunctionCall.params
+
+    verifyTransferEth(value, to, data)
+
+    const ethBalance = BN(await this._ethers.provider.getBalance(this.address))
+    if (BN(value).gt(ethBalance)) {
+      throw new Error(
+        `Can't transferEth. Account has ${ethBalance.toString()} but needs ${value.toString()}`
+      )
+    }
+
+    return true
+  }
+
+  async transferTokenSuccessCheck (signedFunctionCall) {
+    const { params, call } = signedFunctionCall
+    const tokenAddress = params[1]
+    const [ recipientAddress, amount ] = call.params
+
+    verifyTransferToken(tokenAddress, recipientAddress, amount)
+
+    const token = this._ethersContract('ERC20', tokenAddress)
+    const accountBalance = BN(await token.balanceOf(this.address))
+    if (BN(amount).gt(accountBalance)) {
+      throw new Error(
+        `Can't transfer token. Account has ${accountBalance.toString()} but needs ${amount.toString()}`
+      )
+    }
+
+    return true
+  }
+
   _getDeployer () {
     if (!this._deployer) {
       if (!this._deployerAddress) {
@@ -92,6 +221,88 @@ class Account {
       this._deployer = this._ethersContract('IDeployer', this._deployerAddress)
     }
     return this._deployer
+  }
+
+  _getDeployAndExecute () {
+    if (!this._deployAndExecute) {
+      if (!this._deployAndExecuteAddress) {
+        throw new Error('Account: _deployAndExecuteAddress not found')
+      }
+      this._deployAndExecute = this._ethersContract('DeployAndExecute', this._deployAndExecuteAddress)
+    }
+    return this._deployAndExecute
+  }
+
+  async _verifySignedFnCall (signedFunctionCall) {
+    if (!this.address) { throw new Error('Account not loaded') }
+
+    const {
+      accountAddress, message,
+      signature, signer,
+      functionName, bitmapIndex, bit, paramTypes, params,
+      call, callEncoded
+    } = signedFunctionCall
+
+    const checksumSignerAddr = ethJsUtil.toChecksumAddress(signer)
+
+    if (accountAddress !== this.address) {
+      throw new Error(
+        `Invalid function call. Wrong account address. Expected ${this.address}, received ${accountAddress}`
+      )
+    }
+  
+    const { typedDataHash } = typedDataEIP712({
+      accountVersion: this._accountVersion,
+      chainId: this._chainId,
+      accountAddress,
+      functionName,
+      bitmapIndex,
+      bit,
+      paramTypes,
+      params
+    })
+
+    if (message !== typedDataHash) {
+      throw new Error(
+        `Invalid function call. Wrong message. Expected ${typedDataHash}, received ${message}`
+      )
+    }
+
+    const recoveredSigner = recoverSigner({ signature, typedDataHash })
+    if (checksumSignerAddr !== recoveredSigner) {
+      throw new Error(`Invalid function call. Wrong signer. Expected ${recoveredSigner}, received ${checksumSignerAddr}`)
+    }
+
+    const signerIsOwner = await this.isProxyOwner(signer)
+    if (!signerIsOwner) {
+      throw new Error(`Invalid function call. signer ${signer} is not account owner ${accountOwner}`)
+    }
+
+    const bitUsed = await this.bitUsed(bitmapIndex, bit)
+    if (bitUsed) {
+      const bitStr = `${bitmapIndex.toString()}:${bit.toString()}`
+      throw new Error(`Invalid function call. bit ${bitStr} has been used`)
+    }
+
+    if (call) {
+      // signed function includes an encoded call
+      const computedCallEncoded = encodeFunctionCall(call)
+      if (callEncoded !== computedCallEncoded) {
+        throw new Error(
+          `Invalid function call. Call encoding is invalid`
+        )
+      }
+    }
+  }
+
+  _getFunctionCallData (signedFunctionCall, unsignedParams = []) {
+    const { functionName, bitmapIndex, bit, signature, params } = signedFunctionCall
+    const txParams = [ bitmapIndex, bit, ...params, signature, ...unsignedParams ]
+
+    // web3 contracts don't like BN types
+    // const txParams_noBN = txParams.map(p => p.words ? p.toString() : p)
+    const data = encodeFunctionCall(signedFunctionCall)
+    return data
   }
 
   _getAccountBytecode () {
@@ -109,7 +320,7 @@ class Account {
   }
 
   _ethersContract(contractName, contractAddress) {
-    return new this._ethersProvider.Contract(
+    return new this._ethers.Contract(
       contractAddress, _abiMap[contractName], this._ethersSigner
     )
   }
