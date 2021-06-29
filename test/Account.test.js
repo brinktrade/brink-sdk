@@ -24,16 +24,16 @@ describe('Account with PrivateKeySigner', function () {
     this.ethersSigner = signers[0]
     this.accountSalt = randomHex(32)
     // this.ownerAddress = signers[0].address
-    const deployer = new Deployer(singletonFactory)
-    const callExecutor = await deployer.deployAndLog('CallExecutor', [], [])
-    this.accountContract = await deployer.deployAndLog(
+    this.deployer = new Deployer(singletonFactory)
+    this.callExecutor = await this.deployer.deployAndLog('CallExecutor', [], [])
+    this.accountContract = await this.deployer.deployAndLog(
       'Account', 
       ['address', 'address', 'uint256'],
-      [callExecutor.address, this.ethersSigner.address, chainId]
+      [this.callExecutor.address, this.ethersSigner.address, chainId]
     )
     await this.accountContract.addExecutorWithoutSignature(this.ethersSigner.address)
     await this.accountContract.addExecutorWithoutSignature(ownerAddress)
-    const deployAndExecute = await deployer.deployAndLog(
+    const deployAndExecute = await this.deployer.deployAndLog(
       'DeployAndExecute', 
       ['address', 'address'], 
       [singletonFactory.address, this.accountContract.address]
@@ -142,63 +142,28 @@ describe('Account with PrivateKeySigner', function () {
     })
   })
 
-  describe.skip('deployAndTransfer', function () {
-    describe('when signedFunctionCall is a valid transfer', function () {
-      it.only('should execute the transfer', async function () {
-        await this.account.loadFromParams(this.accountContract.address, ownerAddress)
-
-        // const ethAmount = BN(0.01 * 10**18)
-        const ethAmount = ethers.utils.parseEther('0.1');
-        // this.expectedRecipientBalance = BN(await ethers.provider.getBalance(recipientAddress)).add(ethAmount)
-        await this.ethersSigner.sendTransaction({
-          to: this.accountSigner.accountAddress,
-          value: ethAmount
-        })
-  
-        const bitData = await this.account.nextBit()
-        const signedTransferEthCall = await this.accountSigner.signTransferEth(bitData, recipientAddress, ethers.utils.parseEther('0.01'))
-        console.log(signedTransferEthCall)
-        
-        console.log(await ethers.provider.getBalance(this.accountSigner.accountAddress))
-        const response = await this.account.deployAndTransfer(signedTransferEthCall)
-
-        console.log(response)
-        // expect ETH to be transferred to recipientAddress
-        console.log(await ethers.provider.getBalance(this.accountSigner.accountAddress))
-        console.log(await ethers.provider.getBalance(recipientAddress))
-        // expect(await ethers.provider.getBalance(this.accountSigner.accountAddress)).to.be.equal(ethers.utils.parseEther('0'))
-        // expect(await ethers.provider.getBalance(recipientAddress)).to.be.equal(ethAmount)
-      })
+  describe('upgrade', function () {
+    beforeEach(async function () {
+      const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
+      this.proxyAdminVerifier = await ProxyAdminVerifier.deploy()
+      const CallExecutor = await ethers.getContractFactory("CallExecutor");
+      this.callExecutor = await CallExecutor.deploy()
+      this.upgradedAccountContract = await this.deployer.deployAndLog(
+        'Account', 
+        ['address', 'address', 'uint256'],
+        [this.callExecutor.address, this.ethersSigner.address, chainId]
+      )
+      let resp = await this.account.loadAndDeploy(this.accountContract.address, ownerAddress)
     })
 
-    // describe('when signed call is an ETH transfer and account does not have enough ETH', function () {
-    //   it('should throw an error', async function () {
-    //     await this.account.loadFromParams(this.accountLogic.address, ownerAddress)
-    //     const ethAmount = BN(0.01 * 10**18)
-    //     const bitData = await this.account.nextBit()
-    //     const signedTransferEthCall = await this.accountSigner.signTransferEth(bitData, recipientAddress, ethAmount)
-    //     await expectAsyncError(
-    //       this.account.deployAndTransfer(signedTransferEthCall),
-    //       `Can't transferEth. Account has 0 but needs ${ethAmount}`
-    //     )
-    //   })
-    // })
-
-    // describe('when signed call is a token transfer and account does not have enough token', function () {
-    //   it('should throw an error', async function () {
-    //     const token = await TestERC20.new('TestToken', 'TT', 18)
-    //     await this.account.loadFromParams(this.accountLogic.address, ownerAddress)
-    //     const tokenAmount = BN(0.01 * 10**18)
-  
-    //     const bitData = await this.account.nextBit()
-    //     const signedTransferTokenCall = await this.accountSigner.signTransferToken(
-    //       bitData, token.address, recipientAddress, tokenAmount
-    //     )
-    //     await expectAsyncError(
-    //       this.account.deployAndTransfer(signedTransferTokenCall),
-    //       `Can't transfer token. Account has 0 but needs ${tokenAmount.toString()}`
-    //     )
-    //   })
-    // })
+    it.only('should upgrade the account implementation', async function () {
+      expect(await this.account.implementation()).to.equal(this.accountContract.address)
+      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
+        this.proxyAdminVerifier.address, this.upgradedAccountContract.address
+      )
+      const promiEvent = await this.account.upgrade(signedUpgradeFnCall)
+      await new Promise(resolve => promiEvent.onReceipt(resolve))
+      expect(await this.account.implementation()).to.equal(this.upgradedAccountContract.address)
+    })
   })
 })

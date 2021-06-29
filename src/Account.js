@@ -11,7 +11,8 @@ const { ZERO_ADDRESS, swapFunctionNames, transferTypes } = require('./constants'
 
 const { 
   verifyTransferEth,
-  verifyTransferToken
+  verifyTransferToken,
+  verifyUpgrade
  } = require('./callVerifiers')
 
 
@@ -48,37 +49,6 @@ class Account {
     const bytecode = this._getAccountBytecode()
     const deployer = this._getDeployer()
     const promiEvent = deployer.deploy(bytecode, this._accountDeploymentSalt)
-    return promiEvent
-  }
-
-  async deployAndTransfer (signedFunctionCall) {
-    if (await this.isDeployed()) {
-      throw new Error(`Error: Account.deployAndTransfer(): Account contract already deployed`)
-    }
-
-    const bytecode = this._getAccountBytecode()
-    const deployAndExecute = this._getDeployAndExecute()
-
-    await this._verifySignedFnCall(signedFunctionCall)
-    const callData = this._getFunctionCallData(signedFunctionCall)
-
-    const transfer = new Transfer({ ethers: this._ethers, signedFunctionCall })
-    if (transfer.type() == transferTypes.ETH) {
-      await this.transferEthSuccessCheck(signedFunctionCall)
-    } else if (transfer.type() == transferTypes.TOKEN) {
-      await this.transferTokenSuccessCheck(signedFunctionCall)
-    } else {
-      throw new Error(`Error: Account.deployAndTransfer(): transfer type unknown`)
-    }
-
-    const data = (await deployAndExecute.populateTransaction.deployAndExecute.apply(this, [
-      bytecode, this._accountDeploymentSalt, callData
-    ])).data
-
-    const promiEvent = this._ethersSigner.sendTransaction({
-      to: deployAndExecute.address,
-      data
-    })
     return promiEvent
   }
 
@@ -129,44 +99,6 @@ class Account {
     return this._account
   }
 
-  async nextBit () {
-    let bitmapIndex = BN(0)
-    let bit = BN(1)
-    if (await this.isDeployed()) {
-      const account = await this.account()
-      let curBitmap, curBitmapBinStr
-      let curBitmapIndex = -1
-      let nextBitIndex = -1
-      while(nextBitIndex < 0) {
-        curBitmapIndex++
-        curBitmap = await account.getReplayProtectionBitmap(curBitmapIndex)
-        curBitmapBinStr = padLeft(BN(curBitmap).toString(2), 256, '0')
-        curBitmapBinStr = curBitmapBinStr.split("").reverse().join("")
-        for (let i = 0; i < curBitmapBinStr.length; i++) {
-          if (curBitmapBinStr.charAt(i) == '0') {
-            nextBitIndex = i
-            break
-          }
-        }
-      }
-      bitmapIndex = BN(curBitmapIndex)
-      bit = BN(2).pow(BN(nextBitIndex))
-    }
-    return { bitmapIndex, bit }
-  }
-
-  async bitUsed (bitmapIndex, bit) {
-    let bitUsed = false
-    if (await this.isDeployed()) {
-      const account = await this.account()
-      bitUsed = await account.replayProtectionBitUsed(
-        bitmapIndex.toString(),
-        bit.toString()
-      )
-    }
-    return bitUsed
-  }
-
   async isProxyOwner (address) {
     if (!await this.isDeployed()) {
       if (!this._initOwnerAddress) {
@@ -175,7 +107,11 @@ class Account {
       return address.toLowerCase() == this._initOwnerAddress.toLowerCase()
     } else {
       const account = await this.account()
-      const isProxyOwner = await account.isProxyOwner(address)
+      const proxyOwnerAddress = await this._account.proxyOwner()
+      let isProxyOwner = false
+      if (proxyOwnerAddress === address) {
+        isProxyOwner = true
+      }
       return isProxyOwner
     }
   }
@@ -193,6 +129,38 @@ class Account {
     }
 
     return true
+  }
+
+  async upgrade(signedFunctionCall) {
+    if (!await this.isDeployed()) throw new Error('Error: Account.upgrade(): Account contract not deployed')
+
+    const { call } = signedFunctionCall
+    const functionName = call.functionName
+
+    if (functionName !== 'upgradeTo') {
+      throw new Error(
+        `Expected upgrade delegate function name to be "upgradeTo", but got "${functionName}"`
+      )
+    }
+
+    await this.upgradeSuccessCheck(signedFunctionCall)
+
+    const promiEvent = await this._metaDelegateCall(signedFunctionCall)
+    return promiEvent
+  }
+
+  async upgradeSuccessCheck (signedFunctionCall) {
+    const { call } = signedFunctionCall
+    const [ implementationAddress ] = call.params
+    verifyUpgrade(implementationAddress)
+    return true
+  }
+
+  async implementation () {
+    if (!await this.isDeployed()) return ZERO_ADDRESS
+    const account = await this.account()
+    const implementation = await account.implementation()
+    return implementation.toLowerCase()
   }
 
   async transferTokenSuccessCheck (signedFunctionCall) {
@@ -233,13 +201,19 @@ class Account {
     return this._deployAndExecute
   }
 
+  async _metaDelegateCall (signedFunctionCall) {
+    _verifySignedFunctionName(signedFunctionCall, 'metaDelegateCall')
+    const promiEvent = await this._sendSignedTransaction(signedFunctionCall)
+    return promiEvent
+  }
+
   async _verifySignedFnCall (signedFunctionCall) {
     if (!this.address) { throw new Error('Account not loaded') }
 
     const {
       accountAddress, message,
       signature, signer,
-      functionName, bitmapIndex, bit, paramTypes, params,
+      functionName, paramTypes, params,
       call, callEncoded
     } = signedFunctionCall
 
@@ -256,8 +230,6 @@ class Account {
       chainId: this._chainId,
       accountAddress,
       functionName,
-      bitmapIndex,
-      bit,
       paramTypes,
       params
     })
@@ -273,16 +245,11 @@ class Account {
       throw new Error(`Invalid function call. Wrong signer. Expected ${recoveredSigner}, received ${checksumSignerAddr}`)
     }
 
-    const signerIsOwner = await this.isProxyOwner(signer)
-    if (!signerIsOwner) {
-      throw new Error(`Invalid function call. signer ${signer} is not account owner ${accountOwner}`)
-    }
-
-    const bitUsed = await this.bitUsed(bitmapIndex, bit)
-    if (bitUsed) {
-      const bitStr = `${bitmapIndex.toString()}:${bit.toString()}`
-      throw new Error(`Invalid function call. bit ${bitStr} has been used`)
-    }
+    // TODO: Add back in 
+    // const signerIsOwner = await this.isProxyOwner(signer)
+    // if (!signerIsOwner) {
+    //   throw new Error(`Invalid function call. signer ${signer} is not account owner ${accountOwner}`)
+    // }
 
     if (call) {
       // signed function includes an encoded call
@@ -305,6 +272,21 @@ class Account {
     return data
   }
 
+  async _sendSignedTransaction (signedFunctionCall, unsignedParams = []) {
+    if (!await this.isDeployed()) {
+      throw new Error(`Account contract not deployed. Can't send ${signedFunctionCall.functionName} transaction`)
+    }
+    await this._verifySignedFnCall(signedFunctionCall)
+
+    const data = this._getFunctionCallData(signedFunctionCall, unsignedParams)
+
+    const promiEvent = this._ethersSigner.sendTransaction({
+      to: this.address,
+      data
+    })
+    return promiEvent
+  }
+
   _getAccountBytecode () {
     if (!this._initImplementationAddress || !this._initOwnerAddress) {
       throw new Error(
@@ -323,6 +305,13 @@ class Account {
     return new this._ethers.Contract(
       contractAddress, _abiMap[contractName], this._ethersSigner
     )
+  }
+}
+
+function _verifySignedFunctionName(signedFunctionCall, expectedFunctionName) {
+  const { functionName } = signedFunctionCall
+  if (functionName !== expectedFunctionName) {
+    throw new Error(`Expected "${functionName}" to be "${expectedFunctionName}"`)
   }
 }
 

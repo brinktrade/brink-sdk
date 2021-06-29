@@ -61,7 +61,7 @@ class AccountSigner {
 
     verifyTransferEth(amount, recipientAddress, callEncoded)
 
-    const signedCall = await this.signExecuteCall(bitData, amount, recipientAddress, callEncoded)
+    const signedCall = await this.signExternalCall(bitData, amount, recipientAddress, callEncoded)
     
     return {
       ...signedCall,
@@ -186,7 +186,7 @@ class AccountSigner {
     }
   }
   
-  async signUpgrade(bitData, proxyAdminDelegatedAddress, implementationAddress) {
+  async signUpgrade(proxyAdminDelegatedAddress, implementationAddress) {
     const call = {
       functionName: 'upgradeTo',
       paramTypes: [{ name: 'impl', type: 'address' }],
@@ -196,7 +196,7 @@ class AccountSigner {
 
     verifyUpgrade(implementationAddress)
 
-    const signedCall = await this.signExecuteDelegateCall(bitData, proxyAdminDelegatedAddress, callEncoded)
+    const signedCall = await this.signMetaDelegateCall(proxyAdminDelegatedAddress, callEncoded)
 
     return {
       ...signedCall,
@@ -252,6 +252,25 @@ class AccountSigner {
     )
     return signedFnCall
   }
+
+  async signExternalCall (bitData, ethValue, toAddress, callData) {
+    const signedFnCall = await this.signFunctionCall(
+      'externalCall',
+      bitData,
+      executeCallParamTypes,
+      [ ethValue, toAddress, callData ]
+    )
+    return signedFnCall
+  }
+
+  async signMetaDelegateCall (toAddress, callData) {
+    const signedFnCall = await this.signFunctionCall(
+      'metaDelegateCall',
+      executeDelegateCallParamTypes,
+      [ toAddress, callData ]
+    )
+    return signedFnCall
+  }
   
   async signExecuteDelegateCall (bitData, toAddress, callData) {
     const signedFnCall = await this.signFunctionCall(
@@ -283,20 +302,15 @@ class AccountSigner {
     return signedFnCall
   }
 
-  async signFunctionCall (functionName, bitData, paramTypes, params) {
+  async signFunctionCall (functionName, paramTypes, params) {
     if (!this.accountAddress) { throw new Error('AccountSigner not initialized') }
 
-    const { bitmapIndex, bit } = verifyBitData(bitData)
-
     let params_noBN = params.map(p => p.toString())
-
     const { typedData, typedDataHash } = typedDataEIP712({
       accountVersion: this.accountVersion,
       chainId: this.chainId,
       accountAddress: this.accountAddress,
       functionName,
-      bitmapIndex,
-      bit,
       paramTypes,
       params: params_noBN
     })
@@ -308,8 +322,6 @@ class AccountSigner {
       signer: this.signer.address,
       accountAddress: this.accountAddress,
       functionName,
-      bitmapIndex: bitmapIndex.toString(),
-      bit: bit.toString(),
       paramTypes,
       params: params_noBN
     }

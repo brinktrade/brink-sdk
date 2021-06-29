@@ -5,8 +5,6 @@ const typedDataEIP712 = ({
   chainId,
   accountAddress,
   functionName,
-  bitmapIndex,
-  bit,
   paramTypes,
   params
 }) => {
@@ -19,8 +17,6 @@ const typedDataEIP712 = ({
     chainId,
     accountAddress,
     functionName,
-    bitmapIndex,
-    bit,
     paramTypes,
     params
   })
@@ -38,8 +34,6 @@ function getTypedData({
   chainId,
   accountAddress,
   functionName,
-  bitmapIndex,
-  bit,
   paramTypes,
   params
 }) {
@@ -52,11 +46,7 @@ function getTypedData({
         { name: "chainId", type: "uint256" },
         { name: "verifyingContract", type: "address" }
       ],
-      [`${functionType}`]: [
-        { name: "bitmapIndex", type: "uint256" },
-        { name: "bit", type: "uint256" },
-        ...paramTypes
-      ]
+      [`${functionType}`]: paramTypes
     },
     primaryType: functionType,
     domain: {
@@ -66,8 +56,7 @@ function getTypedData({
       verifyingContract: accountAddress
     },
     message: {
-      bitmapIndex: bitmapIndex.toString(),
-      bit: bit.toString()
+      
     }
   }
   for (var i in paramTypes) {
