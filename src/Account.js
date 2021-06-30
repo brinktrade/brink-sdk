@@ -48,14 +48,18 @@ const _abiMap = {
 
 class Account {
   constructor ({
+    implementationAddress,
+    ownerAddress,
     accountVersion,
     accountDeploymentSalt,
     chainId,
     ethers,
     ethersSigner,
     deployerAddress,
-    deployAndExecuteAddress
+    deployAndExecuteAddress,
   }) {
+    this._implementationAddress = implementationAddress
+    this._ownerAddress = ownerAddress
     this._accountVersion = accountVersion
     this._accountDeploymentSalt = accountDeploymentSalt
     this._chainId = chainId
@@ -63,6 +67,17 @@ class Account {
     this._ethersSigner = ethersSigner
     this._deployerAddress = deployerAddress
     this._deployAndExecuteAddress = deployAndExecuteAddress
+
+    this.address = computeAccountAddress(
+      this._deployerAddress,
+      this._implementationAddress,
+      this._ownerAddress,
+      this._chainId,
+      this._accountDeploymentSalt
+    )
+
+    this._accountImpl = this._ethersContract('Account', implementationAddress)
+
   }
 
   async deploy () {
@@ -81,41 +96,6 @@ class Account {
     return code !== '0x'
   }
 
-  // TODO: remove all the load fns, move to constructor with just the load from params
-
-  async loadFromParams(implementationAddress, ownerAddress) {
-    this._initImplementationAddress = implementationAddress
-    this._initOwnerAddress = ownerAddress
-    this.owner = this._initOwnerAddress.toLowerCase()
-
-    this.address = computeAccountAddress(
-      this._deployerAddress,
-      implementationAddress,
-      ownerAddress,
-      this._chainId,
-      this._accountDeploymentSalt
-    )
-
-    this._accountImpl = this._ethersContract('Account', implementationAddress)
-  }
-
-  async loadFromAddress(address) {
-    this.address = address
-
-    if (!await this.isDeployed()) {
-      throw new Error(`Error: Account.loadFromAddress(): No code at contract address ${address}`)
-    }
-
-    const account = this.accountContract()
-    const implAddress = await account.implementation()
-    this._accountImpl = this._ethersContract('Account', implAddress)
-  }
-
-  async loadAndDeploy (implementationAddress, ownerAddress) {
-    this.loadFromParams(implementationAddress, ownerAddress)
-    const promiEvent = await this.deploy()
-    return promiEvent
-  }
 
   // account contract fns
 
@@ -227,14 +207,7 @@ class Account {
 
 
 
-    
-
-  // async accountContract () {
-  //   if (!this._account && this.address && await this.isDeployed()) {
-  //     this._account = this.accountContract()
-  //   }
-  //   return this._account
-  // }
+  
 
   async isProxyOwner (address) {
     if (!await this.isDeployed()) {
@@ -415,14 +388,8 @@ class Account {
   }
 
   _getAccountBytecode () {
-    if (!this._initImplementationAddress || !this._initOwnerAddress) {
-      throw new Error(
-        `Error: Account._getAccountBytecode(): no implementation address or owner address. Use loadFromParams()`
-      )
-    }
-
     const bytecode = computeAccountBytecode(
-      this._initImplementationAddress, this._initOwnerAddress, this._chainId
+      this._implementationAddress, this._ownerAddress, this._chainId
     )
 
     return bytecode

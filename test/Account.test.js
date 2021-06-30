@@ -50,6 +50,8 @@ describe('Account with PrivateKeySigner', function () {
     )
 
     this.account = new Account({
+      implementationAddress:this.accountContract.address,
+      ownerAddress: ownerAddress,
       accountVersion: '1',
       accountDeploymentSalt: this.accountSalt,
       chainId: chainId,
@@ -73,52 +75,17 @@ describe('Account with PrivateKeySigner', function () {
     
   })
 
-  describe('loadFromParams()', function () {
-    describe('when contract code is not deployed', function () {
-      it('should return false from isDeployed()', async function () {
-        await this.account.loadFromParams(this.accountContract.address, ownerAddress)
-        expect(await this.account.isDeployed()).to.be.false
-      })
-    })
-  })
-
   describe('when contract code is deployed', function () {
     it('should return true from isDeployed()', async function () {
-      await this.account.loadFromParams(this.accountContract.address, ownerAddress)
       await this.account.deploy()
       expect(await this.account.isDeployed()).to.be.true
-    })
-  })
-
-  describe('loadFromAddress()', function () {
-    describe('when address is an Account contract', function () {
-      it('should not throw an error', async function () {
-        await this.account.loadFromParams(this.accountContract.address, ownerAddress)
-        await this.account.deploy()
-        await this.account.loadFromAddress(this.accountContract.address)
-      })
-    })
-
-    describe('when address is not a valid Account contract', function () {
-      it('should throw an error', async function () {
-        // set a different deployerAddress so computed addresses won't match
-        this.account._deployerAddress = '0x7bf9e48a063f9835d140146e38841682abb85040'
-        const accountAddress = await deployAccount(
-          this.singletonFactory, 
-          this.accountContract.address, 
-          ownerAddress,
-          this.accountSalt,
-          chainId
-        )
-        await expectAsyncError(this.account.loadFromAddress(accountAddress))
-      })
     })
   })
 
   describe('deploy', function () {
     describe('when given valid params', function () {
       beforeEach(async function () {
-        await this.account.loadAndDeploy(this.accountContract.address, ownerAddress)
+        await this.account.deploy()
       })
 
       it('should deploy the account', async function () {
@@ -150,10 +117,9 @@ describe('Account with PrivateKeySigner', function () {
         [this.callExecutor.address, this.ethersSigner.address, chainId]
       )
       // await this.account.loadAndDeploy(this.accountContract.address, ownerAddress)
-      await this.account.loadFromParams(this.accountContract.address, ownerAddress)
     })
 
-    it.only('should upgrade the account implementation', async function () {
+    it('should upgrade the account implementation', async function () {
       // expect(await this.account.implementation()).to.equal(this.accountContract.address)
       const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
         this.proxyAdminVerifier.address, this.upgradedAccountContract.address
