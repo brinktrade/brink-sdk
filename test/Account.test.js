@@ -1,7 +1,7 @@
 require('@openzeppelin/test-helpers') // for bignumber.equal chai behavior
 
 const { ethers } = require('hardhat')
-const { expect } = require('chai')
+// const { expect } = require('chai')
 const { toBN: BN, utf8ToHex, randomHex } = require('web3-utils')
 const { web3 } = require('@openzeppelin/test-environment')
 const { chainId } = require('@brinkninja/environment/config/network.config.local1.json')
@@ -14,6 +14,9 @@ const computeAccountAddress = require('../src/computeAccountAddress')
 const recipientAddress = '0x17be668e8fc88ef382f0615f385b50690313a121'
 const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
 const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
+
+const { chaiSolidity } = require('@brinkninja/test-helpers')
+const { expect } = chaiSolidity()
 
 describe('Account with PrivateKeySigner', function () {
   beforeEach(async function () {
@@ -29,7 +32,7 @@ describe('Account with PrivateKeySigner', function () {
     this.accountContract = await this.deployer.deployAndLog(
       'Account', ['address'], [this.callExecutor.address]
     )
-    const deployAndExecute = await this.deployer.deployAndLog(
+    this.deployAndExecute = await this.deployer.deployAndLog(
       'DeployAndExecute', 
       ['address', 'address'], 
       [singletonFactory.address, this.accountContract.address]
@@ -58,7 +61,7 @@ describe('Account with PrivateKeySigner', function () {
       ethers: ethers,
       ethersSigner: this.ethersSigner,
       deployerAddress: singletonFactory.address,
-      deployAndExecuteAddress: deployAndExecute.address
+      deployAndExecuteAddress: this.deployAndExecute.address
     })
 
     this.accountSigner = new AccountSigner({
@@ -105,7 +108,44 @@ describe('Account with PrivateKeySigner', function () {
     })
   })
 
-  describe.only('transactionInfo', function () {
+  describe.only('metaDelegateCall', function () {
+    beforeEach(async function () {
+      const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
+      this.proxyAdminVerifier = await ProxyAdminVerifier.deploy()
+      const CallExecutor = await ethers.getContractFactory("CallExecutor");
+      this.callExecutor = await CallExecutor.deploy()
+      this.upgradedAccountContract = await this.deployer.deployAndLog(
+        'Account', ['address'], [this.callExecutor.address]
+      )
+    })
+
+    it('Should return completed tx for metaDelegateCall with account deployment', async function () {
+      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
+        this.proxyAdminVerifier.address, this.upgradedAccountContract.address
+      )
+      const to = signedUpgradeFnCall.signedParams[0].value
+      const data = signedUpgradeFnCall.signedParams[1].value
+      const signature = signedUpgradeFnCall.signature
+      
+      const tx = await this.account.metaDelegateCall(to, data, signature)
+      expect(tx).to.not.be.undefined
+    })
+
+    it('Should return completed tx for metaDelegateCall without account deployment', async function () {
+      await this.account.deploy()
+      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
+        this.proxyAdminVerifier.address, this.upgradedAccountContract.address
+      )
+      const to = signedUpgradeFnCall.signedParams[0].value
+      const data = signedUpgradeFnCall.signedParams[1].value
+      const signature = signedUpgradeFnCall.signature
+      
+      const tx = await this.account.metaDelegateCall(to, data, signature)
+      expect(tx).to.not.be.undefined
+    })
+  })
+
+  describe('transactionInfo', function () {
     beforeEach(async function () {
       const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
       this.proxyAdminVerifier = await ProxyAdminVerifier.deploy()
@@ -144,7 +184,7 @@ describe('Account with PrivateKeySigner', function () {
     })
   })
 
-  describe('upgrade', function () {
+  describe.skip('upgrade', function () {
     beforeEach(async function () {
       const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
       this.proxyAdminVerifier = await ProxyAdminVerifier.deploy()
