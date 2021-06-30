@@ -24,6 +24,19 @@ module.exports = {
     TOKEN: 'TOKEN',
   },
 
+
+  // add the rest of the new param types
+
+  metaDelegateCallSignedParamTypes: [
+    { name: 'to', type: 'address' },
+    { name: 'data', type: 'bytes', calldata: true }
+  ],
+
+
+
+
+  // TODO: remove these
+
   executeCallParamTypes: [
     { name: 'value', type: 'uint256' },
     { name: 'to', type: 'address' },

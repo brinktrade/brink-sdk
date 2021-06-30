@@ -18,6 +18,7 @@ const {
   executeCallWithoutValueParamTypes,
   executeCallWIthoutDataParamTypes,
   executeDelegateCallParamTypes,
+  metaDelegateCallSignedParamTypes,
   executePartialSignedDelegateCallParamTypes,
   tokenToTokenSwapParamTypes,
   ethToTokenSwapParamTypes,
@@ -33,6 +34,9 @@ class AccountSigner {
     this.chainId = chainId
     this.signer = signer
   }
+
+
+  // TODO: consolidate into just initFromParams in constructor
 
   initFromAddress(address) {
     zeroAddressCheck('address', address)
@@ -50,6 +54,76 @@ class AccountSigner {
       accountDeploymentSalt
     )
   }
+
+  async signUpgrade(proxyAdminVerifierAddress, implementationAddress) {
+    const call = {
+      functionName: 'upgradeTo',
+      paramTypes: [{ name: 'impl', type: 'address' }],
+      params: [implementationAddress]
+    }
+    verifyUpgrade(implementationAddress)
+
+    const signedCall = await this.signMetaDelegateCall(proxyAdminVerifierAddress, call)
+    return signedCall
+  }
+
+  async signMetaDelegateCall (toAddress, call) {
+    const signedFnCall = await this.signFunctionCall(
+      'metaDelegateCall',
+      metaDelegateCallSignedParamTypes,
+      [ toAddress, call ]
+    )
+    return signedFnCall
+  }
+
+  async signFunctionCall (functionName, paramTypes, params) {
+    let encodedParams = []
+    for (let i in params) {
+      const typeData = paramTypes[i]
+      if (typeData.calldata) {
+        const callEncoded = encodeFunctionCall(params[i])
+        encodedParams[i] = callEncoded
+      } else {
+        encodedParams[i] = params[i].toString()
+      }
+    }
+    const { typedData, typedDataHash } = typedDataEIP712({
+      accountVersion: this.accountVersion,
+      chainId: this.chainId,
+      accountAddress: this.accountAddress,
+      functionName,
+      paramTypes,
+      params: encodedParams
+    })
+    const signature = await this._signMessage({ typedData, typedDataHash })
+
+    return {
+      message: typedDataHash,
+      signature,
+      signer: this.signer.address,
+      accountAddress: this.accountAddress,
+      functionName,
+      signedParams: parseParams(paramTypes, params)
+    }
+  }
+
+  async _signMessage ({ typedData, typedDataHash }) {
+    const signature = await this.signer.sign({ typedData, typedDataHash })
+    return signature
+  }
+
+
+
+
+
+
+
+
+
+
+
+  //
+  // FIX THESE UP
 
   async signTransferEth(bitData, recipientAddress, amount) {
     const call = {
@@ -185,25 +259,6 @@ class AccountSigner {
       callEncoded
     }
   }
-  
-  async signUpgrade(proxyAdminDelegatedAddress, implementationAddress) {
-    const call = {
-      functionName: 'upgradeTo',
-      paramTypes: [{ name: 'impl', type: 'address' }],
-      params: [implementationAddress]
-    }
-    const callEncoded = encodeFunctionCall(call)
-
-    verifyUpgrade(implementationAddress)
-
-    const signedCall = await this.signMetaDelegateCall(proxyAdminDelegatedAddress, callEncoded)
-
-    return {
-      ...signedCall,
-      call,
-      callEncoded
-    }
-  }
 
   async signAddProxyOwner(bitData, proxyAdminDelegatedAddress, newOwnerAddress) {
     const call = {
@@ -262,17 +317,9 @@ class AccountSigner {
     )
     return signedFnCall
   }
-
-  async signMetaDelegateCall (toAddress, callData) {
-    const signedFnCall = await this.signFunctionCall(
-      'metaDelegateCall',
-      executeDelegateCallParamTypes,
-      [ toAddress, callData ]
-    )
-    return signedFnCall
-  }
   
   async signExecuteDelegateCall (bitData, toAddress, callData) {
+    throw new Error('DEPRECATED')
     const signedFnCall = await this.signFunctionCall(
       'executeDelegateCall',
       bitData,
@@ -301,36 +348,27 @@ class AccountSigner {
     )
     return signedFnCall
   }
+}
 
-  async signFunctionCall (functionName, paramTypes, params) {
-    if (!this.accountAddress) { throw new Error('AccountSigner not initialized') }
-
-    let params_noBN = params.map(p => p.toString())
-    const { typedData, typedDataHash } = typedDataEIP712({
-      accountVersion: this.accountVersion,
-      chainId: this.chainId,
-      accountAddress: this.accountAddress,
-      functionName,
-      paramTypes,
-      params: params_noBN
-    })
-    const signature = await this.signMessage({ typedData, typedDataHash })
-
-    return {
-      message: typedDataHash,
-      signature,
-      signer: this.signer.address,
-      accountAddress: this.accountAddress,
-      functionName,
-      paramTypes,
-      params: params_noBN
+function parseParams (paramTypes, params) {
+  let paramsArray = []
+  for (let i in paramTypes) {
+    const { name, type, calldata } = paramTypes[i]
+    paramsArray[i] = {
+      name,
+      type
+    }
+    if (calldata) {
+      paramsArray[i].value = encodeFunctionCall(params[i])
+      paramsArray[i].callData = {
+        functionName: params[i].functionName,
+        params: parseParams(params[i].paramTypes, params[i].params)
+      }
+    } else {
+      paramsArray[i].value = params[i]
     }
   }
-
-  async signMessage ({ typedData, typedDataHash }) {
-    const signature = await this.signer.sign({ typedData, typedDataHash })
-    return signature
-  }
+  return paramsArray
 }
 
 module.exports = AccountSigner

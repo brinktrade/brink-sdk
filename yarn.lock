@@ -172,6 +172,14 @@
     "@openzeppelin/contracts" "3.4.1-solc-0.7-2"
     require-directory "^2.1.1"
 
+"@brinkninja/core@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@brinkninja/core/-/core-0.1.1.tgz#490535bc7551f31bb1bf9d8f8c72900b1655ef46"
+  integrity sha512-ykfT8NY4s0H6sudsFs7aaPR94cjZr0wrLLqEz3dgR9Xvpbi93twJvqESrB5vaxjb73bSm8fl3R0+TdpqodBdEg==
+  dependencies:
+    "@openzeppelin/contracts" "3.4.1-solc-0.7-2"
+    require-directory "^2.1.1"
+
 "@brinkninja/environment@^0.3.5":
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/@brinkninja/environment/-/environment-0.3.5.tgz#fd09e23b5fd34520195c130f1918dbfa8644d074"

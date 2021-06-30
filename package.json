@@ -9,7 +9,7 @@
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@brinkninja/verifiers": "^0.1.1",
-    "@brinkninja/core": "^0.1.0",
+    "@brinkninja/core": "^0.1.1",
     "bip39": "^3.0.2",
     "chai": "^4.2.0",
     "mocha": "^7.1.0",

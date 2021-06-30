@@ -6,7 +6,7 @@ const typedDataEIP712 = require('./typedDataEIP712')
 const recoverSigner = require('./recoverSigner')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const Transfer = require('./Transfer')
-const { ZERO_ADDRESS, swapFunctionNames, transferTypes } = require('./constants')
+const { ZERO_ADDRESS } = require('./constants')
 
 
 const { 
@@ -15,6 +15,29 @@ const {
   verifyUpgrade
  } = require('./callVerifiers')
 
+const _directCalls = [
+  'externalCall',
+  'delegateCall'
+]
+
+const _metaCalls = [
+  'metaDelegateCall',
+  'metaPartialSignedDelegateCall'
+]
+
+const _paramTypesMap = {
+  'metaDelegateCall': [
+    { name: 'to', type: 'address' },
+    { name: 'data', type: 'bytes' },
+    { name: 'signature', type: 'bytes' }
+  ],
+  'deployAndExecute': [
+    { name: 'initCode', type: 'bytes' },
+    { name: 'salt', type: 'bytes32' },
+    { name: 'execData', type: 'bytes' }
+  ]
+  // TODO: add 'externalCall', 'delegateCall', and 'metaPartialSignedDelegateCall'
+}
 
 const _abiMap = {
   Account: require('./contracts/Account.abi'),
@@ -58,6 +81,8 @@ class Account {
     return code !== '0x'
   }
 
+  // TODO: remove all the load fns, move to constructor with just the load from params
+
   async loadFromParams(implementationAddress, ownerAddress) {
     this._initImplementationAddress = implementationAddress
     this._initOwnerAddress = ownerAddress
@@ -81,7 +106,7 @@ class Account {
       throw new Error(`Error: Account.loadFromAddress(): No code at contract address ${address}`)
     }
 
-    const account = await this.account()
+    const account = this.accountContract()
     const implAddress = await account.implementation()
     this._accountImpl = this._ethersContract('Account', implAddress)
   }
@@ -92,12 +117,124 @@ class Account {
     return promiEvent
   }
 
-  async account () {
-    if (!this._account && this.address && await this.isDeployed()) {
-      this._account = this._ethersContract('Account', this.address)
-    }
-    return this._account
+  // account contract fns
+
+  async externalCall () {
+
   }
+
+  async delegateCall () {
+
+  }
+
+  async metaDelegateCall (to, data, signature) {
+    const tx = await this.sendAccountTransaction('metaDelegateCall', [to, data, signature])
+    return tx
+  }
+
+  async metaPartialSignedDelegateCall () {
+
+  }
+
+  async transactionInfo(functionName, params = []) {
+    const {
+      contract,
+      name: contractName,
+      functionName: txFunctionName,
+      paramTypes,
+      params: txParams
+    } = await this._getTxData(functionName, params)
+    const gasEstimate = await contract.estimateGas[txFunctionName].apply(this, txParams)
+    return {
+      gasEstimate,
+      contractName,
+      functionName: txFunctionName,
+      paramTypes,
+      params: txParams
+    }
+  }
+
+  async sendAccountTransaction (functionName, params = []) {
+    const {
+      contract,
+      functionName: txFunctionName,
+      params: txParams
+    } = await this._getTxData(functionName, params)
+    const tx = await contract[txFunctionName].apply(this, txParams)
+    return tx
+  }
+
+  async _getTxData (functionName, params) {
+    const isDirect = _directCalls.includes(functionName)
+    const isMeta = _metaCalls.includes(functionName)
+
+    if (!isDirect && !isMeta) {
+      throw new Error(`Function ${functionName} is not a valid Account function`)
+    }
+
+    if (await this.isDeployed()) {
+      // returns direct tx to account
+      return {
+        contract: this.accountContract(),
+        name: 'Account',
+        functionName,
+        paramTypes: _paramTypesMap[functionName],
+        params
+      }
+    } else {
+      if (isDirect) {
+        throw new Error(`Function ${functionName} cannot be called before Account deploy`)
+      }
+      // returns batched deployAndExecute tx
+
+      return {
+        contract: this.deployAndExecuteContract(),
+        name: 'DeployAndExecute',
+        functionName: 'deployAndExecute',
+        paramTypes: _paramTypesMap['deployAndExecute'],
+        params: [
+          this._getAccountBytecode(),
+          this._accountDeploymentSalt,
+          encodeFunctionCall({
+            functionName,
+            paramTypes: _paramTypesMap[functionName],
+            params
+          })
+        ]
+      }
+    }
+  }
+
+  accountContract() {
+    return this._ethersContract('Account', this.address)
+  }
+
+  deployAndExecuteContract () {
+    return this._ethersContract('DeployAndExecute', this._deployAndExecuteAddress)
+  }
+
+  _ethersContract(contractName, contractAddress) {
+    return new this._ethers.Contract(
+      contractAddress, _abiMap[contractName], this._ethersSigner
+    )
+  }
+
+
+
+
+
+
+
+
+
+    
+
+  // async accountContract () {
+  //   if (!this._account && this.address && await this.isDeployed()) {
+  //     this._account = this.accountContract()
+  //   }
+  //   return this._account
+  // }
 
   async isProxyOwner (address) {
     if (!await this.isDeployed()) {
@@ -106,7 +243,7 @@ class Account {
       }
       return address.toLowerCase() == this._initOwnerAddress.toLowerCase()
     } else {
-      const account = await this.account()
+      const account = this.accountContract()
       const proxyOwnerAddress = await this._account.proxyOwner()
       let isProxyOwner = false
       if (proxyOwnerAddress === address) {
@@ -158,7 +295,7 @@ class Account {
 
   async implementation () {
     if (!await this.isDeployed()) return ZERO_ADDRESS
-    const account = await this.account()
+    const account = this.accountContract()
     const implementation = await account.implementation()
     return implementation.toLowerCase()
   }
@@ -189,16 +326,6 @@ class Account {
       this._deployer = this._ethersContract('IDeployer', this._deployerAddress)
     }
     return this._deployer
-  }
-
-  _getDeployAndExecute () {
-    if (!this._deployAndExecute) {
-      if (!this._deployAndExecuteAddress) {
-        throw new Error('Account: _deployAndExecuteAddress not found')
-      }
-      this._deployAndExecute = this._ethersContract('DeployAndExecute', this._deployAndExecuteAddress)
-    }
-    return this._deployAndExecute
   }
 
   async _metaDelegateCall (signedFunctionCall) {
@@ -299,12 +426,6 @@ class Account {
     )
 
     return bytecode
-  }
-
-  _ethersContract(contractName, contractAddress) {
-    return new this._ethers.Contract(
-      contractAddress, _abiMap[contractName], this._ethersSigner
-    )
   }
 }
 

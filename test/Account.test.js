@@ -27,12 +27,8 @@ describe('Account with PrivateKeySigner', function () {
     this.deployer = new Deployer(singletonFactory)
     this.callExecutor = await this.deployer.deployAndLog('CallExecutor', [], [])
     this.accountContract = await this.deployer.deployAndLog(
-      'Account', 
-      ['address', 'address', 'uint256'],
-      [this.callExecutor.address, this.ethersSigner.address, chainId]
+      'Account', ['address'], [this.callExecutor.address]
     )
-    await this.accountContract.addExecutorWithoutSignature(this.ethersSigner.address)
-    await this.accountContract.addExecutorWithoutSignature(ownerAddress)
     const deployAndExecute = await this.deployer.deployAndLog(
       'DeployAndExecute', 
       ['address', 'address'], 
@@ -153,17 +149,32 @@ describe('Account with PrivateKeySigner', function () {
         ['address', 'address', 'uint256'],
         [this.callExecutor.address, this.ethersSigner.address, chainId]
       )
-      let resp = await this.account.loadAndDeploy(this.accountContract.address, ownerAddress)
+      // await this.account.loadAndDeploy(this.accountContract.address, ownerAddress)
+      await this.account.loadFromParams(this.accountContract.address, ownerAddress)
     })
 
     it.only('should upgrade the account implementation', async function () {
-      expect(await this.account.implementation()).to.equal(this.accountContract.address)
+      // expect(await this.account.implementation()).to.equal(this.accountContract.address)
       const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
         this.proxyAdminVerifier.address, this.upgradedAccountContract.address
       )
-      const promiEvent = await this.account.upgrade(signedUpgradeFnCall)
-      await new Promise(resolve => promiEvent.onReceipt(resolve))
-      expect(await this.account.implementation()).to.equal(this.upgradedAccountContract.address)
+      const to = signedUpgradeFnCall.signedParams[0].value
+      const data = signedUpgradeFnCall.signedParams[1].value
+      const signature = signedUpgradeFnCall.signature
+      
+      const tx = await this.account.metaDelegateCall(to, data, signature)
+      console.log('TX: ', tx)
+
+      // const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaDelegateCall', [to, data, signature])
+      // console.log('GAS: ', gasEstimate.toString())
+      // console.log('CONTRACT: ', contractName)
+      // console.log('FUNCTION NAME: ', functionName)
+      // console.log('PARAM TYPES: ', paramTypes)
+      // console.log('PARAMS: ', params)
+
+      // const promiEvent = await this.account.upgrade(signedUpgradeFnCall)
+      // await new Promise(resolve => promiEvent.onReceipt(resolve))
+      // expect(await this.account.implementation()).to.equal(this.upgradedAccountContract.address)
     })
   })
 })
