@@ -41,8 +41,16 @@ const _paramTypesMap = {
     { name: 'initCode', type: 'bytes' },
     { name: 'salt', type: 'bytes32' },
     { name: 'execData', type: 'bytes' }
+  ],
+  'delegateCall': [
+    { name: 'to', type: 'address' },
+    { name: 'data', type: 'bytes' }
+  ],
+  'externalCall': [
+    { name: 'value', type: 'uint256'},
+    { name: 'to', type: 'address' },
+    { name: 'data', type: 'bytes' }
   ]
-  // TODO: add 'externalCall', 'delegateCall', and 'metaPartialSignedDelegateCall'
 }
 
 const _abiMap = {
@@ -105,12 +113,14 @@ class Account {
 
   // account contract fns
 
-  async externalCall () {
-
+  async externalCall (value, to, data) {
+    const tx = await this.sendAccountTransaction('externalCall', [value, to, data])
+    return tx
   }
 
-  async delegateCall () {
-
+  async delegateCall (to, data) {
+    const tx = await this.sendAccountTransaction('delegateCall', [to, data])
+    return tx
   }
 
   async metaDelegateCall (to, data, signature) {

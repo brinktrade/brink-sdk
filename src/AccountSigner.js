@@ -5,7 +5,7 @@ const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const {
   verifyBitData,
-  verifyTransferEth,
+  verifyEncodeTransferEth,
   verifyTransferToken,
   verifyTokenToTokenSwap,
   verifyEthToTokenSwap,
@@ -87,6 +87,7 @@ class AccountSigner {
         encodedParams[i] = params[i].toString()
       }
     }
+
     const { typedData, typedDataHash } = typedDataEIP712({
       accountVersion: this.accountVersion,
       chainId: this.chainId,
@@ -112,9 +113,23 @@ class AccountSigner {
     return signature
   }
 
+  async encodeTransferEth(bitmapIndex, bit, recipientAddress, amount, expiryBlock='0') {
+    const call = {
+      functionName: 'ethTransfer',
+      paramTypes: [
+        { name: 'bitmapIndex', type: 'uint256' },
+        { name: 'bit', type: 'uint256'},
+        { name: 'recipient', type: 'address' },
+        { name: 'amount', type: 'uint256'},
+        { name: 'expiryBlock', type: 'uint256'}
+      ],
+      params: [bitmapIndex, bit, recipientAddress, amount, expiryBlock]
+    }
+    const callEncoded = encodeFunctionCall(call)
 
-
-
+    verifyEncodeTransferEth(amount, recipientAddress, callEncoded)
+    return callEncoded
+  }
 
 
 
@@ -125,24 +140,7 @@ class AccountSigner {
   //
   // FIX THESE UP
 
-  async signTransferEth(bitData, recipientAddress, amount) {
-    const call = {
-      functionName: null,
-      paramTypes: [],
-      params: []
-    }
-    const callEncoded = encodeFunctionCall(call)
 
-    verifyTransferEth(amount, recipientAddress, callEncoded)
-
-    const signedCall = await this.signExternalCall(bitData, amount, recipientAddress, callEncoded)
-    
-    return {
-      ...signedCall,
-      call,
-      callEncoded
-    }
-  }
 
   async signTransferToken (bitData, tokenAddress, recipientAddress, amount) {
     verifyTransferToken(tokenAddress, recipientAddress, amount)

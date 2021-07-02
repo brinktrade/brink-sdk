@@ -26,19 +26,19 @@ describe('Account with PrivateKeySigner', function () {
     const signers = await ethers.getSigners()
     this.ethersSigner = signers[0]
     this.accountSalt = randomHex(32)
-    // this.ownerAddress = signers[0].address
     this.deployer = new Deployer(singletonFactory)
-    this.callExecutor = await this.deployer.deployAndLog('CallExecutor', [], [])
-    this.accountContract = await this.deployer.deployAndLog(
+    this.callExecutor = await this.deployer.deploy('CallExecutor', [], [])
+    this.accountContract = await this.deployer.deploy(
       'Account', ['address'], [this.callExecutor.address]
     )
-    this.deployAndExecute = await this.deployer.deployAndLog(
+    this.deployAndExecute = await this.deployer.deploy(
       'DeployAndExecute', 
       ['address', 'address'], 
       [singletonFactory.address, this.accountContract.address]
     )
 
     const privateKeySigner = new PrivateKeySigner(ownerPrivateKey)
+    // console.log(ethers.Signer.isSigner(this.ethersSigner))
     this.accountSigner = new AccountSigner({
       accountVersion: '1',
       chainId,
@@ -52,6 +52,22 @@ describe('Account with PrivateKeySigner', function () {
       this.accountSalt
     )
 
+    await this.ethersSigner.sendTransaction({
+      to: ownerAddress,
+      value: ethers.utils.parseEther("500.0")
+    });
+    
+    // this.ownerSigner = ethers.getSigner(ownerAddress)
+    await hre.network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: ["0x6ede982a4e7feb090c28a357401d8f3a6fcc0829"]}
+    )
+    this.ownerSigner = await ethers.getSigner("0x6ede982a4e7feb090c28a357401d8f3a6fcc0829")
+    // await hre.network.provider.request({
+    //   method: "hardhat_stopImpersonatingAccount",
+    //   params: ["0x6ede982a4e7feb090c28a357401d8f3a6fcc0829"]}
+    // )
+
     this.account = new Account({
       implementationAddress:this.accountContract.address,
       ownerAddress: ownerAddress,
@@ -59,7 +75,7 @@ describe('Account with PrivateKeySigner', function () {
       accountDeploymentSalt: this.accountSalt,
       chainId: chainId,
       ethers: ethers,
-      ethersSigner: this.ethersSigner,
+      ethersSigner: this.ownerSigner,
       deployerAddress: singletonFactory.address,
       deployAndExecuteAddress: this.deployAndExecute.address
     })
@@ -80,7 +96,7 @@ describe('Account with PrivateKeySigner', function () {
 
   describe('when contract code is deployed', function () {
     it('should return true from isDeployed()', async function () {
-      await this.account.deploy()
+      let resp = await this.account.deploy()
       expect(await this.account.isDeployed()).to.be.true
     })
   })
@@ -108,13 +124,38 @@ describe('Account with PrivateKeySigner', function () {
     })
   })
 
+  describe('delegateCall', function () {
+    beforeEach(async function () {
+      const TransferVerifier = await ethers.getContractFactory("TransferVerifier");
+      this.transferVerifier = await TransferVerifier.deploy()
+      await this.account.deploy()
+    })
+
+    it('Should complete an ETH transfer with delegateCall', async function () {
+      const transferAmount = await ethers.utils.parseEther('0.01')
+      // console.log(transferAmount.toString())
+      // this.ownerSigner = new ethers.Wallet(ownerPrivateKey, ethers.Provider)
+      const transferEthData = await this.accountSigner.encodeTransferEth(ethers.BigNumber.from(0).toString(), ethers.BigNumber.from(1).toString(), recipientAddress, transferAmount.toString())
+      // const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
+      //   this.proxyAdminVerifier.address, this.upgradedAccountContract.address
+      // )
+      // const to = signedUpgradeFnCall.signedParams[0].value
+      // const data = signedUpgradeFnCall.signedParams[1].value
+      // const signature = signedUpgradeFnCall.signature
+      
+      const tx = await this.account.delegateCall(recipientAddress, transferEthData, this.ownerSigner)
+      // console.log(tx)
+      // expect(tx).to.not.be.undefined
+    })
+  })
+
   describe('metaDelegateCall', function () {
     beforeEach(async function () {
       const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
       this.proxyAdminVerifier = await ProxyAdminVerifier.deploy()
       const CallExecutor = await ethers.getContractFactory("CallExecutor");
       this.callExecutor = await CallExecutor.deploy()
-      this.upgradedAccountContract = await this.deployer.deployAndLog(
+      this.upgradedAccountContract = await this.deployer.deploy(
         'Account', ['address'], [this.callExecutor.address]
       )
     })
@@ -151,7 +192,7 @@ describe('Account with PrivateKeySigner', function () {
       this.proxyAdminVerifier = await ProxyAdminVerifier.deploy()
       const CallExecutor = await ethers.getContractFactory("CallExecutor");
       this.callExecutor = await CallExecutor.deploy()
-      this.upgradedAccountContract = await this.deployer.deployAndLog(
+      this.upgradedAccountContract = await this.deployer.deploy(
         'Account', ['address'], [this.callExecutor.address]
       )
     })
@@ -169,7 +210,7 @@ describe('Account with PrivateKeySigner', function () {
       expect(parseInt(gasEstimate.toString())).to.be.closeTo(179000, 1000)
     })
 
-    it('Should return tx info for metaPartialSignedDelegateCall without account deployment', async function () {
+    it.skip('Should return tx info for metaPartialSignedDelegateCall without account deployment', async function () {
       await this.account.deploy()
       const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
         this.proxyAdminVerifier.address, this.upgradedAccountContract.address
@@ -190,14 +231,15 @@ describe('Account with PrivateKeySigner', function () {
       // expect(parseInt(gasEstimate.toString())).to.be.closeTo(45241, 1000)
     })
 
-    it('Should return tx info for metaPartialSignedDelegateCall with account deployment', async function () {
+    it.skip('Should return tx info for metaPartialSignedDelegateCall with account deployment', async function () {
       const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
         this.proxyAdminVerifier.address, this.upgradedAccountContract.address
       )
       const to = signedUpgradeFnCall.signedParams[0].value
       const data = signedUpgradeFnCall.signedParams[1].value
       const signature = signedUpgradeFnCall.signature
-      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, '0x'])
+      this.account.metaPartialSignedDelegateCall(to, data, signature, '0x')
+      // const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, '0x'])
       // expect(contractName).to.be.equal('DeployAndExecute')
       // expect(functionName).to.be.equal('deployAndExecute')
       // expect(parseInt(gasEstimate.toString())).to.be.closeTo(179000, 1000)
