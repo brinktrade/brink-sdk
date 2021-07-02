@@ -108,7 +108,7 @@ describe('Account with PrivateKeySigner', function () {
     })
   })
 
-  describe.only('metaDelegateCall', function () {
+  describe('metaDelegateCall', function () {
     beforeEach(async function () {
       const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
       this.proxyAdminVerifier = await ProxyAdminVerifier.deploy()
@@ -167,6 +167,40 @@ describe('Account with PrivateKeySigner', function () {
       expect(contractName).to.be.equal('DeployAndExecute')
       expect(functionName).to.be.equal('deployAndExecute')
       expect(parseInt(gasEstimate.toString())).to.be.closeTo(179000, 1000)
+    })
+
+    it('Should return tx info for metaPartialSignedDelegateCall without account deployment', async function () {
+      await this.account.deploy()
+      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
+        this.proxyAdminVerifier.address, this.upgradedAccountContract.address
+      )
+      const to = signedUpgradeFnCall.signedParams[0].value
+      const data = signedUpgradeFnCall.signedParams[1].value
+      const signature = signedUpgradeFnCall.signature
+      this.account.metaPartialSignedDelegateCall(to, data, signature, '0x')
+      // const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, '0x'])
+      // console.log('GAS: ', gasEstimate.toString())
+      // console.log('CONTRACT: ', contractName)
+      // console.log('FUNCTION NAME: ', functionName)
+      // console.log('PARAM TYPES: ', paramTypes)
+      // console.log('PARAMS: ', params)
+
+      // expect(contractName).to.be.equal('Account')
+      // expect(functionName).to.be.equal('metaDelegateCall')
+      // expect(parseInt(gasEstimate.toString())).to.be.closeTo(45241, 1000)
+    })
+
+    it('Should return tx info for metaPartialSignedDelegateCall with account deployment', async function () {
+      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
+        this.proxyAdminVerifier.address, this.upgradedAccountContract.address
+      )
+      const to = signedUpgradeFnCall.signedParams[0].value
+      const data = signedUpgradeFnCall.signedParams[1].value
+      const signature = signedUpgradeFnCall.signature
+      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, '0x'])
+      // expect(contractName).to.be.equal('DeployAndExecute')
+      // expect(functionName).to.be.equal('deployAndExecute')
+      // expect(parseInt(gasEstimate.toString())).to.be.closeTo(179000, 1000)
     })
 
     it('Should return tx info for metaDelegateCall without account deployment', async function () {

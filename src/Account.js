@@ -31,6 +31,12 @@ const _paramTypesMap = {
     { name: 'data', type: 'bytes' },
     { name: 'signature', type: 'bytes' }
   ],
+  'metaPartialSignedDelegateCall': [
+    { name: 'to', type: 'address' },
+    { name: 'data', type: 'bytes' },
+    { name: 'signature', type: 'bytes' },
+    { name: 'unsignedData', type: 'bytes'}
+  ],
   'deployAndExecute': [
     { name: 'initCode', type: 'bytes' },
     { name: 'salt', type: 'bytes32' },
@@ -112,8 +118,9 @@ class Account {
     return tx
   }
 
-  async metaPartialSignedDelegateCall () {
-
+  async metaPartialSignedDelegateCall (to, data, signature, unsignedData) {
+    const tx = await this.sendAccountTransaction('metaPartialSignedDelegateCall', [to, data, signature, unsignedData])
+    return tx
   }
 
   async transactionInfo(functionName, params = []) {
@@ -207,7 +214,7 @@ class Account {
 
 
 
-  
+
 
   async isProxyOwner (address) {
     if (!await this.isDeployed()) {
