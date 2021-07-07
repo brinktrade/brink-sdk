@@ -11,7 +11,6 @@ const deployAccount = require('./helpers/deployAccount')
 const expectAsyncError = require('./helpers/expectAsyncError')
 const computeAccountAddress = require('../src/computeAccountAddress')
 
-const recipientAddress = '0x17be668e8fc88ef382f0615f385b50690313a121'
 const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
 const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
 
@@ -38,7 +37,6 @@ describe('Account with PrivateKeySigner', function () {
     )
 
     const privateKeySigner = new PrivateKeySigner(ownerPrivateKey)
-    // console.log(ethers.Signer.isSigner(this.ethersSigner))
     this.accountSigner = new AccountSigner({
       accountVersion: '1',
       chainId,
@@ -69,7 +67,7 @@ describe('Account with PrivateKeySigner', function () {
     // )
 
     this.account = new Account({
-      implementationAddress:this.accountContract.address,
+      implementationAddress: this.accountContract.address,
       ownerAddress: ownerAddress,
       accountVersion: '1',
       accountDeploymentSalt: this.accountSalt,
@@ -132,20 +130,34 @@ describe('Account with PrivateKeySigner', function () {
     })
 
     it('Should complete an ETH transfer with delegateCall', async function () {
+      const recipientAddress = '0x17be668e8fc88ef382f0615f385b50690313a121'
+      await this.ethersSigner.sendTransaction({
+        to: this.account.address,
+        value: ethers.utils.parseEther("1.0")
+      });
       const transferAmount = await ethers.utils.parseEther('0.01')
-      // console.log(transferAmount.toString())
-      // this.ownerSigner = new ethers.Wallet(ownerPrivateKey, ethers.Provider)
       const transferEthData = await this.accountSigner.encodeTransferEth(ethers.BigNumber.from(0).toString(), ethers.BigNumber.from(1).toString(), recipientAddress, transferAmount.toString())
-      // const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
-      //   this.proxyAdminVerifier.address, this.upgradedAccountContract.address
-      // )
-      // const to = signedUpgradeFnCall.signedParams[0].value
-      // const data = signedUpgradeFnCall.signedParams[1].value
-      // const signature = signedUpgradeFnCall.signature
-      
-      const tx = await this.account.delegateCall(recipientAddress, transferEthData, this.ownerSigner)
-      // console.log(tx)
-      // expect(tx).to.not.be.undefined
+      const tx = await this.account.delegateCall(this.transferVerifier.address, transferEthData)
+      expect(tx).to.not.be.undefined
+      expect(await ethers.provider.getBalance(recipientAddress)).to.equal(ethers.utils.parseEther('0.01'))
+    })
+  })
+
+  describe('externalCall', function () {
+    beforeEach(async function () {
+      await this.account.deploy()
+    })
+
+    it('Should complete an ETH transfer with externalCall', async function () {
+      const recipientAddress = '0x17be668e8fc88ef382f0615f385b50690313a122'
+      await this.ethersSigner.sendTransaction({
+        to: this.account.address,
+        value: ethers.utils.parseEther("1.0")
+      });
+      const transferAmount = await ethers.utils.parseEther('0.01')
+      const tx = await this.account.externalCall(transferAmount.toString(), recipientAddress, '0x')
+      expect(tx).to.not.be.undefined
+      expect(await ethers.provider.getBalance(recipientAddress)).to.equal(ethers.utils.parseEther('0.01'))
     })
   })
 
@@ -197,6 +209,27 @@ describe('Account with PrivateKeySigner', function () {
       )
     })
 
+    it('Should return tx info for delegateCall eth transfer', async function () {
+      await this.account.deploy()
+      const recipientAddress = '0x17be668e8fc88ef382f0615f385b50690313a123'
+      const transferAmount = await ethers.utils.parseEther('0.01')
+      const transferEthData = await this.accountSigner.encodeTransferEth(ethers.BigNumber.from(0).toString(), ethers.BigNumber.from(1).toString(), recipientAddress, transferAmount.toString())
+
+      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('delegateCall', [recipientAddress, transferEthData])
+      expect(parseInt(gasEstimate.toString())).to.be.closeTo(33750, 1000)
+    })
+
+    // TODO: figure out why gas estimation fails for this successful tx
+    it.skip('Should return tx info for externalCall eth transfer', async function () {
+      await this.account.deploy()
+      const recipientAddress = '0x17be668e8fc88ef382f0615f385b50690313a124'
+      const transferAmount = await ethers.utils.parseEther('0.01')
+
+      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('externalCall', [transferAmount.toString(), recipientAddress, '0x'])
+      console.log('GAS: ', gasEstimate.toString())
+      // expect(parseInt(gasEstimate.toString())).to.be.closeTo(33946, 1000)
+    })
+
     it('Should return tx info for metaDelegateCall with account deployment', async function () {
       const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
         this.proxyAdminVerifier.address, this.upgradedAccountContract.address
@@ -208,6 +241,20 @@ describe('Account with PrivateKeySigner', function () {
       expect(contractName).to.be.equal('DeployAndExecute')
       expect(functionName).to.be.equal('deployAndExecute')
       expect(parseInt(gasEstimate.toString())).to.be.closeTo(179000, 1000)
+    })
+
+    it('Should return tx info for metaDelegateCall without account deployment', async function () {
+      await this.account.deploy()
+      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
+        this.proxyAdminVerifier.address, this.upgradedAccountContract.address
+      )
+      const to = signedUpgradeFnCall.signedParams[0].value
+      const data = signedUpgradeFnCall.signedParams[1].value
+      const signature = signedUpgradeFnCall.signature
+      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaDelegateCall', [to, data, signature])
+      expect(contractName).to.be.equal('Account')
+      expect(functionName).to.be.equal('metaDelegateCall')
+      expect(parseInt(gasEstimate.toString())).to.be.closeTo(45241, 1000)
     })
 
     it.skip('Should return tx info for metaPartialSignedDelegateCall without account deployment', async function () {
@@ -243,20 +290,6 @@ describe('Account with PrivateKeySigner', function () {
       // expect(contractName).to.be.equal('DeployAndExecute')
       // expect(functionName).to.be.equal('deployAndExecute')
       // expect(parseInt(gasEstimate.toString())).to.be.closeTo(179000, 1000)
-    })
-
-    it('Should return tx info for metaDelegateCall without account deployment', async function () {
-      await this.account.deploy()
-      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
-        this.proxyAdminVerifier.address, this.upgradedAccountContract.address
-      )
-      const to = signedUpgradeFnCall.signedParams[0].value
-      const data = signedUpgradeFnCall.signedParams[1].value
-      const signature = signedUpgradeFnCall.signature
-      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaDelegateCall', [to, data, signature])
-      expect(contractName).to.be.equal('Account')
-      expect(functionName).to.be.equal('metaDelegateCall')
-      expect(parseInt(gasEstimate.toString())).to.be.closeTo(45241, 1000)
     })
   })
 

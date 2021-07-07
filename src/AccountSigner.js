@@ -27,6 +27,8 @@ const {
   recoveryCancelParamTypes
 } = require('./constants')
 
+const MAX_UINT_256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935'
+
 class AccountSigner {
 
   constructor ({ accountVersion, chainId, signer }) {
@@ -113,7 +115,7 @@ class AccountSigner {
     return signature
   }
 
-  async encodeTransferEth(bitmapIndex, bit, recipientAddress, amount, expiryBlock='0') {
+  async encodeTransferEth(bitmapIndex, bit, recipientAddress, amount, expiryBlock=MAX_UINT_256) {
     const call = {
       functionName: 'ethTransfer',
       paramTypes: [
@@ -123,7 +125,7 @@ class AccountSigner {
         { name: 'amount', type: 'uint256'},
         { name: 'expiryBlock', type: 'uint256'}
       ],
-      params: [bitmapIndex, bit, recipientAddress, amount, expiryBlock]
+      params: [bitmapIndex, bit, recipientAddress, amount, expiryBlock.toString()]
     }
     const callEncoded = encodeFunctionCall(call)
 
