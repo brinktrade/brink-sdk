@@ -29,7 +29,7 @@ const verifyEncodeTransferEth = (value, to, data) => {
   }
 }
 
-const verifyTransferToken = (tokenAddress, recipientAddress, amount) => {
+const verifyEncodeTransferToken = (tokenAddress, recipientAddress, amount) => {
   zeroAddressCheck('tokenAddress', tokenAddress)
   zeroAddressCheck('recipientAddress', recipientAddress)
   zeroNumberCheck('amount', amount)
@@ -72,7 +72,7 @@ const verifyRemoveProxyOwner = (newOwnerAddress) => {
 module.exports = {
   verifyBitData,
   verifyEncodeTransferEth,
-  verifyTransferToken,
+  verifyEncodeTransferToken,
   verifyTokenToTokenSwap,
   verifyEthToTokenSwap,
   verifyTokenToEthSwap,

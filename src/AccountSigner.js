@@ -115,29 +115,6 @@ class AccountSigner {
     return signature
   }
 
-  async encodeTransferEth(bitmapIndex, bit, recipientAddress, amount, expiryBlock=MAX_UINT_256) {
-    const call = {
-      functionName: 'ethTransfer',
-      paramTypes: [
-        { name: 'bitmapIndex', type: 'uint256' },
-        { name: 'bit', type: 'uint256'},
-        { name: 'recipient', type: 'address' },
-        { name: 'amount', type: 'uint256'},
-        { name: 'expiryBlock', type: 'uint256'}
-      ],
-      params: [bitmapIndex, bit, recipientAddress, amount, expiryBlock.toString()]
-    }
-    const callEncoded = encodeFunctionCall(call)
-
-    verifyEncodeTransferEth(amount, recipientAddress, callEncoded)
-    return callEncoded
-  }
-
-
-
-
-
-
 
   //
   // FIX THESE UP
