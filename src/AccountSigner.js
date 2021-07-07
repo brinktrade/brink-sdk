@@ -69,6 +69,17 @@ class AccountSigner {
     return signedCall
   }
 
+  async signSetProxyOwner(proxyAdminVerifierAddress, ownerAddress) {
+    const call = {
+      functionName: 'setProxyOwner',
+      paramTypes: [{ name: 'owner', type: 'address' }],
+      params: [ownerAddress]
+    }
+    
+    const signedCall = await this.signMetaDelegateCall(proxyAdminVerifierAddress, call)
+    return signedCall
+  }
+
   async signCancel(cancelVerifierAddress, bitMapIndex, bit) {
     const call = {
       functionName: 'cancel',
