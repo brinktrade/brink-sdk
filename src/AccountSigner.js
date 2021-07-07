@@ -69,6 +69,20 @@ class AccountSigner {
     return signedCall
   }
 
+  async signCancel(cancelVerifierAddress, bitMapIndex, bit) {
+    const call = {
+      functionName: 'cancel',
+      paramTypes: [
+        { name: 'bitmapIndex', type: 'uint256' },
+        { name: 'bit', type: 'uint256'}
+      ],
+      params: [bitMapIndex, bit]
+    }
+
+    const signedCall = await this.signMetaDelegateCall(cancelVerifierAddress, call)
+    return signedCall
+  }
+
   async signMetaDelegateCall (toAddress, call) {
     const signedFnCall = await this.signFunctionCall(
       'metaDelegateCall',
@@ -312,16 +326,6 @@ class AccountSigner {
       bitData,
       executePartialSignedDelegateCallParamTypes,
       [ toAddress, callData ]
-    )
-    return signedFnCall
-  }
-
-  async signCancel (bitData) {
-    const signedFnCall = await this.signFunctionCall(
-      'cancel',
-      bitData,
-      cancelParamTypes,
-      []
     )
     return signedFnCall
   }
