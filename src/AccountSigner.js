@@ -75,7 +75,7 @@ class AccountSigner {
       paramTypes: [{ name: 'owner', type: 'address' }],
       params: [ownerAddress]
     }
-    
+
     const signedCall = await this.signMetaDelegateCall(proxyAdminVerifierAddress, call)
     return signedCall
   }
@@ -91,6 +91,25 @@ class AccountSigner {
     }
 
     const signedCall = await this.signMetaDelegateCall(cancelVerifierAddress, call)
+    return signedCall
+  }
+
+  async signEthToTokenSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock=MAX_UINT_256) {
+    verifyEthToTokenSwap(tokenAddress, ethAmount, tokenAmount, expiryBlock)
+    const call = {
+      functionName: 'ethToToken',
+      paramTypes: [
+        { name: 'bitmapIndex', type: 'uint256' },
+        { name: 'bit', type: 'uint256'},
+        { name: 'token', type: 'address'},
+        { name: 'ethAmount', type: 'uint256'},
+        { name: 'tokenAmount', type: 'uint256'},
+        { name: 'expiryBlock', type: 'uint256'}
+      ],
+      params: [bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock]
+    }
+
+    const signedCall = await this.signMetaDelegateCall(limitSwapVerifierAddress, call)
     return signedCall
   }
 
@@ -177,17 +196,6 @@ class AccountSigner {
       bitData,
       tokenToTokenSwapParamTypes,
       [ tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock ]
-    )
-    return signedFnCall
-  }
-  
-  async signEthToTokenSwap (bitData, tokenAddress, ethAmount, tokenAmount, expiryBlock) {
-    verifyEthToTokenSwap(tokenAddress, ethAmount, tokenAmount, expiryBlock)
-    const signedFnCall = await this.signFunctionCall(
-      'ethToTokenSwap',
-      bitData,
-      ethToTokenSwapParamTypes,
-      [ tokenAddress, ethAmount, tokenAmount, expiryBlock ]
     )
     return signedFnCall
   }

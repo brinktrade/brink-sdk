@@ -130,4 +130,35 @@ describe('AccountSigner', function () {
       expect(tx).to.not.be.undefined
     })
   })
+
+  describe('Limit Swap Signing', function () {
+    beforeEach(async function () {
+      const LimitSwapVerifier = await ethers.getContractFactory("LimitSwapVerifierMock");
+      this.limitSwapVerifier = await LimitSwapVerifier.deploy()
+      this.messageEncoder = new MessageEncoder()
+    })
+
+    // bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount
+    it.only('ethToToken swap', async function () {
+      await this.account.deploy()
+      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        this.limitSwapVerifier.address, '0', '1', this.token.address, '10', '10'
+      )
+      const to = signedEthToTokenSwap.signedParams[0].value
+      const data = signedEthToTokenSwap.signedParams[1].value
+      const signature = signedEthToTokenSwap.signature
+      const unsignedData = {
+        paramTypes: [
+          { name: 'to', type: 'address' },
+          { name: 'data', type: 'bytes'},
+        ],
+        params: [randomAddress, '0x123']
+      }
+      const unsignedDataEncoded = this.messageEncoder.encodeParams(unsignedData)
+      
+      const tx = await this.account.metaPartialSignedDelegateCall(to, data, signature, unsignedDataEncoded)
+      expect(tx).to.not.be.undefined
+    })
+  })
 })
