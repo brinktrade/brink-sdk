@@ -109,7 +109,46 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaDelegateCall(limitSwapVerifierAddress, call)
+    const signedCall = await this.signMetaPartialSignedDelegateCall(limitSwapVerifierAddress, call)
+    return signedCall
+  }
+
+  async signTokenToEthSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock=MAX_UINT_256) {
+    verifyTokenToEthSwap(tokenAddress, tokenAddress, ethAmount, expiryBlock)
+    const call = {
+      functionName: 'tokenToEth',
+      paramTypes: [
+        { name: 'bitmapIndex', type: 'uint256' },
+        { name: 'bit', type: 'uint256'},
+        { name: 'token', type: 'address'},
+        { name: 'tokenAmount', type: 'uint256'},
+        { name: 'ethAmount', type: 'uint256'},
+        { name: 'expiryBlock', type: 'uint256'}
+      ],
+      params: [bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock]
+    }
+
+    const signedCall = await this.signMetaPartialSignedDelegateCall(limitSwapVerifierAddress, call)
+    return signedCall
+  }
+
+  async signTokenToTokenSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock=MAX_UINT_256) {
+    verifyTokenToTokenSwap(tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock)
+    const call = {
+      functionName: 'tokenToToken',
+      paramTypes: [
+        { name: 'bitmapIndex', type: 'uint256' },
+        { name: 'bit', type: 'uint256'},
+        { name: 'tokenIn', type: 'address'},
+        { name: 'tokenOut', type: 'address'},
+        { name: 'tokenInAmount', type: 'uint256'},
+        { name: 'tokenOutAmount', type: 'uint256'},
+        { name: 'expiryBlock', type: 'uint256'}
+      ],
+      params: [bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock]
+    }
+
+    const signedCall = await this.signMetaPartialSignedDelegateCall(limitSwapVerifierAddress, call)
     return signedCall
   }
 
@@ -118,6 +157,15 @@ class AccountSigner {
       'metaDelegateCall',
       metaDelegateCallSignedParamTypes,
       [ toAddress, call ]
+    )
+    return signedFnCall
+  }
+
+  async signMetaPartialSignedDelegateCall (toAddress, callData) {
+    const signedFnCall = await this.signFunctionCall(
+      'metaPartialSignedDelegateCall',
+      executePartialSignedDelegateCallParamTypes,
+      [ toAddress, callData ]
     )
     return signedFnCall
   }
@@ -162,54 +210,6 @@ class AccountSigner {
 
   //
   // FIX THESE UP
-
-
-
-  async signTransferToken (bitData, tokenAddress, recipientAddress, amount) {
-    verifyTransferToken(tokenAddress, recipientAddress, amount)
-
-    const call = {
-      functionName: 'transfer',
-      paramTypes: [
-        { name: 'recipient', type: 'address' },
-        { name: 'amount', type: 'uint256'}
-      ],
-      params: [recipientAddress, amount.toString()]
-    }
-    const callEncoded = encodeFunctionCall(call)
-
-    const signedCall = await this.signExecuteCall(bitData, BN(0), tokenAddress, callEncoded)
-
-    return {
-      ...signedCall,
-      call,
-      callEncoded
-    }
-  }
-  
-  async signTokenToTokenSwap (
-    bitData, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock
-  ) {
-    verifyTokenToTokenSwap(tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock)
-    const signedFnCall = await this.signFunctionCall(
-      'tokenToTokenSwap',
-      bitData,
-      tokenToTokenSwapParamTypes,
-      [ tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock ]
-    )
-    return signedFnCall
-  }
-  
-  async signTokenToEthSwap (bitData, tokenAddress, tokenAmount, ethAmount, expiryBlock) {
-    verifyTokenToEthSwap(tokenAddress, tokenAmount, ethAmount, expiryBlock)
-    const signedFnCall = await this.signFunctionCall(
-      'tokenToEthSwap',
-      bitData,
-      tokenToEthSwapParamTypes,
-      [ tokenAddress, tokenAmount, ethAmount, expiryBlock ]
-    )
-    return signedFnCall
-  }
 
   async signCreateRangeOrder(
     bitData, uniswapV3RangeOrdersDelegatedAddress,
@@ -270,71 +270,12 @@ class AccountSigner {
     }
   }
 
-  async signAddProxyOwner(bitData, proxyAdminDelegatedAddress, newOwnerAddress) {
-    const call = {
-      functionName: 'addProxyOwner',
-      paramTypes: [{ name: 'owner', type: 'address' }],
-      params: [newOwnerAddress]
-    }
-    const callEncoded = encodeFunctionCall(call)
-
-    verifyAddProxyOwner(newOwnerAddress)
-
-    const signedCall = await this.signExecuteDelegateCall(bitData, proxyAdminDelegatedAddress, callEncoded)
-
-    return {
-      ...signedCall,
-      call,
-      callEncoded
-    }
-  }
-
-  async signRemoveProxyOwner(bitData, proxyAdminDelegatedAddress, ownerAddress) {
-    const call = {
-      functionName: 'removeProxyOwner',
-      paramTypes: [{ name: 'owner', type: 'address' }],
-      params: [ownerAddress]
-    }
-    const callEncoded = encodeFunctionCall(call)
-
-    verifyAddProxyOwner(ownerAddress)
-
-    const signedCall = await this.signExecuteDelegateCall(bitData, proxyAdminDelegatedAddress, callEncoded)
-
-    return {
-      ...signedCall,
-      call,
-      callEncoded
-    }
-  }
-
   async signExecuteCall (bitData, ethValue, toAddress, callData) {
     const signedFnCall = await this.signFunctionCall(
       'executeCall',
       bitData,
       executeCallParamTypes,
       [ ethValue, toAddress, callData ]
-    )
-    return signedFnCall
-  }
-
-  async signExternalCall (bitData, ethValue, toAddress, callData) {
-    const signedFnCall = await this.signFunctionCall(
-      'externalCall',
-      bitData,
-      executeCallParamTypes,
-      [ ethValue, toAddress, callData ]
-    )
-    return signedFnCall
-  }
-  
-  async signExecuteDelegateCall (bitData, toAddress, callData) {
-    throw new Error('DEPRECATED')
-    const signedFnCall = await this.signFunctionCall(
-      'executeDelegateCall',
-      bitData,
-      executeDelegateCallParamTypes,
-      [ toAddress, callData ]
     )
     return signedFnCall
   }
