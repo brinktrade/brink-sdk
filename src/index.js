@@ -1,5 +1,6 @@
 const Account = require('./Account')
 const AccountSigner = require('./AccountSigner')
+const MessageEncoder = require('./MessageEncoder')
 const PrivateKeySigner = require('./PrivateKeySigner')
 const Web3GanacheSigner = require('./Web3GanacheSigner')
 const Web3MetamaskSigner = require('./Web3MetamaskSigner')
@@ -20,6 +21,7 @@ const decodeExecuteCallData = require('./decodeExecuteCallData')
 module.exports = {
   Account,
   AccountSigner,
+  MessageEncoder,
   PrivateKeySigner,
   Web3GanacheSigner,
   Web3MetamaskSigner,

@@ -3,8 +3,8 @@ const { transferTypes, tokenTypes } = require('./constants')
 
 class Transfer {
   
-  constructor ({ web3, signedFunctionCall }) {
-    if (!web3) throw new Error(`web3 required`)
+  constructor ({ ethers, signedFunctionCall }) {
+    if (!ethers) throw new Error(`web3 required`)
     if (!signedFunctionCall) throw new Error(`signedFunctionCall required`)
     if (signedFunctionCall.functionName !== 'executeCall') {
       throw new Error(
@@ -20,7 +20,7 @@ class Transfer {
       throw new Error(`Invalid signedFunctionCall: expected call.functionName "${callFnName}" to be "transfer" or null`)
     }
 
-    this._web3 = web3
+    this._ethers = ethers
     this._signedFunctionCall = signedFunctionCall
     this._type = callFnName == null ? transferTypes.ETH : transferTypes.TOKEN
     this._accountAddress = signedFunctionCall.accountAddress

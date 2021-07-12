@@ -5,7 +5,7 @@ const web3Utils = require('web3-utils')
 const saltHex = web3Utils.utf8ToHex('<<account|deployment|salt>>')
 const chainId = 1
 
-const deployAccount = async (deployer, implAddress, ownerAddress, salt, chainId) => {
+const deployAccount = async (deployer, implAddress, ownerAddress) => {
   const bytecode = computeAccountBytecode(implAddress, ownerAddress, chainId)
   const accountAddress = computeAccountAddress(
     deployer.address,
@@ -14,7 +14,7 @@ const deployAccount = async (deployer, implAddress, ownerAddress, salt, chainId)
     chainId,
     saltHex
   )
-  await deployer.deploy(bytecode, salt)
+  await deployer.deploy(bytecode, saltHex)
   return accountAddress
 }
 

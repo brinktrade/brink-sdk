@@ -20,16 +20,16 @@ const verifyBitData = (bitData) => {
   return { bitmapIndex, bit }
 }
 
-const verifyTransferEth = (value, to, data) => {
+const verifyEncodeTransferEth = (value, to, data) => {
   zeroNumberCheck('value', value)
   zeroAddressCheck('to', to)
 
-  if (data !== '0x') {
-    throw new Error(`Invalid "data" param. ${data} must be empty bytes (0x)`)
+  if (data === '0x') {
+    throw new Error(`Invalid "data" param. ${data} must not be empty bytes (0x)`)
   }
 }
 
-const verifyTransferToken = (tokenAddress, recipientAddress, amount) => {
+const verifyEncodeTransferToken = (tokenAddress, recipientAddress, amount) => {
   zeroAddressCheck('tokenAddress', tokenAddress)
   zeroAddressCheck('recipientAddress', recipientAddress)
   zeroNumberCheck('amount', amount)
@@ -71,8 +71,8 @@ const verifyRemoveProxyOwner = (newOwnerAddress) => {
 
 module.exports = {
   verifyBitData,
-  verifyTransferEth,
-  verifyTransferToken,
+  verifyEncodeTransferEth,
+  verifyEncodeTransferToken,
   verifyTokenToTokenSwap,
   verifyEthToTokenSwap,
   verifyTokenToEthSwap,

@@ -3,3 +3,5 @@ scripts
 test
 rollup**
 test-**
+test/cache
+test/artifacts
