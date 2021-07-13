@@ -2,12 +2,6 @@ const Account = require('./Account')
 const AccountSigner = require('./AccountSigner')
 const MessageEncoder = require('./MessageEncoder')
 const PrivateKeySigner = require('./PrivateKeySigner')
-const Web3GanacheSigner = require('./Web3GanacheSigner')
-const Web3MetamaskSigner = require('./Web3MetamaskSigner')
-const Swap = require('./Swap')
-const swapFromMessageData = require('./swapFromMessageData')
-const swapFromSignedFunctionCall = require('./swapFromSignedFunctionCall')
-const Transfer = require('./Transfer')
 const computeAccountAddress = require('./computeAccountAddress')
 const computeAccountBytecode = require('./computeAccountBytecode')
 const computeInitBytecode = require('./computeInitBytecode')
@@ -23,12 +17,6 @@ module.exports = {
   AccountSigner,
   MessageEncoder,
   PrivateKeySigner,
-  Web3GanacheSigner,
-  Web3MetamaskSigner,
-  Swap,
-  swapFromMessageData,
-  swapFromSignedFunctionCall,
-  Transfer,
   computeAccountAddress,
   computeAccountBytecode,
   computeInitBytecode,

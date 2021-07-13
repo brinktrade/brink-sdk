@@ -65,7 +65,6 @@ describe('MessageEncoder', function () {
     await this.account.deploy()
     const TransferVerifier = await ethers.getContractFactory("TransferVerifier");
     this.transferVerifier = await TransferVerifier.deploy()
-    this.accountWithEmits = TransferVerifier.attach(this.account.address)
   })
 
   it('Should complete an ETH transfer with delegateCall using encodeTransferEth', async function () {

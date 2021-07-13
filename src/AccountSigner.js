@@ -1,30 +1,17 @@
-const { toBN: BN } = require('web3-utils')
 const zeroAddressCheck = require('./utils/zeroAddressCheck')
 const typedDataEIP712 = require('./typedDataEIP712')
 const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const {
   verifyBitData,
-  verifyEncodeTransferEth,
-  verifyTransferToken,
   verifyTokenToTokenSwap,
   verifyEthToTokenSwap,
   verifyTokenToEthSwap,
-  verifyUpgrade,
-  verifyAddProxyOwner
+  verifyUpgrade
 } = require('./callVerifiers')
 const {
-  executeCallParamTypes,
-  executeCallWithoutValueParamTypes,
-  executeCallWIthoutDataParamTypes,
-  executeDelegateCallParamTypes,
   metaDelegateCallSignedParamTypes,
-  metaPartialSignedDelegateCallSignedParamTypes,
-  tokenToTokenSwapParamTypes,
-  ethToTokenSwapParamTypes,
-  tokenToEthSwapParamTypes,
-  cancelParamTypes,
-  recoveryCancelParamTypes
+  metaPartialSignedDelegateCallSignedParamTypes
 } = require('./constants')
 
 const MAX_UINT_256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935'
@@ -212,90 +199,8 @@ class AccountSigner {
     const signature = await this.signer.sign({ typedData, typedDataHash })
     return signature
   }
-
-
-  //
-  // FIX THESE UP
-
-  async signCreateRangeOrder(
-    bitData, uniswapV3RangeOrdersDelegatedAddress,
-    rangeOrderPositionManagerAddress, positionHash, tokenInAddress, tokenInAmount,
-    liquidityOutAmount, expiryBlock
-  ) {
-    const call = {
-      functionName: 'createRangeOrder',
-      paramTypes: [
-        { name:  'rangeOrderPositionManager', type: 'address' },
-        { name:  'positionHash', type: 'bytes32' },
-        { name:  'tokenIn', type: 'address' },
-        { name:  'tokenInAmount', type: 'uint256' },
-        { name:  'liquidityOutAmount', type: 'uint128' },
-        { name:  'expiryBlock', type: 'uint256' }
-      ],
-      params: [
-        rangeOrderPositionManagerAddress, positionHash, tokenInAddress, tokenInAmount,
-        liquidityOutAmount, expiryBlock
-      ]
-    }
-    const callEncoded = encodeFunctionCall(call)
-
-    const signedCall = await this.signExecutePartialSignedDelegateCall(bitData, uniswapV3RangeOrdersDelegatedAddress, callEncoded)
-
-    return {
-      ...signedCall,
-      call,
-      callEncoded
-    }
-  }
-
-  async signCreateRangeOrderETH(
-    bitData, uniswapV3RangeOrdersDelegatedAddress,
-    rangeOrderPositionManagerAddress, positionHash, ethInAmount, liquidityOutAmount, expiryBlock
-  ) {
-    const call = {
-      functionName: 'createRangeOrderETH',
-      paramTypes: [
-        { name:  'rangeOrderPositionManager', type: 'address' },
-        { name:  'positionHash', type: 'bytes32' },
-        { name:  'ethInAmount', type: 'uint256' },
-        { name:  'liquidityOutAmount', type: 'uint128' },
-        { name:  'expiryBlock', type: 'uint256' }
-      ],
-      params: [
-        rangeOrderPositionManagerAddress, positionHash, ethInAmount, liquidityOutAmount, expiryBlock
-      ]
-    }
-    const callEncoded = encodeFunctionCall(call)
-
-    const signedCall = await this.signExecutePartialSignedDelegateCall(bitData, uniswapV3RangeOrdersDelegatedAddress, callEncoded)
-
-    return {
-      ...signedCall,
-      call,
-      callEncoded
-    }
-  }
-
-  async signExecuteCall (bitData, ethValue, toAddress, callData) {
-    const signedFnCall = await this.signFunctionCall(
-      'executeCall',
-      bitData,
-      executeCallParamTypes,
-      [ ethValue, toAddress, callData ]
-    )
-    return signedFnCall
-  }
-
-  async signExecutePartialSignedDelegateCall (bitData, toAddress, callData) {
-    const signedFnCall = await this.signFunctionCall(
-      'executePartialSignedDelegateCall',
-      bitData,
-      executePartialSignedDelegateCallParamTypes,
-      [ toAddress, callData ]
-    )
-    return signedFnCall
-  }
 }
+
 
 function parseParams (paramTypes, params) {
   let paramsArray = []

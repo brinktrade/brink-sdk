@@ -42,49 +42,6 @@ module.exports = {
 
   // TODO: remove these
 
-  executeCallParamTypes: [
-    { name: 'value', type: 'uint256' },
-    { name: 'to', type: 'address' },
-    { name: 'data', type: 'bytes' }
-  ],
-  
-  executeCallWithoutValueParamTypes: [
-    { name: 'to', type: 'address' },
-    { name: 'data', type: 'bytes' }
-  ],
-  
-  executeCallWIthoutDataParamTypes: [
-    { name: 'value', type: 'uint256' },
-    { name: 'to', type: 'address' }
-  ],
-  
-  executeDelegateCallParamTypes: [
-    { name: 'to', type: 'address' },
-    { name: 'data', type: 'bytes' }
-  ],
-
-  tokenToTokenSwapParamTypes: [
-    { name: 'tokenIn', type: 'address' },
-    { name: 'tokenOut', type: 'address' },
-    { name: 'tokenInAmount', type: 'uint256' },
-    { name: 'tokenOutAmount', type: 'uint256' },
-    { name: 'expiryBlock', type: 'uint256' }
-  ],
-  
-  ethToTokenSwapParamTypes: [
-    { name: 'token', type: 'address' },
-    { name: 'ethAmount', type: 'uint256' },
-    { name: 'tokenAmount', type: 'uint256' },
-    { name: 'expiryBlock', type: 'uint256' }
-  ],
-  
-  tokenToEthSwapParamTypes: [
-    { name: 'token', type: 'address' },
-    { name: 'tokenAmount', type: 'uint256' },
-    { name: 'ethAmount', type: 'uint256' },
-    { name: 'expiryBlock', type: 'uint256' }
-  ],
-
   adapterTokenToTokenParamTypes: [
     { name: 'tokenIn', type: 'address' },
     { name: 'tokenOut', type: 'address' },
