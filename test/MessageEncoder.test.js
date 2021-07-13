@@ -63,11 +63,12 @@ describe('MessageEncoder', function () {
     await this.token.mint(this.account.address, BN(10).pow(9).mul(BN(10).pow(tokens[0].decimals)))
 
     await this.account.deploy()
+    const TransferVerifier = await ethers.getContractFactory("TransferVerifier");
+    this.transferVerifier = await TransferVerifier.deploy()
+    this.accountWithEmits = TransferVerifier.attach(this.account.address)
   })
 
   it('Should complete an ETH transfer with delegateCall using encodeTransferEth', async function () {
-    const TransferVerifier = await ethers.getContractFactory("TransferVerifier");
-    this.transferVerifier = await TransferVerifier.deploy()
     const recipientAddress = '0x17be668e8fc88ef382f0615f385b50690313a155'
     await this.ethersSigner.sendTransaction({
       to: this.account.address,
@@ -81,8 +82,6 @@ describe('MessageEncoder', function () {
   })
 
   it('Should complete a Token transfer with delegateCall using encodeTransferToken', async function () {
-    const TransferVerifier = await ethers.getContractFactory("TransferVerifier");
-    this.transferVerifier = await TransferVerifier.deploy()
     const recipientAddress = '0x17be668e8fc88ef382f0615f385b50690313a155'
     const transferTokenData = await this.messageEncoder.encodeTransferToken(ethers.BigNumber.from(0).toString(), ethers.BigNumber.from(1).toString(), this.token.address, recipientAddress, '10')
     const tx = await this.account.delegateCall(this.transferVerifier.address, transferTokenData)

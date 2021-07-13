@@ -32,6 +32,11 @@ module.exports = {
     { name: 'data', type: 'bytes', calldata: true }
   ],
 
+  metaPartialSignedDelegateCallSignedParamTypes: [
+    { name: 'to', type: 'address' },
+    { name: 'data', type: 'bytes', calldata: true }
+  ],
+
 
 
 
@@ -54,11 +59,6 @@ module.exports = {
   ],
   
   executeDelegateCallParamTypes: [
-    { name: 'to', type: 'address' },
-    { name: 'data', type: 'bytes' }
-  ],
-
-  executePartialSignedDelegateCallParamTypes: [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes' }
   ],

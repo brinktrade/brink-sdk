@@ -19,7 +19,7 @@ const {
   executeCallWIthoutDataParamTypes,
   executeDelegateCallParamTypes,
   metaDelegateCallSignedParamTypes,
-  executePartialSignedDelegateCallParamTypes,
+  metaPartialSignedDelegateCallSignedParamTypes,
   tokenToTokenSwapParamTypes,
   ethToTokenSwapParamTypes,
   tokenToEthSwapParamTypes,
@@ -94,7 +94,7 @@ class AccountSigner {
     return signedCall
   }
 
-  async signEthToTokenSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock=MAX_UINT_256) {
+  async signEthToTokenSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
     verifyEthToTokenSwap(tokenAddress, ethAmount, tokenAmount, expiryBlock)
     const call = {
       functionName: 'ethToToken',
@@ -104,16 +104,18 @@ class AccountSigner {
         { name: 'token', type: 'address'},
         { name: 'ethAmount', type: 'uint256'},
         { name: 'tokenAmount', type: 'uint256'},
-        { name: 'expiryBlock', type: 'uint256'}
+        { name: 'expiryBlock', type: 'uint256'},
+        { name: 'to', type: 'address'},
+        { name: 'data', type: 'bytes'}
       ],
-      params: [bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock]
+      params: [bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock, toAddress, data]
     }
 
     const signedCall = await this.signMetaPartialSignedDelegateCall(limitSwapVerifierAddress, call)
     return signedCall
   }
 
-  async signTokenToEthSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock=MAX_UINT_256) {
+  async signTokenToEthSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
     verifyTokenToEthSwap(tokenAddress, tokenAddress, ethAmount, expiryBlock)
     const call = {
       functionName: 'tokenToEth',
@@ -123,16 +125,18 @@ class AccountSigner {
         { name: 'token', type: 'address'},
         { name: 'tokenAmount', type: 'uint256'},
         { name: 'ethAmount', type: 'uint256'},
-        { name: 'expiryBlock', type: 'uint256'}
+        { name: 'expiryBlock', type: 'uint256'},
+        { name: 'to', type: 'address'},
+        { name: 'data', type: 'bytes'}
       ],
-      params: [bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock]
+      params: [bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock, toAddress, data]
     }
 
     const signedCall = await this.signMetaPartialSignedDelegateCall(limitSwapVerifierAddress, call)
     return signedCall
   }
 
-  async signTokenToTokenSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock=MAX_UINT_256) {
+  async signTokenToTokenSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
     verifyTokenToTokenSwap(tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock)
     const call = {
       functionName: 'tokenToToken',
@@ -143,9 +147,11 @@ class AccountSigner {
         { name: 'tokenOut', type: 'address'},
         { name: 'tokenInAmount', type: 'uint256'},
         { name: 'tokenOutAmount', type: 'uint256'},
-        { name: 'expiryBlock', type: 'uint256'}
+        { name: 'expiryBlock', type: 'uint256'},
+        { name: 'to', type: 'address'},
+        { name: 'data', type: 'bytes'}
       ],
-      params: [bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock]
+      params: [bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock, toAddress, data]
     }
 
     const signedCall = await this.signMetaPartialSignedDelegateCall(limitSwapVerifierAddress, call)
@@ -161,11 +167,11 @@ class AccountSigner {
     return signedFnCall
   }
 
-  async signMetaPartialSignedDelegateCall (toAddress, callData) {
+  async signMetaPartialSignedDelegateCall (toAddress, call) {
     const signedFnCall = await this.signFunctionCall(
       'metaPartialSignedDelegateCall',
-      executePartialSignedDelegateCallParamTypes,
-      [ toAddress, callData ]
+      metaPartialSignedDelegateCallSignedParamTypes,
+      [ toAddress, call ]
     )
     return signedFnCall
   }
