@@ -2,17 +2,21 @@ require('@openzeppelin/test-helpers') // for bignumber.equal chai behavior
 
 const { ethers } = require('hardhat')
 // const { expect } = require('chai')
-const { toBN: BN, utf8ToHex, randomHex } = require('web3-utils')
+const { utf8ToHex, randomHex } = require('web3-utils')
 const { chainId } = require('@brinkninja/environment/config/network.config.local1.json')
+const tokens = require('@brinkninja/environment/config/tokens.local1.json')
+
 const Deployer = require('./helpers/Deployer')
 const { Account, AccountSigner, PrivateKeySigner, MessageEncoder } = require('../src')
 const computeAccountAddress = require('../src/computeAccountAddress')
 
+const BN = ethers.BigNumber.from
 const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
 const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
 
 const { chaiSolidity } = require('@brinkninja/test-helpers')
 const { expect } = chaiSolidity()
+
 
 describe('Account with PrivateKeySigner', function () {
   beforeEach(async function () {
@@ -89,6 +93,13 @@ describe('Account with PrivateKeySigner', function () {
       chainId,
       this.accountSalt
     )
+
+    this.token = await this.deployer.deploy(
+      'TestERC20',
+      ['string', 'string', 'uint8'],
+      [tokens[0].name, tokens[0].symbol, tokens[0].decimals]
+    )
+    await this.token.mint(this.account.address, BN(10).pow(9).mul(BN(10).pow(tokens[0].decimals)))
     
   })
 
@@ -207,6 +218,9 @@ describe('Account with PrivateKeySigner', function () {
       this.upgradedAccountContract = await this.deployer.deploy(
         'Account', ['address'], [this.callExecutor.address]
       )
+      const LimitSwapVerifier = await ethers.getContractFactory("LimitSwapVerifierMock");
+      this.limitSwapVerifier = await LimitSwapVerifier.deploy()
+      this.messageEncoder = new MessageEncoder()
     })
 
     it('Should return tx info for metaDelegateCall with account deployment', async function () {
@@ -243,53 +257,70 @@ describe('Account with PrivateKeySigner', function () {
       const transferEthData = await this.messageEncoder.encodeTransferEth(ethers.BigNumber.from(0).toString(), ethers.BigNumber.from(1).toString(), recipientAddress, transferAmount.toString())
 
       const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('delegateCall', [recipientAddress, transferEthData])
+      expect(contractName).to.be.equal('Account')
+      expect(functionName).to.be.equal('delegateCall')
       expect(parseInt(gasEstimate.toString())).to.be.closeTo(33750, 1000)
     })
 
-    // TODO: figure out why gas estimation fails for this successful tx
-    it.skip('Should return tx info for externalCall eth transfer', async function () {
+    it('Should return tx info for externalCall eth transfer', async function () {
+      await this.ethersSigner.sendTransaction({
+        to: this.account.address,
+        value: ethers.utils.parseEther("0.01")
+      });
       await this.account.deploy()
       const recipientAddress = '0x17be668e8fc88ef382f0615f385b50690313a124'
       const transferAmount = await ethers.utils.parseEther('0.01')
+      const transferEthData = await this.messageEncoder.encodeTransferEth(ethers.BigNumber.from(0).toString(), ethers.BigNumber.from(1).toString(), recipientAddress, transferAmount.toString())
 
       const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('externalCall', [transferAmount.toString(), recipientAddress, '0x'])
-      console.log('GAS: ', gasEstimate.toString())
-      // expect(parseInt(gasEstimate.toString())).to.be.closeTo(33946, 1000)
+      expect(contractName).to.be.equal('Account')
+      expect(functionName).to.be.equal('externalCall')
+      expect(parseInt(gasEstimate.toString())).to.be.closeTo(66839, 1000)
     })
 
-    it.skip('Should return tx info for metaPartialSignedDelegateCall without account deployment', async function () {
+    it('Should return tx info for metaPartialSignedDelegateCall without account deployment', async function () {
       await this.account.deploy()
-      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
-        this.proxyAdminVerifier.address, this.upgradedAccountContract.address
+      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        this.limitSwapVerifier.address, '0', '1', this.token.address, '10', '10', randomAddress, '0x123'
       )
-      const to = signedUpgradeFnCall.signedParams[0].value
-      const data = signedUpgradeFnCall.signedParams[1].value
-      const signature = signedUpgradeFnCall.signature
-      this.account.metaPartialSignedDelegateCall(to, data, signature, '0x')
-      // const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, '0x'])
-      // console.log('GAS: ', gasEstimate.toString())
-      // console.log('CONTRACT: ', contractName)
-      // console.log('FUNCTION NAME: ', functionName)
-      // console.log('PARAM TYPES: ', paramTypes)
-      // console.log('PARAMS: ', params)
-
-      // expect(contractName).to.be.equal('Account')
-      // expect(functionName).to.be.equal('metaDelegateCall')
-      // expect(parseInt(gasEstimate.toString())).to.be.closeTo(45241, 1000)
+      const to = signedEthToTokenSwap.signedParams[0].value
+      const data = signedEthToTokenSwap.signedParams[1].value
+      const signature = signedEthToTokenSwap.signature
+      const unsignedData = {
+        paramTypes: [
+          { name: 'to', type: 'address' },
+          { name: 'data', type: 'bytes'},
+        ],
+        params: [randomAddress, '0x123']
+      }
+      const unsignedDataEncoded = await this.messageEncoder.encodeParams(unsignedData)
+      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, unsignedDataEncoded])
+      expect(contractName).to.be.equal('Account')
+      expect(functionName).to.be.equal('metaPartialSignedDelegateCall')
+      expect(parseInt(gasEstimate.toString())).to.be.closeTo(50000, 1000)
     })
 
-    it.skip('Should return tx info for metaPartialSignedDelegateCall with account deployment', async function () {
-      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(
-        this.proxyAdminVerifier.address, this.upgradedAccountContract.address
+    it('Should return tx info for metaPartialSignedDelegateCall with account deployment', async function () {
+      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        this.limitSwapVerifier.address, '0', '1', this.token.address, '10', '10', randomAddress, '0x123'
       )
-      const to = signedUpgradeFnCall.signedParams[0].value
-      const data = signedUpgradeFnCall.signedParams[1].value
-      const signature = signedUpgradeFnCall.signature
-      this.account.metaPartialSignedDelegateCall(to, data, signature, '0x')
-      // const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, '0x'])
-      // expect(contractName).to.be.equal('DeployAndExecute')
-      // expect(functionName).to.be.equal('deployAndExecute')
-      // expect(parseInt(gasEstimate.toString())).to.be.closeTo(179000, 1000)
+      const to = signedEthToTokenSwap.signedParams[0].value
+      const data = signedEthToTokenSwap.signedParams[1].value
+      const signature = signedEthToTokenSwap.signature
+      const unsignedData = {
+        paramTypes: [
+          { name: 'to', type: 'address' },
+          { name: 'data', type: 'bytes'},
+        ],
+        params: [randomAddress, '0x123']
+      }
+      const unsignedDataEncoded = await this.messageEncoder.encodeParams(unsignedData)
+      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, unsignedDataEncoded])
+      expect(contractName).to.be.equal('DeployAndExecute')
+      expect(functionName).to.be.equal('deployAndExecute')
+      expect(parseInt(gasEstimate.toString())).to.be.closeTo(187000, 1000)
     })
   })
 })
