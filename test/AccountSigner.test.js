@@ -13,11 +13,12 @@ const BN = ethers.BigNumber.from
 const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
 const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
 
-
+const brinkUtils = require('@brinkninja/utils')
+const {
+  MAX_UINT_256
+} = brinkUtils.test
 const { chaiSolidity } = require('@brinkninja/test-helpers')
 const { expect } = chaiSolidity()
-
-const MAX_UINT_256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935'
 
 describe('AccountSigner', function () {
   beforeEach(async function () {

@@ -14,7 +14,10 @@ const {
   metaPartialSignedDelegateCallSignedParamTypes
 } = require('./constants')
 
-const MAX_UINT_256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935'
+const brinkUtils = require('@brinkninja/utils')
+const {
+  MAX_UINT_256
+} = brinkUtils.test
 
 class AccountSigner {
 
