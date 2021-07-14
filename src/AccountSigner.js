@@ -63,14 +63,14 @@ class AccountSigner {
     return signedCall
   }
 
-  async signCancel(bitMapIndex, bit) {
+  async signCancel(bitmapIndex, bit) {
     const call = {
       functionName: 'cancel',
       paramTypes: [
         { name: 'bitmapIndex', type: 'uint256' },
         { name: 'bit', type: 'uint256'}
       ],
-      params: [bitMapIndex, bit]
+      params: [bitmapIndex, bit]
     }
 
     const signedCall = await this.signMetaDelegateCall(this.contracts.cancelVerifier, call)
