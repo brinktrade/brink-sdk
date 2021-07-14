@@ -64,15 +64,6 @@ class BrinkSDK {
 
     return { account: account, accountSigner: accountSigner }
   }
-
-  getContractAddress(contractName) {
-    for (const contractDetails in this.environment.deployments) {
-      console.log(contractDetails)
-      if (contractDetails.name === contractName) {
-        return contractDetails.address
-      }
-    }
-  }
 }
 
 module.exports = {
