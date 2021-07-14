@@ -11,24 +11,12 @@ const isAddress = require('./utils/isAddress')
 const typedDataEIP712 = require('./typedDataEIP712')
 const recoverSigner = require('./recoverSigner')
 const decodeExecuteCallData = require('./decodeExecuteCallData')
-const localConfig = require('@brinkninja/environment/config/network.config.local1.json')
-const goerliConfig = require('@brinkninja/environment/config/network.config.goerli1.json')
-const mainnetConfig = require('@brinkninja/environment/config/network.config.mainnet1.json')
+const { getEnvConfig } = require('@brinkninja/environment')
 
 class BrinkSDK {
   constructor (environmentConfiguration) {
     if (typeof environmentConfiguration == 'string') {
-      switch(environmentConfiguration) {
-        case 'local':
-          this.environment = localConfig
-          break;
-        case 'goerli':
-          this.environment = goerliConfig
-          break;
-        case 'mainnet':
-          this.environment = mainnetConfig
-          break;
-      }
+      this.environment = getEnvConfig(environmentConfiguration)
     } else {
       this.environment = environmentConfiguration
     }
