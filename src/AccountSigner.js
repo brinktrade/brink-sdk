@@ -40,22 +40,6 @@ class AccountSigner {
     )
   }
 
-  getContractAddress(contractName) {
-    for (const contractDetails in this.environment.deployments) {
-      if (contractDetails.name === contractName) {
-        console.log(contractDetails.name)
-        return contractDetails.address
-      }
-    }
-  }
-
-  // TODO: consolidate into just initFromParams in constructor
-
-  // initFromAddress(address) {
-  //   zeroAddressCheck('address', address)
-  //   this.accountAddress = address
-  // }
-
   async signUpgrade(implementationAddress) {
     const call = {
       functionName: 'upgradeTo',
