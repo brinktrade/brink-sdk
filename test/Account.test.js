@@ -19,9 +19,6 @@ const { expect } = chaiSolidity()
 
 describe('Account with PrivateKeySigner', function () {
   beforeEach(async function () {
-
-    // const sdk = new BrinkSDK(configuration)
-    // const account = sdk.newAccount({ ethersSigner, signer })
     const environmentConfiguration = {}
     const deployments = []
 
@@ -107,12 +104,14 @@ describe('Account with PrivateKeySigner', function () {
 
     environmentConfiguration.chainId = chainId
     environmentConfiguration.deployments = deployments
+    environmentConfiguration.accountDeploymentSalt = randomHex(32)
+    this.accountSalt = environmentConfiguration.accountDeploymentSalt
 
     const brinkSDK = new BrinkSDK(environmentConfiguration)
 
     const signers = await ethers.getSigners()
     this.ethersSigner = signers[0]
-    this.accountSalt = randomHex(32)
+    
     const privateKeySigner = new PrivateKeySigner(ownerPrivateKey)
 
     await this.ethersSigner.sendTransaction({
@@ -125,7 +124,7 @@ describe('Account with PrivateKeySigner', function () {
     )
     this.ownerSigner = await ethers.getSigner("0x6ede982a4e7feb090c28a357401d8f3a6fcc0829")
 
-    const { account, accountSigner } = brinkSDK.newAccount(this.ownerSigner, privateKeySigner, this.accountSalt, ethers)
+    const { account, accountSigner } = brinkSDK.newAccount(this.ownerSigner, privateKeySigner, ethers)
     this.account = account
     this.accountSigner = accountSigner
     this.messageEncoder = new MessageEncoder()

@@ -36,7 +36,7 @@ class BrinkSDK {
     this.accountSigners = []
   }
 
-  newAccount(ethersSigner, signer, accountDeploymentSalt, ethers) {
+  newAccount(ethersSigner, signer, ethers) {
 
     const contracts = {}
     for (var i = 0; i < this.environment.deployments.length; i++) {
@@ -44,17 +44,17 @@ class BrinkSDK {
     }
 
     const accountSigner = new AccountSigner({
-      accountVersion: '1',
+      accountVersion: this.environment.accountVersion,
       environment: this.environment,
       signer: signer,
-      accountDeploymentSalt: accountDeploymentSalt
+      accountDeploymentSalt: this.environment.accountDeploymentSalt
     })
 
     const account = new Account({
       implementationAddress: contracts.account,
       ownerAddress: ethersSigner.address,
-      accountVersion: '1',
-      accountDeploymentSalt: accountDeploymentSalt,
+      accountVersion: this.environment.accountVersion,
+      accountDeploymentSalt: this.environment.accountDeploymentSalt,
       chainId: this.environment.chainId,
       ethers: ethers,
       ethersSigner: ethersSigner,

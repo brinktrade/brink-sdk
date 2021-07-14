@@ -116,12 +116,13 @@ describe('AccountSigner', function () {
 
     environmentConfiguration.chainId = chainId
     environmentConfiguration.deployments = deployments
+    environmentConfiguration.accountDeploymentSalt = randomHex(32)
+    this.accountSalt = environmentConfiguration.accountDeploymentSalt
 
     const brinkSDK = new BrinkSDK(environmentConfiguration)
 
     const signers = await ethers.getSigners()
     this.ethersSigner = signers[0]
-    this.accountSalt = randomHex(32)
 
     await this.ethersSigner.sendTransaction({
       to: ownerAddress,
@@ -134,7 +135,7 @@ describe('AccountSigner', function () {
     this.ownerSigner = await ethers.getSigner("0x6ede982a4e7feb090c28a357401d8f3a6fcc0829")
     const privateKeySigner = new PrivateKeySigner(ownerPrivateKey)
 
-    const { account, accountSigner } = brinkSDK.newAccount(this.ownerSigner, privateKeySigner, this.accountSalt, ethers)
+    const { account, accountSigner } = brinkSDK.newAccount(this.ownerSigner, privateKeySigner, ethers)
     this.account = account
     this.accountSigner = accountSigner
     this.messageEncoder = new MessageEncoder()
