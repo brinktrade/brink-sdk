@@ -21,33 +21,42 @@ const {
 
 class AccountSigner {
 
-  constructor ({ accountVersion, chainId, signer }) {
+  constructor ({ accountVersion, environment, signer, accountDeploymentSalt }) {
     this.accountVersion = accountVersion
-    this.chainId = chainId
+    this.environment = environment
     this.signer = signer
-  }
-
-
-  // TODO: consolidate into just initFromParams in constructor
-
-  initFromAddress(address) {
-    zeroAddressCheck('address', address)
-    this.accountAddress = address
-  }
-
-  initFromParams(deployerAddress, implementationAddress, chainId, accountDeploymentSalt) {
-    zeroAddressCheck('deployerAddress', deployerAddress)
-    zeroAddressCheck('implementationAddress', implementationAddress)
+    this.chainId = environment.chainId
+    const contracts = {}
+    for (var i = 0; i < this.environment.deployments.length; i++) {
+      contracts[this.environment.deployments[i].name] = this.environment.deployments[i].address;
+    }
+    this.contracts = contracts
     this.accountAddress = computeAccountAddress(
-      deployerAddress,
-      implementationAddress,
-      this.signer.address,
-      chainId,
+      this.contracts.singletonFactory,
+      this.contracts.account,
+      signer.address,
+      environment.chainId,
       accountDeploymentSalt
     )
   }
 
-  async signUpgrade(proxyAdminVerifierAddress, implementationAddress) {
+  getContractAddress(contractName) {
+    for (const contractDetails in this.environment.deployments) {
+      if (contractDetails.name === contractName) {
+        console.log(contractDetails.name)
+        return contractDetails.address
+      }
+    }
+  }
+
+  // TODO: consolidate into just initFromParams in constructor
+
+  // initFromAddress(address) {
+  //   zeroAddressCheck('address', address)
+  //   this.accountAddress = address
+  // }
+
+  async signUpgrade(implementationAddress) {
     const call = {
       functionName: 'upgradeTo',
       paramTypes: [{ name: 'impl', type: 'address' }],
@@ -55,22 +64,22 @@ class AccountSigner {
     }
     verifyUpgrade(implementationAddress)
 
-    const signedCall = await this.signMetaDelegateCall(proxyAdminVerifierAddress, call)
+    const signedCall = await this.signMetaDelegateCall(this.contracts.proxyAdminVerifier, call)
     return signedCall
   }
 
-  async signSetProxyOwner(proxyAdminVerifierAddress, ownerAddress) {
+  async signSetProxyOwner(ownerAddress) {
     const call = {
       functionName: 'setProxyOwner',
       paramTypes: [{ name: 'owner', type: 'address' }],
       params: [ownerAddress]
     }
 
-    const signedCall = await this.signMetaDelegateCall(proxyAdminVerifierAddress, call)
+    const signedCall = await this.signMetaDelegateCall(this.contracts.proxyAdminVerifier, call)
     return signedCall
   }
 
-  async signCancel(cancelVerifierAddress, bitMapIndex, bit) {
+  async signCancel(bitMapIndex, bit) {
     const call = {
       functionName: 'cancel',
       paramTypes: [
@@ -80,11 +89,11 @@ class AccountSigner {
       params: [bitMapIndex, bit]
     }
 
-    const signedCall = await this.signMetaDelegateCall(cancelVerifierAddress, call)
+    const signedCall = await this.signMetaDelegateCall(this.contracts.cancelVerifier, call)
     return signedCall
   }
 
-  async signEthToTokenSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
+  async signEthToTokenSwap(bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
     verifyEthToTokenSwap(tokenAddress, ethAmount, tokenAmount, expiryBlock)
     const call = {
       functionName: 'ethToToken',
@@ -101,11 +110,11 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock, toAddress, data]
     }
 
-    const signedCall = await this.signMetaPartialSignedDelegateCall(limitSwapVerifierAddress, call)
+    const signedCall = await this.signMetaPartialSignedDelegateCall(this.contracts.limitSwapVerifier, call)
     return signedCall
   }
 
-  async signTokenToEthSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
+  async signTokenToEthSwap(bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
     verifyTokenToEthSwap(tokenAddress, tokenAddress, ethAmount, expiryBlock)
     const call = {
       functionName: 'tokenToEth',
@@ -122,11 +131,11 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock, toAddress, data]
     }
 
-    const signedCall = await this.signMetaPartialSignedDelegateCall(limitSwapVerifierAddress, call)
+    const signedCall = await this.signMetaPartialSignedDelegateCall(this.contracts.limitSwapVerifier, call)
     return signedCall
   }
 
-  async signTokenToTokenSwap(limitSwapVerifierAddress, bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
+  async signTokenToTokenSwap(bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
     verifyTokenToTokenSwap(tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock)
     const call = {
       functionName: 'tokenToToken',
@@ -144,7 +153,7 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock, toAddress, data]
     }
 
-    const signedCall = await this.signMetaPartialSignedDelegateCall(limitSwapVerifierAddress, call)
+    const signedCall = await this.signMetaPartialSignedDelegateCall(this.contracts.limitSwapVerifier, call)
     return signedCall
   }
 
