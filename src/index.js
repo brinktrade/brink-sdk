@@ -11,7 +11,8 @@ const isAddress = require('./utils/isAddress')
 const typedDataEIP712 = require('./typedDataEIP712')
 const recoverSigner = require('./recoverSigner')
 const decodeExecuteCallData = require('./decodeExecuteCallData')
-const { getEnvConfig } = require('@brinkninja/environment')
+const brinkEnv = require('@brinkninja/environment')
+const { getEnvConfig } = brinkEnv
 
 class BrinkSDK {
   constructor (environmentConfiguration) {
