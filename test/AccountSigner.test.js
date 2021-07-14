@@ -120,6 +120,7 @@ describe('AccountSigner', function () {
     environmentConfiguration.chainId = chainId
     environmentConfiguration.deployments = deployments
     environmentConfiguration.accountDeploymentSalt = randomHex(32)
+    environmentConfiguration.accountVersion = '1'
     this.accountSalt = environmentConfiguration.accountDeploymentSalt
 
     const brinkSDK = new BrinkSDK(environmentConfiguration)
@@ -300,7 +301,7 @@ describe('AccountSigner', function () {
       const to = signedTokenToTokenSwap.signedParams[0].value
       const signature = signedTokenToTokenSwap.signature
 
-      // console.log('signedTokenToTokenSwap: ', JSON.stringify(signedTokenToTokenSwap, null, 2))
+      console.log('signedTokenToTokenSwap: ', JSON.stringify(signedTokenToTokenSwap, null, 2))
 
       const { signedData, unsignedData } = splitCallData(encodeFunctionCall({
         functionName: 'tokenToToken',
