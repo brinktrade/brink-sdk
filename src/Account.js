@@ -5,7 +5,6 @@ const ethJsUtil = require('ethereumjs-util')
 const typedDataEIP712 = require('./typedDataEIP712')
 const recoverSigner = require('./recoverSigner')
 const encodeFunctionCall = require('./encodeFunctionCall')
-const Transfer = require('./Transfer')
 const { ZERO_ADDRESS } = require('./constants')
 
 

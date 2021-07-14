@@ -50,7 +50,7 @@ class MessageEncoder {
 
   async encodeParams({paramTypes, params}){
     const types = paramTypes.map((t) => t == 'uint' ? 'uint256' : t)
-    return web3Abi.encodeParameters(types, params).slice(2)
+    return '0x' + web3Abi.encodeParameters(types, params).slice(2)
   }
 }
 
