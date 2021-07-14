@@ -119,7 +119,7 @@ class AccountSigner {
     return signedCall
   }
 
-  async signTokenToTokenSwap(bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, toAddress, data, expiryBlock=MAX_UINT_256) {
+  async signTokenToTokenSwap(bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock=MAX_UINT_256) {
     verifyTokenToTokenSwap(tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock)
     const call = {
       functionName: 'tokenToToken',
@@ -134,7 +134,7 @@ class AccountSigner {
         { name: 'to', type: 'address'},
         { name: 'data', type: 'bytes'}
       ],
-      params: [bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock, toAddress, data]
+      params: [bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock]
     }
 
     const signedCall = await this.signMetaPartialSignedDelegateCall(this.contracts.limitSwapVerifier, call)
@@ -164,6 +164,7 @@ class AccountSigner {
     for (let i in params) {
       const typeData = paramTypes[i]
       if (typeData.calldata) {
+        console.log(params[i])
         const callEncoded = encodeFunctionCall(params[i])
         encodedParams[i] = callEncoded
       } else {

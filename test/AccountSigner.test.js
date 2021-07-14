@@ -287,11 +287,11 @@ describe('AccountSigner', function () {
         .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256, ethers.utils.getAddress(randomAddress), '0x0123')
     })
 
-    it('tokenToToken swap (without account deployment)', async function () {
+    it.only('tokenToToken swap (without account deployment)', async function () {
       await this.account.deploy()
       const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
       const signedEthToTokenSwap = await this.accountSigner.signTokenToTokenSwap(
-        '0', '1', this.token.address, this.token.address, '10', '10', randomAddress, '0x0123'
+        '0', '1', this.token.address, this.token.address, '10', '10'
       )
       const to = signedEthToTokenSwap.signedParams[0].value
       const data = signedEthToTokenSwap.signedParams[1].value
@@ -304,6 +304,10 @@ describe('AccountSigner', function () {
         params: [randomAddress, '0x0123']
       }
       const unsignedDataEncoded = await this.messageEncoder.encodeParams(unsignedData)
+      console.log('TO', to)
+      console.log('DATA', data)
+      console.log('SIGNATURE', signature)
+      console.log("UNSIGNED", unsignedDataEncoded)
       await expect(this.account.metaPartialSignedDelegateCall(to, data, signature, unsignedDataEncoded))
         .to.emit(this.accountWithEmits, 'TokenToToken')
         .withArgs('0', '1', ethers.utils.getAddress(this.token.address), ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256, ethers.utils.getAddress(randomAddress), '0x0123')
