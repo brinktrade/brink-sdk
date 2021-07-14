@@ -105,6 +105,7 @@ describe('Account with PrivateKeySigner', function () {
     environmentConfiguration.chainId = chainId
     environmentConfiguration.deployments = deployments
     environmentConfiguration.accountDeploymentSalt = randomHex(32)
+    environmentConfiguration.accountVersion = '1'
     this.accountSalt = environmentConfiguration.accountDeploymentSalt
 
     const brinkSDK = new BrinkSDK(environmentConfiguration)

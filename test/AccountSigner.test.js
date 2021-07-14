@@ -9,6 +9,8 @@ const computeAccountAddress = require('../src/computeAccountAddress')
 const tokens = require('@brinkninja/environment/config/tokens.local1.json')
 const BN = ethers.BigNumber.from
 
+const encodeFunctionCall = require('../src/encodeFunctionCall')
+
 
 const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
 const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
@@ -18,6 +20,7 @@ const {
   MAX_UINT_256
 } = brinkUtils.test
 const { chaiSolidity } = require('@brinkninja/test-helpers')
+const splitCallData = require('@brinkninja/test-helpers/src/splitCallData')
 const { expect } = chaiSolidity()
 
 describe('AccountSigner', function () {
@@ -117,6 +120,7 @@ describe('AccountSigner', function () {
     environmentConfiguration.chainId = chainId
     environmentConfiguration.deployments = deployments
     environmentConfiguration.accountDeploymentSalt = randomHex(32)
+    environmentConfiguration.accountVersion = '1'
     this.accountSalt = environmentConfiguration.accountDeploymentSalt
 
     const brinkSDK = new BrinkSDK(environmentConfiguration)
@@ -291,25 +295,34 @@ describe('AccountSigner', function () {
     it.only('tokenToToken swap (without account deployment)', async function () {
       await this.account.deploy()
       const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
-      const signedEthToTokenSwap = await this.accountSigner.signTokenToTokenSwap(
-        '0', '1', this.token.address, this.token.address, '10', '10'
+      const signedTokenToTokenSwap = await this.accountSigner.signTokenToTokenSwap(
+        '0', '1', this.token.address, this.token.address, '10', '10', MAX_UINT_256
       )
-      const to = signedEthToTokenSwap.signedParams[0].value
-      const data = signedEthToTokenSwap.signedParams[1].value
-      const signature = signedEthToTokenSwap.signature
-      const unsignedData = {
+      const to = signedTokenToTokenSwap.signedParams[0].value
+      const signature = signedTokenToTokenSwap.signature
+
+      console.log('signedTokenToTokenSwap: ', JSON.stringify(signedTokenToTokenSwap, null, 2))
+
+      const { signedData, unsignedData } = splitCallData(encodeFunctionCall({
+        functionName: 'tokenToToken',
         paramTypes: [
-          { name: 'to', type: 'address' },
-          { name: 'data', type: 'bytes'},
+          { name: 'bitmapIndex', type: 'uint256' },
+          { name: 'bit', type: 'uint256'},
+          { name: 'tokenIn', type: 'address'},
+          { name: 'tokenOut', type: 'address'},
+          { name: 'tokenInAmount', type: 'uint256'},
+          { name: 'tokenOutAmount', type: 'uint256'},
+          { name: 'expiryBlock', type: 'uint256'},
+          { name: 'to', type: 'address'},
+          { name: 'data', type: 'bytes'}
         ],
-        params: [randomAddress, '0x0123']
-      }
-      const unsignedDataEncoded = await this.messageEncoder.encodeParams(unsignedData)
-      console.log('TO', to)
-      console.log('DATA', data)
-      console.log('SIGNATURE', signature)
-      console.log("UNSIGNED", unsignedDataEncoded)
-      await expect(this.account.metaPartialSignedDelegateCall(to, data, signature, unsignedDataEncoded))
+        params: [
+          '0', '1', this.token.address, this.token.address, '10', '10', MAX_UINT_256, // signed params
+          randomAddress, '0x0123' // unsigned params
+        ]
+      }), 7)
+
+      await expect(this.account.metaPartialSignedDelegateCall(to, signedData, signature, unsignedData))
         .to.emit(this.accountWithEmits, 'TokenToToken')
         .withArgs('0', '1', ethers.utils.getAddress(this.token.address), ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256, ethers.utils.getAddress(randomAddress), '0x0123')
     })
