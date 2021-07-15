@@ -111,22 +111,8 @@ class Account {
   }
 
   // verifier calls
-  async sendLimitSwapTokenToToken(signedTokenToTokenSwap, to, data) {
-    const tx = await this.sendEthSwap(signedTokenToTokenSwap, to, data)
-    return tx
-  }
 
-  async sendLimitSwapTokenToEth(signedTokenToEthSwap, to, data) {
-    const tx = await this.sendEthSwap(signedTokenToEthSwap, to, data)
-    return tx
-  }
-
-  async sendLimitSwapEthToToken(signedEthToTokenSwap, to, data) {
-    const tx = await this.sendEthSwap(signedEthToTokenSwap, to, data)
-    return tx
-  }
-
-  async sendEthSwap(signedEthSwap, to, data) {
+  async sendLimitSwap(signedEthSwap, to, data) {
     const { signedData, unsignedData } = this.getLimitSwapData(signedEthSwap, to, data)
     const tx = await this.metaPartialSignedDelegateCall(signedEthSwap.signedParams[0].value, signedData, signedEthSwap.signature, unsignedData)
     return tx
