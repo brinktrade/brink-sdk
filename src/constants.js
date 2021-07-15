@@ -24,9 +24,6 @@ module.exports = {
     TOKEN: 'TOKEN',
   },
 
-
-  // add the rest of the new param types
-
   metaDelegateCallSignedParamTypes: [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes', calldata: true }
@@ -35,35 +32,5 @@ module.exports = {
   metaPartialSignedDelegateCallSignedParamTypes: [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes', calldata: true }
-  ],
-
-
-
-
-  // TODO: remove these
-
-  adapterTokenToTokenParamTypes: [
-    { name: 'tokenIn', type: 'address' },
-    { name: 'tokenOut', type: 'address' },
-    { name: 'tokenInAmount', type: 'uint256' },
-    { name: 'tokenOutAmount', type: 'uint256' },
-    { name: 'account', type: 'address' }
-  ],
-
-  adapterEthToTokenParamTypes: [
-    { name: 'token', type: 'address' },
-    { name: 'tokenAmount', type: 'uint256' },
-    { name: 'account', type: 'address' }
-  ],
-
-  adapterTokenToEthParamTypes: [
-    { name: 'token', type: 'address' },
-    { name: 'tokenAmount', type: 'uint256' },
-    { name: 'ethAmount', type: 'uint256' },
-    { name: 'account', type: 'address' }
-  ],
-
-  cancelParamTypes: [],
-
-  recoveryCancelParamTypes: []
+  ]
 }
