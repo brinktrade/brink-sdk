@@ -127,7 +127,7 @@ describe('Account with PrivateKeySigner', function () {
       const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaDelegateCall', [to, data, signature])
       expect(contractName).to.be.equal('DeployAndExecute')
       expect(functionName).to.be.equal('deployAndExecute')
-      expect(parseInt(gasEstimate.toString())).to.be.closeTo(179000, 1000)
+      expect(parseInt(gasEstimate.toString())).to.be.closeTo(179000, 2000)
     })
 
     it('Should return tx info for metaDelegateCall without account deployment', async function () {
@@ -139,7 +139,7 @@ describe('Account with PrivateKeySigner', function () {
       const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaDelegateCall', [to, data, signature])
       expect(contractName).to.be.equal('Account')
       expect(functionName).to.be.equal('metaDelegateCall')
-      expect(parseInt(gasEstimate.toString())).to.be.closeTo(45241, 1000)
+      expect(parseInt(gasEstimate.toString())).to.be.closeTo(45241, 2000)
     })
 
     it('Should return tx info for delegateCall eth transfer', async function () {
