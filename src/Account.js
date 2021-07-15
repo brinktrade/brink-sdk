@@ -119,16 +119,19 @@ class Account {
   }
 
   async sendLimitSwapTokenToEth(signedTokenToEthSwap, to, data) {
-    const constructedFunctionCall = this.constructLimitSwapFunctionCall(signedTokenToEthSwap, [to, data])
-    const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), 6)
-    const tx = await this.metaPartialSignedDelegateCall(signedTokenToEthSwap.signedParams[0].value, signedData, signedTokenToEthSwap.signature, unsignedData)
+    const tx = await this.sendEthSwap(signedTokenToEthSwap, to, data)
     return tx
   }
 
   async sendLimitSwapEthToToken(signedEthToTokenSwap, to, data) {
-    const constructedFunctionCall = this.constructLimitSwapFunctionCall(signedEthToTokenSwap, [to, data])
+    const tx = await this.sendEthSwap(signedEthToTokenSwap, to, data)
+    return tx
+  }
+
+  async sendEthSwap(signedEthSwap, to, data) {
+    const constructedFunctionCall = this.constructLimitSwapFunctionCall(signedEthSwap, [to, data])
     const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), 6)
-    const tx = await this.metaPartialSignedDelegateCall(signedEthToTokenSwap.signedParams[0].value, signedData, signedEthToTokenSwap.signature, unsignedData)
+    const tx = await this.metaPartialSignedDelegateCall(signedEthSwap.signedParams[0].value, signedData, signedEthSwap.signature, unsignedData)
     return tx
   }
 
