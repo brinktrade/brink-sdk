@@ -302,20 +302,10 @@ describe('Account with PrivateKeySigner', function () {
       await this.account.deploy()
       const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10', randomAddress, '0x123'
+        '0', '1', this.token.address, '10', '10'
       )
-      const to = signedEthToTokenSwap.signedParams[0].value
-      const data = signedEthToTokenSwap.signedParams[1].value
-      const signature = signedEthToTokenSwap.signature
-      const unsignedData = {
-        paramTypes: [
-          { name: 'to', type: 'address' },
-          { name: 'data', type: 'bytes'},
-        ],
-        params: [randomAddress, '0x123']
-      }
-      const unsignedDataEncoded = await this.messageEncoder.encodeParams(unsignedData)
-      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, unsignedDataEncoded])
+      const { signedData, unsignedData } = this.account.getLimitSwapData(signedEthToTokenSwap, randomAddress, '0x0123')
+      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [signedEthToTokenSwap.signedParams[0].value, signedData, signedEthToTokenSwap.signature, unsignedData])
       expect(contractName).to.be.equal('Account')
       expect(functionName).to.be.equal('metaPartialSignedDelegateCall')
       expect(parseInt(gasEstimate.toString())).to.be.closeTo(50000, 1000)
@@ -324,20 +314,10 @@ describe('Account with PrivateKeySigner', function () {
     it('Should return tx info for metaPartialSignedDelegateCall with account deployment', async function () {
       const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10', randomAddress, '0x123'
+        '0', '1', this.token.address, '10', '10'
       )
-      const to = signedEthToTokenSwap.signedParams[0].value
-      const data = signedEthToTokenSwap.signedParams[1].value
-      const signature = signedEthToTokenSwap.signature
-      const unsignedData = {
-        paramTypes: [
-          { name: 'to', type: 'address' },
-          { name: 'data', type: 'bytes'},
-        ],
-        params: [randomAddress, '0x123']
-      }
-      const unsignedDataEncoded = await this.messageEncoder.encodeParams(unsignedData)
-      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [to, data, signature, unsignedDataEncoded])
+      const { signedData, unsignedData } = this.account.getLimitSwapData(signedEthToTokenSwap, randomAddress, '0x0123')
+      const { gasEstimate, contractName, functionName, paramTypes, params } = await this.account.transactionInfo('metaPartialSignedDelegateCall', [signedEthToTokenSwap.signedParams[0].value, signedData, signedEthToTokenSwap.signature, unsignedData])
       expect(contractName).to.be.equal('DeployAndExecute')
       expect(functionName).to.be.equal('deployAndExecute')
       expect(parseInt(gasEstimate.toString())).to.be.closeTo(187000, 1000)

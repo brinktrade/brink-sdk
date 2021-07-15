@@ -112,8 +112,7 @@ class Account {
 
   // verifier calls
   async sendLimitSwapTokenToToken(signedTokenToTokenSwap, to, data) {
-    const constructedFunctionCall = this.constructLimitSwapFunctionCall(signedTokenToTokenSwap, [to, data])
-    const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), 7)
+    const { signedData, unsignedData } = this.getLimitSwapData(signedTokenToTokenSwap, to, data)
     const tx = await this.metaPartialSignedDelegateCall(signedTokenToTokenSwap.signedParams[0].value, signedData, signedTokenToTokenSwap.signature, unsignedData)
     return tx
   }
@@ -129,10 +128,18 @@ class Account {
   }
 
   async sendEthSwap(signedEthSwap, to, data) {
-    const constructedFunctionCall = this.constructLimitSwapFunctionCall(signedEthSwap, [to, data])
-    const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), 6)
+    const { signedData, unsignedData } = this.getLimitSwapData(signedEthSwap, to, data)
     const tx = await this.metaPartialSignedDelegateCall(signedEthSwap.signedParams[0].value, signedData, signedEthSwap.signature, unsignedData)
     return tx
+  }
+
+  getLimitSwapData(signedSwap, to, data) {
+    const { 
+      functionCall: constructedFunctionCall, 
+      numParams 
+    } = this.constructLimitSwapFunctionCall(signedSwap, [to, data])
+    const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), numParams)
+    return { signedData, unsignedData }
   }
 
   constructLimitSwapFunctionCall(signedMessage, unsignedDataList) {
@@ -157,10 +164,11 @@ class Account {
         functionCall.params.push(param)
       }
     }
+    const numParams = functionCall.params.length
     for (let k = 0; k < unsignedDataList.length; k++) {
       functionCall.params.push(unsignedDataList[k])
     }
-    return functionCall
+    return { functionCall, numParams }
   }
 
 
