@@ -11,13 +11,12 @@ const isAddress = require('./utils/isAddress')
 const typedDataEIP712 = require('./typedDataEIP712')
 const recoverSigner = require('./recoverSigner')
 const decodeExecuteCallData = require('./decodeExecuteCallData')
-const brinkEnv = require('@brinkninja/environment')
-const { getEnvConfig } = brinkEnv
+const { loadEnvironment } = require('@brinkninja/environment')
 
 class BrinkSDK {
   constructor (environmentConfiguration) {
     if (typeof environmentConfiguration == 'string') {
-      this.environment = getEnvConfig(environmentConfiguration)
+      this.environment = loadEnvironment(environmentConfiguration)
     } else {
       this.environment = environmentConfiguration
     }
