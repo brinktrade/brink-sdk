@@ -6,6 +6,7 @@ const typedDataEIP712 = require('./typedDataEIP712')
 const recoverSigner = require('./recoverSigner')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const { ZERO_ADDRESS } = require('./constants')
+const splitCallData = require('@brinkninja/test-helpers/src/splitCallData')
 
 
 const { 
@@ -107,6 +108,52 @@ class Account {
     if (!this.address) { throw new Error('Error: Account.isDeployed(): Account not loaded') }
     const code = await this._ethers.provider.getCode(this.address)
     return code !== '0x'
+  }
+
+  // verifier calls
+
+  async sendLimitSwap(signedEthSwap, to, data) {
+    const { signedData, unsignedData } = this.getLimitSwapData(signedEthSwap, to, data)
+    const tx = await this.metaPartialSignedDelegateCall(signedEthSwap.signedParams[0].value, signedData, signedEthSwap.signature, unsignedData)
+    return tx
+  }
+
+  getLimitSwapData(signedSwap, to, data) {
+    const { 
+      functionCall: constructedFunctionCall, 
+      numParams 
+    } = this.constructLimitSwapFunctionCall(signedSwap, [to, data])
+    const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), numParams)
+    return { signedData, unsignedData }
+  }
+
+  constructLimitSwapFunctionCall(signedMessage, unsignedDataList) {
+    let functionCall = {}
+    let callData = {}
+    for (let i = 0; i < signedMessage.signedParams.length; i++) {
+      if (signedMessage.signedParams[i].callData) {
+        callData = signedMessage.signedParams[i].callData
+      }
+    }
+    functionCall.functionName = callData.functionName
+    functionCall.paramTypes = []
+    functionCall.params = []
+    for (let j = 0; j < callData.params.length; j++) {
+      let paramType = {
+        name: callData.params[j].name,
+        type: callData.params[j].type
+      }
+      functionCall.paramTypes.push(paramType)
+      if (callData.params[j].value) {
+        let param = callData.params[j].value
+        functionCall.params.push(param)
+      }
+    }
+    const numParams = functionCall.params.length
+    for (let k = 0; k < unsignedDataList.length; k++) {
+      functionCall.params.push(unsignedDataList[k])
+    }
+    return { functionCall, numParams }
   }
 
 

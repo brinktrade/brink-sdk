@@ -11,24 +11,12 @@ const isAddress = require('./utils/isAddress')
 const typedDataEIP712 = require('./typedDataEIP712')
 const recoverSigner = require('./recoverSigner')
 const decodeExecuteCallData = require('./decodeExecuteCallData')
-const localConfig = require('@brinkninja/environment/config/network.config.local1.json')
-const goerliConfig = require('@brinkninja/environment/config/network.config.goerli1.json')
-const mainnetConfig = require('@brinkninja/environment/config/network.config.mainnet1.json')
+const { loadEnvironment } = require('@brinkninja/environment')
 
 class BrinkSDK {
   constructor (environmentConfiguration) {
     if (typeof environmentConfiguration == 'string') {
-      switch(environmentConfiguration) {
-        case 'local':
-          this.environment = localConfig
-          break;
-        case 'goerli':
-          this.environment = goerliConfig
-          break;
-        case 'mainnet':
-          this.environment = mainnetConfig
-          break;
-      }
+      this.environment = loadEnvironment(environmentConfiguration)
     } else {
       this.environment = environmentConfiguration
     }
@@ -36,7 +24,7 @@ class BrinkSDK {
     this.accountSigners = []
   }
 
-  newAccount(ethersSigner, signer, accountDeploymentSalt, ethers) {
+  newAccount(ethersSigner, signer, ethers) {
 
     const contracts = {}
     for (var i = 0; i < this.environment.deployments.length; i++) {
@@ -44,17 +32,17 @@ class BrinkSDK {
     }
 
     const accountSigner = new AccountSigner({
-      accountVersion: '1',
+      accountVersion: this.environment.accountVersion,
       environment: this.environment,
       signer: signer,
-      accountDeploymentSalt: accountDeploymentSalt
+      accountDeploymentSalt: this.environment.accountDeploymentSalt
     })
 
     const account = new Account({
       implementationAddress: contracts.account,
       ownerAddress: ethersSigner.address,
-      accountVersion: '1',
-      accountDeploymentSalt: accountDeploymentSalt,
+      accountVersion: this.environment.accountVersion,
+      accountDeploymentSalt: this.environment.accountDeploymentSalt,
       chainId: this.environment.chainId,
       ethers: ethers,
       ethersSigner: ethersSigner,
