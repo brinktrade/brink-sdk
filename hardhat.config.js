@@ -24,6 +24,10 @@ module.exports = {
       },
     },
   },
+  mocha: {
+    timeout: 10000,
+    file: './test/setupTeardown.js'
+  },
   paths: {
     sources: "./test/contracts",
     cache: "./test/cache",
