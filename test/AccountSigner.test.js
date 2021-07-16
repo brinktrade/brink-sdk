@@ -24,35 +24,6 @@ describe('AccountSigner', function () {
     })
   })
 
-  describe('ProxyAdminVerifier Signing', function () {
-    beforeEach(async function () {
-      const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
-      this.accountWithEmits = ProxyAdminVerifier.attach(this.account.address)
-    })
-
-    it('Should call upgradeTo through a signed metaDelegateCall', async function () {
-      const randomAddress = '0x13be228b8fc88ef382f0615f385b50690313a155'
-      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(randomAddress)
-      const to = signedUpgradeFnCall.signedParams[0].value
-      const data = signedUpgradeFnCall.signedParams[1].value
-      const signature = signedUpgradeFnCall.signature
-      
-      const tx = await this.account.metaDelegateCall(to, data, signature)
-      expect(tx).to.not.be.undefined
-    })
-
-    it('Should call setProxyOwner through a signed metaDelegateCall', async function () {
-      const newOwner = '0x13be228b8fc88ef382f0615f385b50690313a177'
-      const signedSetProxyOwnerFnCall = await this.accountSigner.signSetProxyOwner(newOwner)
-      const to = signedSetProxyOwnerFnCall.signedParams[0].value
-      const data = signedSetProxyOwnerFnCall.signedParams[1].value
-      const signature = signedSetProxyOwnerFnCall.signature
-      
-      const tx = await this.account.metaDelegateCall(to, data, signature)
-      expect(tx).to.not.be.undefined
-    })
-  })
-
   describe('Limit Swap Signing', function () {
     beforeEach(async function () {
       const LimitSwapVerifier = await ethers.getContractFactory("LimitSwapVerifierMock");
