@@ -10,7 +10,6 @@ const constants = require('./constants')
 const isAddress = require('./utils/isAddress')
 const typedDataEIP712 = require('./typedDataEIP712')
 const recoverSigner = require('./recoverSigner')
-const decodeExecuteCallData = require('./decodeExecuteCallData')
 const { loadEnvironment } = require('@brinkninja/environment')
 
 class BrinkSDK {
@@ -67,6 +66,5 @@ module.exports = {
   isAddress,
   typedDataEIP712,
   recoverSigner,
-  decodeExecuteCallData,
   BrinkSDK
 }
