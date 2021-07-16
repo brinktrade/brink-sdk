@@ -35,14 +35,7 @@
     "web3-utils": "^1.2.6",
     "ethers": "^5.1.0"
   },
-  "files": [
-    "lib",
-    "src"
-  ],
-  "main": "lib/bundle.js",
   "scripts": {
-    "build": "rollup -c rollup.config.js",
-    "test": "hardhat test",
-    "postinstall": "yarn run build"
+    "test": "hardhat test"
   }
 }
