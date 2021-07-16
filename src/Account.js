@@ -1,6 +1,6 @@
 const computeAccountBytecode = require('./computeAccountBytecode')
 const computeAccountAddress = require('./computeAccountAddress')
-const { toBN: BN, padLeft } = require('web3-utils')
+const { toBN: BN } = require('web3-utils')
 const ethJsUtil = require('ethereumjs-util')
 const typedDataEIP712 = require('./typedDataEIP712')
 const recoverSigner = require('./recoverSigner')

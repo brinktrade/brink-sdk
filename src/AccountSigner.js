@@ -1,9 +1,7 @@
-const zeroAddressCheck = require('./utils/zeroAddressCheck')
 const typedDataEIP712 = require('./typedDataEIP712')
 const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const {
-  verifyBitData,
   verifyTokenToTokenSwap,
   verifyEthToTokenSwap,
   verifyTokenToEthSwap,
