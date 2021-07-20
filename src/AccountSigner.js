@@ -75,6 +75,41 @@ class AccountSigner {
     return signedCall
   }
 
+  async signEthTransfer(bitmapIndex, bit, recipient, amount, expiryBlock) {
+    const call = {
+      functionName: 'ethTransfer',
+      paramTypes: [
+        { name: 'bitmapIndex', type: 'uint256' },
+        { name: 'bit', type: 'uint256'},
+        { name: 'recipient', type: 'address'},
+        { name: 'amount', type: 'uint256'},
+        { name: 'expiryBlock', type: 'uint256'}
+      ],
+      params: [bitmapIndex, bit, recipient, amount, expiryBlock]
+    }
+
+    const signedCall = await this.signMetaDelegateCall(this.contracts.transferVerifier, call)
+    return signedCall
+  }
+
+  async signTokenTransfer(bitmapIndex, bit, tokenAddress, recipient, amount, expiryBlock) {
+    const call = {
+      functionName: 'tokenTransfer',
+      paramTypes: [
+        { name: 'bitmapIndex', type: 'uint256' },
+        { name: 'bit', type: 'uint256'},
+        { name: 'token', type: 'address'},
+        { name: 'recipient', type: 'address'},
+        { name: 'amount', type: 'uint256'},
+        { name: 'expiryBlock', type: 'uint256'}
+      ],
+      params: [bitmapIndex, bit, tokenAddress, recipient, amount, expiryBlock]
+    }
+
+    const signedCall = await this.signMetaDelegateCall(this.contracts.transferVerifier, call)
+    return signedCall
+  }
+
   async signEthToTokenSwap(bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock=MAX_UINT_256) {
     verifyEthToTokenSwap(tokenAddress, ethAmount, tokenAmount, expiryBlock)
     const call = {

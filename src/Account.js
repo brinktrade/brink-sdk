@@ -95,14 +95,14 @@ class Account {
       this.estimateGas[fnName] = (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
         const gas = await contract.estimateGas[functionName].apply(contract, params)
-        return { contract, contractName, functionName, paramTypes, params, gas }
+        return { contractName, functionName, paramTypes, params, gas }
       }).bind(this)
 
       this.populateTransaction[fnName] = (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
         const txData = await contract.populateTransaction[functionName].apply(contract, params)
         return {
-          contract, contractName, functionName, paramTypes, params,
+          contractName, functionName, paramTypes, params,
           ...txData
         }
       }).bind(this)
@@ -110,7 +110,7 @@ class Account {
       this.callStatic[fnName] = (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
         const returnValues = await contract.callStatic[functionName].apply(contract, params)
-        return { contract, contractName, functionName, paramTypes, params, returnValues }
+        return { contractName, functionName, paramTypes, params, returnValues }
       }).bind(this)
     }
 
@@ -122,18 +122,54 @@ class Account {
       )
       return { contract, contractName, functionName, params, paramTypes }
     })
-  }
 
-  async deploy () {
-    if (await this.isDeployed()) {
-      throw new Error(`Account contract already deployed`)
-    }
-    const bytecode = this._getAccountBytecode()
-    const deployer = this._getDeployer()
-    const promiEvent = deployer.deploy(bytecode, this._accountDeploymentSalt)
-    return promiEvent
-  }
+    _setupEthersWrappedTx('deploy', async () => {
+      if (await this.isDeployed()) {
+        throw new Error(`Account contract already deployed`)
+      }
+      const bytecode = this._getAccountBytecode()
+      const deployer = this._getDeployer()
+      return {
+        contract: deployer,
+        contractName: 'IDeployer',
+        functionName: 'deploy',
+        params: [bytecode, this._accountDeploymentSalt],
+        paramTypes: [
+          { name: 'initCode', type: 'bytes' },
+          { name: 'salt', type: 'bytes32' }
+        ]
+      }
+    })
 
+    _setupEthersWrappedTx('externalCall', async (value, to, data) => {
+      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
+        'externalCall', [value, to, data]
+      )
+      return { contract, contractName, functionName, params, paramTypes }
+    })
+
+    _setupEthersWrappedTx('delegateCall', async (to, data) => {
+      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
+        'delegateCall', [to, data]
+      )
+      return { contract, contractName, functionName, params, paramTypes }
+    })
+
+    _setupEthersWrappedTx('metaDelegateCall', async (to, data, signature) => {
+      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
+        'metaDelegateCall', [to, data, signature]
+      )
+      return { contract, contractName, functionName, params, paramTypes }
+    })
+
+    _setupEthersWrappedTx('metaPartialSignedDelegateCall', async (to, data, signature, unsignedData) => {
+      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
+        'metaPartialSignedDelegateCall', [to, data, signature, unsignedData]
+      )
+      return { contract, contractName, functionName, params, paramTypes }
+    })
+  }
+  
   async isDeployed () {
     if (!this.address) { throw new Error('Account not loaded') }
     const code = await this._ethers.provider.getCode(this.address)
@@ -178,29 +214,6 @@ class Account {
       functionCall.params.push(unsignedDataList[k])
     }
     return { functionCall, numParams }
-  }
-
-
-  // account contract fns
-
-  async externalCall (value, to, data) {
-    const tx = await this._sendAccountTransaction('externalCall', [value, to, data])
-    return tx
-  }
-
-  async delegateCall (to, data) {
-    const tx = await this._sendAccountTransaction('delegateCall', [to, data])
-    return tx
-  }
-
-  async metaDelegateCall (to, data, signature) {
-    const tx = await this._sendAccountTransaction('metaDelegateCall', [to, data, signature])
-    return tx
-  }
-
-  async metaPartialSignedDelegateCall (to, data, signature, unsignedData) {
-    const tx = await this._sendAccountTransaction('metaPartialSignedDelegateCall', [to, data, signature, unsignedData])
-    return tx
   }
 
   async _sendAccountTransaction (functionName, params = []) {
