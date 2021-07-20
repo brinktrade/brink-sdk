@@ -38,29 +38,6 @@ class AccountSigner {
     )
   }
 
-  async signUpgrade(implementationAddress) {
-    const call = {
-      functionName: 'upgradeTo',
-      paramTypes: [{ name: 'impl', type: 'address' }],
-      params: [implementationAddress]
-    }
-    verifyUpgrade(implementationAddress)
-
-    const signedCall = await this.signMetaDelegateCall(this.contracts.proxyAdminVerifier, call)
-    return signedCall
-  }
-
-  async signSetProxyOwner(ownerAddress) {
-    const call = {
-      functionName: 'setProxyOwner',
-      paramTypes: [{ name: 'owner', type: 'address' }],
-      params: [ownerAddress]
-    }
-
-    const signedCall = await this.signMetaDelegateCall(this.contracts.proxyAdminVerifier, call)
-    return signedCall
-  }
-
   async signCancel(bitmapIndex, bit) {
     const call = {
       functionName: 'cancel',

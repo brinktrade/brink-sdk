@@ -64,15 +64,6 @@ beforeEach(async function () {
     address: this.transferVerifier.address
   }
 
-  // Proxy Admin Verifier
-  const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
-  this.proxyAdminVerifier = await ProxyAdminVerifier.deploy()
-  const proxyAdminVerifierItem = {
-    name: 'proxyAdminVerifier',
-    contract: 'ProxyAdminVerifier',
-    address: this.proxyAdminVerifier.address
-  }
-
   // Limit Swap Verifier
   const LimitSwapVerifier = await ethers.getContractFactory("LimitSwapVerifierMock");
   this.limitSwapVerifier = await LimitSwapVerifier.deploy()
@@ -97,7 +88,6 @@ beforeEach(async function () {
     accountContractItem, 
     deployAndExecuteItem,
     transferVerifierItem,
-    proxyAdminVerifierItem,
     limitSwapVerifierItem,
     cancelVerifierItem
   )
