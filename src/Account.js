@@ -2,7 +2,6 @@ const computeAccountBytecode = require('./computeAccountBytecode')
 const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const { ZERO_ADDRESS } = require('./constants')
-const splitCallData = require('@brinkninja/test-helpers/src/splitCallData')
 
 const _directCalls = [
   'externalCall',
@@ -81,6 +80,48 @@ class Account {
 
     this._accountImpl = this._ethersContract('Account', implementationAddress)
 
+    this.estimateGas = {}
+    this.populateTransaction = {}
+    this.callStatic = {}
+
+    // wraps ethers contract functions and exposes them on the Account object
+    const _setupEthersWrappedTx = (fnName, fn) => {
+      this[fnName] = (async function () {
+        const { contract, functionName, params } = await fn.apply(this, arguments)
+        const tx = await contract[functionName].apply(contract, params)
+        return tx
+      }).bind(this)
+
+      this.estimateGas[fnName] = (async function () {
+        const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
+        const gas = await contract.estimateGas[functionName].apply(contract, params)
+        return { contract, contractName, functionName, paramTypes, params, gas }
+      }).bind(this)
+
+      this.populateTransaction[fnName] = (async function () {
+        const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
+        const txData = await contract.populateTransaction[functionName].apply(contract, params)
+        return {
+          contract, contractName, functionName, paramTypes, params,
+          ...txData
+        }
+      }).bind(this)
+
+      this.callStatic[fnName] = (async function () {
+        const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
+        const returnValues = await contract.callStatic[functionName].apply(contract, params)
+        return { contract, contractName, functionName, paramTypes, params, returnValues }
+      }).bind(this)
+    }
+
+    _setupEthersWrappedTx('sendLimitSwap', async (signedLimitSwapMessage, to, data) => {
+      const { signedData, unsignedData } = this.getLimitSwapData(signedLimitSwapMessage, to, data)
+      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
+        'metaPartialSignedDelegateCall',
+        [signedLimitSwapMessage.signedParams[0].value, signedData, signedLimitSwapMessage.signature, unsignedData]
+      )
+      return { contract, contractName, functionName, params, paramTypes }
+    })
   }
 
   async deploy () {
@@ -101,17 +142,19 @@ class Account {
 
   // verifier calls
 
-  async sendLimitSwap(signedEthSwap, to, data) {
-    const { signedData, unsignedData } = this.getLimitSwapData(signedEthSwap, to, data)
-    const tx = await this.metaPartialSignedDelegateCall(signedEthSwap.signedParams[0].value, signedData, signedEthSwap.signature, unsignedData)
-    return tx
-  }
+  // async sendLimitSwap(signedEthSwap, to, data) {
+  //   const { signedData, unsignedData } = this.getLimitSwapData(signedEthSwap, to, data)
+  //   const tx = await this.metaPartialSignedDelegateCall(signedEthSwap.signedParams[0].value, signedData, signedEthSwap.signature, unsignedData)
+  //   return tx
+  // }
 
   getLimitSwapData(signedSwap, to, data) {
     const { 
       functionCall: constructedFunctionCall, 
       numParams 
     } = this.constructLimitSwapFunctionCall(signedSwap, [to, data])
+    // console.log('constructedFunctionCall: ', constructedFunctionCall)
+    // console.log('numParams: ', numParams)
     const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), numParams)
     return { signedData, unsignedData }
   }
@@ -149,44 +192,26 @@ class Account {
   // account contract fns
 
   async externalCall (value, to, data) {
-    const tx = await this.sendAccountTransaction('externalCall', [value, to, data])
+    const tx = await this._sendAccountTransaction('externalCall', [value, to, data])
     return tx
   }
 
   async delegateCall (to, data) {
-    const tx = await this.sendAccountTransaction('delegateCall', [to, data])
+    const tx = await this._sendAccountTransaction('delegateCall', [to, data])
     return tx
   }
 
   async metaDelegateCall (to, data, signature) {
-    const tx = await this.sendAccountTransaction('metaDelegateCall', [to, data, signature])
+    const tx = await this._sendAccountTransaction('metaDelegateCall', [to, data, signature])
     return tx
   }
 
   async metaPartialSignedDelegateCall (to, data, signature, unsignedData) {
-    const tx = await this.sendAccountTransaction('metaPartialSignedDelegateCall', [to, data, signature, unsignedData])
+    const tx = await this._sendAccountTransaction('metaPartialSignedDelegateCall', [to, data, signature, unsignedData])
     return tx
   }
 
-  async transactionInfo(functionName, params = []) {
-    const {
-      contract,
-      name: contractName,
-      functionName: txFunctionName,
-      paramTypes,
-      params: txParams
-    } = await this._getTxData(functionName, params)
-    const gasEstimate = await contract.estimateGas[txFunctionName].apply(this, txParams)
-    return {
-      gasEstimate,
-      contractName,
-      functionName: txFunctionName,
-      paramTypes,
-      params: txParams
-    }
-  }
-
-  async sendAccountTransaction (functionName, params = []) {
+  async _sendAccountTransaction (functionName, params = []) {
     const {
       contract,
       functionName: txFunctionName,
@@ -208,7 +233,7 @@ class Account {
       // returns direct tx to account
       return {
         contract: this.accountContract(),
-        name: 'Account',
+        contractName: 'Account',
         functionName,
         paramTypes: _paramTypesMap[functionName],
         params
@@ -221,7 +246,7 @@ class Account {
 
       return {
         contract: this.deployAndExecuteContract(),
-        name: 'DeployAndExecute',
+        contractName: 'DeployAndExecute',
         functionName: 'deployAndExecute',
         paramTypes: _paramTypesMap['deployAndExecute'],
         params: [
@@ -292,6 +317,21 @@ class Account {
 
     return bytecode
   }
+}
+
+// splits a call for metaPartialSignedDelegateCall into signedData and unsignedData
+// TODO: this only works if all signed data params are fixed bytes32, will not work for dynamic params
+function splitCallData (callData, numSignedParams) {
+  let parsedCallData = callData.indexOf('0x') == 0 ? callData.slice(2) : callData
+  // signed data is the prefix + fnSig + signedParams
+  const bytes32SlotLen = 64 
+  const fnSigLen = 8
+  const signedDataLen = fnSigLen + (numSignedParams * bytes32SlotLen)
+  const signedData = `0x${parsedCallData.slice(0, signedDataLen)}`
+
+  // unsigned data is the rest
+  const unsignedData = `0x${parsedCallData.slice(signedDataLen)}`
+  return { signedData, unsignedData }
 }
 
 module.exports = Account

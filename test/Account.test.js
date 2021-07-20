@@ -6,16 +6,75 @@ const computeAccountAddress = require('../src/computeAccountAddress')
 const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
 const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
 
-const { chaiSolidity } = require('@brinkninja/test-helpers')
+const brinkUtils = require('@brinkninja/utils')
+const { chaiSolidity, MAX_UINT_256 } = brinkUtils.test
 const { expect } = chaiSolidity()
 
+const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
 
-describe('Account with PrivateKeySigner', function () {
+describe('Account', function () {
+
+  beforeEach(async function () {
+    const LimitSwapVerifier = await ethers.getContractFactory('LimitSwapVerifierMock')
+    this.account_limitSwapVerifier = LimitSwapVerifier.attach(this.account.address)
+  })
 
   describe('when contract code is deployed', function () {
     it('should return true from isDeployed()', async function () {
       let resp = await this.account.deploy()
       expect(await this.account.isDeployed()).to.be.true
+    })
+  })
+
+  describe.only('populateTransaction', function () {
+    it('should wrap call to ethers populateTranscation', async function () {
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        '0', '1', this.token.address, '10', '10'
+      )
+      const res = await this.account.populateTransaction.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123')
+      const { contract, contractName, functionName, params, paramTypes, data, to, from } = res
+      expect(contract).not.to.be.undefined
+      expect(contractName).not.to.be.undefined
+      expect(functionName).not.to.be.undefined
+      expect(params).not.to.be.undefined
+      expect(paramTypes).not.to.be.undefined
+      expect(data).not.to.be.undefined
+      expect(to).not.to.be.undefined
+      expect(from).not.to.be.undefined
+    })
+  })
+
+  describe.only('estimateGas', function () {
+    it('should wrap call to ethers estimateGas', async function () {
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        '0', '1', this.token.address, '10', '10'
+      )
+      const res = await this.account.estimateGas.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123')
+      expect(res.gas.toString()).to.be.bignumber.greaterThan('0')
+    })
+  })
+
+  describe.only('callStatic', function () {
+    it('should wrap call to ethers callStatic', async function () {
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        '0', '1', this.token.address, '10', '10'
+      )
+      const res = await this.account.callStatic.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123')
+      expect(res.returnValues).not.to.be.undefined
+    })
+  })
+
+  describe.only('sendLimitSwap', function () {
+    it('should send a limit swap tx', async function () {
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        '0', '1', this.token.address, '10', '10'
+      )
+      await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
+        .to.emit(this.account_limitSwapVerifier, 'EthToToken')
+        .withArgs(
+          '0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256,
+          ethers.utils.getAddress(randomAddress), '0x0123'
+        )
     })
   })
 
@@ -172,7 +231,6 @@ describe('Account with PrivateKeySigner', function () {
 
     it('Should return tx info for metaPartialSignedDelegateCall without account deployment', async function () {
       await this.account.deploy()
-      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
         '0', '1', this.token.address, '10', '10'
       )
@@ -184,7 +242,6 @@ describe('Account with PrivateKeySigner', function () {
     })
 
     it('Should return tx info for metaPartialSignedDelegateCall with account deployment', async function () {
-      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
         '0', '1', this.token.address, '10', '10'
       )
