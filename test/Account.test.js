@@ -1,15 +1,15 @@
 const { ethers } = require('hardhat')
-
-const Deployer = require('./helpers/Deployer')
+const chaiAsPromised = require('chai-as-promised')
+const brinkUtils = require('@brinkninja/utils')
 const computeAccountAddress = require('../src/computeAccountAddress')
+
+const { chaiSolidity, MAX_UINT_256 } = brinkUtils.test
+const chai = chaiSolidity()
+chai.use(chaiAsPromised)
+const { expect } = chai
 
 const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
 const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
-
-const brinkUtils = require('@brinkninja/utils')
-const { chaiSolidity, MAX_UINT_256 } = brinkUtils.test
-const { expect } = chaiSolidity()
-
 const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
 
 describe('Account', function () {
@@ -19,14 +19,7 @@ describe('Account', function () {
     this.account_limitSwapVerifier = LimitSwapVerifier.attach(this.account.address)
   })
 
-  describe('when contract code is deployed', function () {
-    it('should return true from isDeployed()', async function () {
-      let resp = await this.account.deploy()
-      expect(await this.account.isDeployed()).to.be.true
-    })
-  })
-
-  describe.only('populateTransaction', function () {
+  describe('populateTransaction', function () {
     it('should wrap call to ethers populateTranscation', async function () {
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
         '0', '1', this.token.address, '10', '10'
@@ -44,7 +37,7 @@ describe('Account', function () {
     })
   })
 
-  describe.only('estimateGas', function () {
+  describe('estimateGas', function () {
     it('should wrap call to ethers estimateGas', async function () {
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
         '0', '1', this.token.address, '10', '10'
@@ -54,7 +47,7 @@ describe('Account', function () {
     })
   })
 
-  describe.only('callStatic', function () {
+  describe('callStatic', function () {
     it('should wrap call to ethers callStatic', async function () {
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
         '0', '1', this.token.address, '10', '10'
@@ -64,7 +57,7 @@ describe('Account', function () {
     })
   })
 
-  describe.only('sendLimitSwap', function () {
+  describe('sendLimitSwap', function () {
     it('should send a limit swap tx', async function () {
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
         '0', '1', this.token.address, '10', '10'
@@ -98,6 +91,20 @@ describe('Account', function () {
         )
         expect(this.account.address).to.equal(expectedAccountAddress)
       })
+    })
+
+    describe('when account is already deployed', function () {
+      it('should throw an error', async function () {
+        await this.account.deploy()
+        await expect(this.account.deploy()).to.be.rejectedWith('Account contract already deployed')
+      })
+    })
+  })
+
+  describe('isDeployed()', function () {
+    it('should return true when contract is deployed', async function () {
+      await this.account.deploy()
+      expect(await this.account.isDeployed()).to.be.true
     })
   })
 

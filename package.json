@@ -5,6 +5,7 @@
     "@brinkninja/verifiers": "^0.1.2",
     "@brinkninja/core": "^0.1.1",
     "@brinkninja/test-helpers": "^0.2.0",
+    "chai-as-promised": "^7.1.1",
     "hardhat": "^2.1.2"
   },
   "dependencies": {

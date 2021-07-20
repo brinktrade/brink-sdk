@@ -126,7 +126,7 @@ class Account {
 
   async deploy () {
     if (await this.isDeployed()) {
-      throw new Error(`Error: Account.deploy(): Account contract already deployed`)
+      throw new Error(`Account contract already deployed`)
     }
     const bytecode = this._getAccountBytecode()
     const deployer = this._getDeployer()
@@ -135,18 +135,10 @@ class Account {
   }
 
   async isDeployed () {
-    if (!this.address) { throw new Error('Error: Account.isDeployed(): Account not loaded') }
+    if (!this.address) { throw new Error('Account not loaded') }
     const code = await this._ethers.provider.getCode(this.address)
     return code !== '0x'
   }
-
-  // verifier calls
-
-  // async sendLimitSwap(signedEthSwap, to, data) {
-  //   const { signedData, unsignedData } = this.getLimitSwapData(signedEthSwap, to, data)
-  //   const tx = await this.metaPartialSignedDelegateCall(signedEthSwap.signedParams[0].value, signedData, signedEthSwap.signature, unsignedData)
-  //   return tx
-  // }
 
   getLimitSwapData(signedSwap, to, data) {
     const { 
