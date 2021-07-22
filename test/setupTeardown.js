@@ -102,9 +102,6 @@ beforeEach(async function () {
   this.defaultSigner = signers[0]
   this.ethersAccountSigner = signers[1]
 
-  // console.log('ETHERS DEFAULT SIGNER ADDR: ', signers[0].address)
-  // console.log('ETHERS PROVIDER SIGNER ADDR: ', ethers.provider.getSigner())
-
   const brink = brinkSDK({
     environment,
     ethers,
