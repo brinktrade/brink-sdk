@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const computeAccountBytecode = require('./computeAccountBytecode')
 const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
@@ -50,25 +51,21 @@ const _abiMap = {
 
 class Account {
   constructor ({
-    implementationAddress,
     ownerAddress,
-    accountVersion,
-    accountDeploymentSalt,
-    chainId,
+    environment,
     ethers,
-    ethersSigner,
-    deployerAddress,
-    deployAndExecuteAddress,
+    signer
   }) {
-    this._implementationAddress = implementationAddress
+    this._environment = environment
+    this._implementationAddress = _.find(this._environment.deployments, { name: 'account' }).address
     this._ownerAddress = ownerAddress
-    this._accountVersion = accountVersion
-    this._accountDeploymentSalt = accountDeploymentSalt
-    this._chainId = chainId
+    this._accountVersion = this._environment.accountVersion
+    this._accountDeploymentSalt = this._environment.accountDeploymentSalt
+    this._chainId = this._environment.chainId
     this._ethers = ethers
-    this._ethersSigner = ethersSigner
-    this._deployerAddress = deployerAddress
-    this._deployAndExecuteAddress = deployAndExecuteAddress
+    this._signer = signer
+    this._deployerAddress = _.find(this._environment.deployments, { name: 'singletonFactory' }).address
+    this._deployAndExecuteAddress = _.find(this._environment.deployments, { name: 'deployAndExecute' }).address
 
     this.address = computeAccountAddress(
       this._deployerAddress,
@@ -78,7 +75,7 @@ class Account {
       this._accountDeploymentSalt
     )
 
-    this._accountImpl = this._ethersContract('Account', implementationAddress)
+    this._accountImpl = this._ethersContract('Account', this._implementationAddress)
 
     this.estimateGas = {}
     this.populateTransaction = {}
@@ -277,7 +274,7 @@ class Account {
 
   _ethersContract(contractName, contractAddress) {
     return new this._ethers.Contract(
-      contractAddress, _abiMap[contractName], this._ethersSigner
+      contractAddress, _abiMap[contractName], this._signer
     )
   }
 
@@ -289,7 +286,7 @@ class Account {
       return address.toLowerCase() == this._initOwnerAddress.toLowerCase()
     } else {
       const account = this.accountContract()
-      const proxyOwnerAddress = await this._account.proxyOwner()
+      const proxyOwnerAddress = await account.proxyOwner()
       let isProxyOwner = false
       if (proxyOwnerAddress === address) {
         isProxyOwner = true

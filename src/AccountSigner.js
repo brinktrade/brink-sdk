@@ -1,3 +1,5 @@
+const _ = require('lodash')
+const { TypedDataUtils } = require('eth-sig-util')
 const typedDataEIP712 = require('./typedDataEIP712')
 const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
@@ -13,29 +15,32 @@ const {
 } = require('./constants')
 
 const brinkUtils = require('@brinkninja/utils')
-const {
-  MAX_UINT_256
-} = brinkUtils.test
+const { signEIP712 } = brinkUtils
+const { MAX_UINT_256 } = brinkUtils.test
 
 class AccountSigner {
 
-  constructor ({ accountVersion, environment, signer, accountDeploymentSalt }) {
-    this.accountVersion = accountVersion
-    this.environment = environment
-    this.signer = signer
-    this.chainId = environment.chainId
-    const contracts = {}
-    for (var i = 0; i < this.environment.deployments.length; i++) {
-      contracts[this.environment.deployments[i].name] = this.environment.deployments[i].address;
-    }
-    this.contracts = contracts
-    this.accountAddress = computeAccountAddress(
-      this.contracts.singletonFactory,
-      this.contracts.account,
-      signer.address,
-      environment.chainId,
-      accountDeploymentSalt
+  constructor ({ environment, signer }) {
+    this._environment = environment
+    this._signer = signer
+    this._chainId = environment.chainId
+    this._accountVersion = environment.accountVersion
+  }
+
+  async accountAddress () {
+    const addr = computeAccountAddress(
+      this._findContractAddress('singletonFactory'),
+      this._findContractAddress('account'),
+      await this.signerAddress(),
+      this._environment.chainId,
+      this._environment.accountDeploymentSalt
     )
+    return addr
+  }
+
+  async signerAddress () {
+    const addr = await this._signer.getAddress()
+    return addr
   }
 
   async signCancel(bitmapIndex, bit) {
@@ -48,7 +53,9 @@ class AccountSigner {
       params: [bitmapIndex, bit]
     }
 
-    const signedCall = await this.signMetaDelegateCall(this.contracts.cancelVerifier, call)
+    const signedCall = await this.signMetaDelegateCall(
+      this._findContractAddress('cancelVerifier'), call
+    )
     return signedCall
   }
 
@@ -65,7 +72,9 @@ class AccountSigner {
       params: [bitmapIndex, bit, recipient, amount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaDelegateCall(this.contracts.transferVerifier, call)
+    const signedCall = await this.signMetaDelegateCall(
+      this._findContractAddress('transferVerifier'), call
+    )
     return signedCall
   }
 
@@ -83,7 +92,9 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenAddress, recipient, amount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaDelegateCall(this.contracts.transferVerifier, call)
+    const signedCall = await this.signMetaDelegateCall(
+      this._findContractAddress('transferVerifier'), call
+    )
     return signedCall
   }
 
@@ -104,7 +115,9 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaPartialSignedDelegateCall(this.contracts.limitSwapVerifier, call)
+    const signedCall = await this.signMetaPartialSignedDelegateCall(
+      this._findContractAddress('limitSwapVerifier'), call
+    )
     return signedCall
   }
 
@@ -125,7 +138,9 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaPartialSignedDelegateCall(this.contracts.limitSwapVerifier, call)
+    const signedCall = await this.signMetaPartialSignedDelegateCall(
+      this._findContractAddress('limitSwapVerifier'), call
+    )
     return signedCall
   }
 
@@ -147,7 +162,9 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaPartialSignedDelegateCall(this.contracts.limitSwapVerifier, call)
+    const signedCall = await this.signMetaPartialSignedDelegateCall(
+      this._findContractAddress('limitSwapVerifier'), call
+    )
     return signedCall
   }
 
@@ -181,32 +198,34 @@ class AccountSigner {
       }
     }
 
-    const { typedData, typedDataHash } = typedDataEIP712({
-      accountVersion: this.accountVersion,
-      chainId: this.chainId,
-      accountAddress: this.accountAddress,
-      functionName,
+    const { typedData, typedDataHash, signature } = await signEIP712({
+      signer: this._signer,
+      contractAddress: await this.accountAddress(),
+      contractName: 'BrinkAccount',
+      contractVersion: this._accountVersion,
+      chainId: this._chainId,
+      method: functionName,
       paramTypes,
       params: encodedParams
     })
-    const signature = await this._signMessage({ typedData, typedDataHash })
+
+    const signerAddress = await this._signer.getAddress()
 
     return {
       message: typedDataHash,
+      EIP712TypedData: typedData,
       signature,
-      signer: this.signer.address,
-      accountAddress: this.accountAddress,
+      signer: signerAddress,
+      accountAddress: await this.accountAddress(),
       functionName,
       signedParams: parseParams(paramTypes, params)
     }
   }
 
-  async _signMessage ({ typedData, typedDataHash }) {
-    const signature = await this.signer.sign({ typedData, typedDataHash })
-    return signature
+  _findContractAddress (contractName) {
+    return _.find(this._environment.deployments, { name: contractName }).address
   }
 }
-
 
 function parseParams (paramTypes, params) {
   let paramsArray = []

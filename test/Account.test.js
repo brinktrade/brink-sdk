@@ -3,14 +3,11 @@ const { randomHex } = require('web3-utils')
 const chaiAsPromised = require('chai-as-promised')
 const brinkUtils = require('@brinkninja/utils')
 const computeAccountAddress = require('../src/computeAccountAddress')
-
-const { chaiSolidity, BN, MAX_UINT_256 } = brinkUtils.test
+const { chaiSolidity, MAX_UINT_256 } = brinkUtils.test
 const chai = chaiSolidity()
 chai.use(chaiAsPromised)
 const { expect } = chai
 
-const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
-const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
 const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
 
 describe('Account', function () {
@@ -87,7 +84,7 @@ describe('Account', function () {
         const expectedAccountAddress = computeAccountAddress(
           this.singletonFactory.address,
           this.accountContract.address,
-          ownerAddress,
+          this.ownerAddress,
           this.chainId,
           this.accountSalt
         )
@@ -109,12 +106,12 @@ describe('Account', function () {
     })
 
     it('should send externalCall tx', async function () {
-      await this.ethersSigner.sendTransaction({
+      await this.defaultSigner.sendTransaction({
         to: this.account.address,
         value: ethers.utils.parseEther('1.0')
       })
       const transferAmount = await ethers.utils.parseEther('0.01')
-      const tx = await this.account.externalCall(transferAmount.toString(), this.recipientAddress, '0x')
+      const tx = await this.account_ownerSigner.externalCall(transferAmount.toString(), this.recipientAddress, '0x')
       expect(tx).to.not.be.undefined
       expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('0.01'))
     })
@@ -126,13 +123,13 @@ describe('Account', function () {
     })
 
     it('should send delegateCall tx', async function () {
-      await this.ethersSigner.sendTransaction({
+      await this.defaultSigner.sendTransaction({
         to: this.account.address,
         value: ethers.utils.parseEther('1.0')
       })
       const transferAmount = await ethers.utils.parseEther('0.01')
-      const transferEthData = await this.messageEncoder.encodeTransferEth(BN(0).toString(), BN(1).toString(), this.recipientAddress, transferAmount.toString())
-      const tx = await this.account.delegateCall(this.transferVerifier.address, transferEthData)
+      const transferEthData = await this.encodeEthTransfer('0', '1', this.recipientAddress, transferAmount.toString())
+      const tx = await this.account_ownerSigner.delegateCall(this.transferVerifier.address, transferEthData)
       expect(tx).to.not.be.undefined
       expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('0.01'))
     })
@@ -141,7 +138,7 @@ describe('Account', function () {
   describe('metaDelegateCall', function () {
     beforeEach(async function () {
       this.transferAmt = ethers.utils.parseEther('1.0')
-      await this.ethersSigner.sendTransaction({
+      await this.defaultSigner.sendTransaction({
         to: this.account.address,
         value: this.transferAmt
       })
