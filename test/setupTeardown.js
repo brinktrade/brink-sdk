@@ -1,16 +1,15 @@
 const { ethers } = require('hardhat')
 const { randomHex } = require('web3-utils')
 const { chainId } = require('@brinkninja/environment/config/network.config.local1.json')
-const Deployer = require('./helpers/Deployer')
-const { MessageEncoder, PrivateKeySigner, BrinkSDK } = require('../src')
 const tokens = require('@brinkninja/environment/config/tokens.local1.json')
-const BN = ethers.BigNumber.from
-
-const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
-const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
+const brinkUtils = require('@brinkninja/utils')
+const Deployer = require('./helpers/Deployer')
+const brinkSDK = require('../src')
+const { encodeFunctionCall } = brinkUtils
+const { BN, MAX_UINT_256 } = brinkUtils.test
 
 beforeEach(async function () {
-  const environmentConfiguration = {}
+  const environment = {}
   const deployments = []
 
   // Singleton Factory
@@ -56,7 +55,7 @@ beforeEach(async function () {
   }
 
   // Transfer Verifier
-  const TransferVerifier = await ethers.getContractFactory("TransferVerifier");
+  const TransferVerifier = await ethers.getContractFactory('TransferVerifier');
   this.transferVerifier = await TransferVerifier.deploy()
   const transferVerifierItem = {
     name: 'transferVerifier',
@@ -64,17 +63,8 @@ beforeEach(async function () {
     address: this.transferVerifier.address
   }
 
-  // Proxy Admin Verifier
-  const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
-  this.proxyAdminVerifier = await ProxyAdminVerifier.deploy()
-  const proxyAdminVerifierItem = {
-    name: 'proxyAdminVerifier',
-    contract: 'ProxyAdminVerifier',
-    address: this.proxyAdminVerifier.address
-  }
-
   // Limit Swap Verifier
-  const LimitSwapVerifier = await ethers.getContractFactory("LimitSwapVerifierMock");
+  const LimitSwapVerifier = await ethers.getContractFactory('LimitSwapVerifierMock');
   this.limitSwapVerifier = await LimitSwapVerifier.deploy()
   const limitSwapVerifierItem = {
     name: 'limitSwapVerifier',
@@ -83,7 +73,7 @@ beforeEach(async function () {
   }
 
   // Cancel Verifier
-  const CancelVerifier = await ethers.getContractFactory("CancelVerifier");
+  const CancelVerifier = await ethers.getContractFactory('CancelVerifier');
   this.cancelVerifier = await CancelVerifier.deploy()
   const cancelVerifierItem = {
     name: 'cancelVerifier',
@@ -97,38 +87,40 @@ beforeEach(async function () {
     accountContractItem, 
     deployAndExecuteItem,
     transferVerifierItem,
-    proxyAdminVerifierItem,
     limitSwapVerifierItem,
     cancelVerifierItem
   )
 
-  environmentConfiguration.chainId = chainId
-  environmentConfiguration.deployments = deployments
-  environmentConfiguration.accountDeploymentSalt = randomHex(32)
-  environmentConfiguration.accountVersion = '1'
-  this.accountSalt = environmentConfiguration.accountDeploymentSalt
+  environment.chainId = chainId
+  environment.deployments = deployments
+  environment.accountDeploymentSalt = randomHex(32)
+  environment.accountVersion = '1'
+  this.accountSalt = environment.accountDeploymentSalt
   this.chainId = chainId
 
-  const brinkSDK = new BrinkSDK(environmentConfiguration)
-
   const signers = await ethers.getSigners()
-  this.ethersSigner = signers[0]
+  this.defaultSigner = signers[0]
+  this.ethersAccountSigner = signers[1]
 
-  await this.ethersSigner.sendTransaction({
-    to: ownerAddress,
-    value: ethers.utils.parseEther("500.0")
-  });
-  await hre.network.provider.request({
-    method: "hardhat_impersonateAccount",
-    params: ["0x6ede982a4e7feb090c28a357401d8f3a6fcc0829"]}
-  )
-  this.ownerSigner = await ethers.getSigner("0x6ede982a4e7feb090c28a357401d8f3a6fcc0829")
-  const privateKeySigner = new PrivateKeySigner(ownerPrivateKey)
+  // console.log('ETHERS DEFAULT SIGNER ADDR: ', signers[0].address)
+  // console.log('ETHERS PROVIDER SIGNER ADDR: ', ethers.provider.getSigner())
 
-  const { account, accountSigner } = brinkSDK.newAccount(this.ownerSigner, privateKeySigner, ethers)
-  this.account = account
-  this.accountSigner = accountSigner
-  this.messageEncoder = new MessageEncoder()
+  const brink = brinkSDK({
+    environment,
+    ethers,
+    signer: this.defaultSigner
+  })
+
+  this.ownerAddress = this.ethersAccountSigner.address
+
+  // account uses ethers signer 0 (not the account owner, it's acting as an executor)
+  this.account = brink.account(this.ownerAddress)
+
+  // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
+  this.account_ownerSigner = brink.account(this.ownerAddress, this.ethersAccountSigner)
+
+  // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
+  this.accountSigner = brink.accountSigner(this.ethersAccountSigner)
 
   this.token = await this.deployer.deploy(
     'TestERC20',
@@ -137,4 +129,39 @@ beforeEach(async function () {
   )
   await this.token.mint(this.account.address, BN(10).pow(9).mul(BN(10).pow(tokens[0].decimals)))
 
+  this.encodeEthTransfer = encodeEthTransfer
+  this.encodeTokenTransfer = encodeTokenTransfer
 })
+
+async function encodeEthTransfer (
+  bitmapIndex, bit, recipientAddress, amount, expiryBlock = MAX_UINT_256
+) {
+  return encodeFunctionCall(
+    'ethTransfer',
+    [
+      { name: 'bitmapIndex', type: 'uint256' },
+      { name: 'bit', type: 'uint256'},
+      { name: 'recipient', type: 'address' },
+      { name: 'amount', type: 'uint256'},
+      { name: 'expiryBlock', type: 'uint256'}
+    ],
+    [bitmapIndex, bit, recipientAddress, amount, expiryBlock.toString()]
+  )
+}
+
+async function encodeTokenTransfer (
+  bitmapIndex, bit, tokenAddress, recipientAddress, amount, expiryBlock = MAX_UINT_256
+) {
+  return encodeFunctionCall(
+    'tokenTransfer',
+    [
+      { name: 'bitmapIndex', type: 'uint256' },
+      { name: 'bit', type: 'uint256'},
+      { name: 'token', type: 'address'},
+      { name: 'recipient', type: 'address' },
+      { name: 'amount', type: 'uint256'},
+      { name: 'expiryBlock', type: 'uint256'}
+    ],
+    [bitmapIndex, bit, tokenAddress, recipientAddress, amount, expiryBlock.toString()]
+  )
+}

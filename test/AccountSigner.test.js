@@ -1,13 +1,6 @@
 const { ethers } = require('hardhat')
-
-const ownerAddress = '0x6ede982a4e7feb090c28a357401d8f3a6fcc0829'
-const ownerPrivateKey = '0x4497d1a8deb6a0b13cc85805b6392331623dd2d429db1a1cad4af2b57fcdec25'
-
 const brinkUtils = require('@brinkninja/utils')
-const {
-  MAX_UINT_256
-} = brinkUtils.test
-const { chaiSolidity } = require('@brinkninja/test-helpers')
+const { chaiSolidity, MAX_UINT_256 } = brinkUtils.test
 const { expect } = chaiSolidity()
 
 describe('AccountSigner', function () {
@@ -21,35 +14,6 @@ describe('AccountSigner', function () {
       expect(tx).to.not.be.undefined
       await expect(this.account.metaDelegateCall(to, data, signature))
         .to.be.reverted
-    })
-  })
-
-  describe('ProxyAdminVerifier Signing', function () {
-    beforeEach(async function () {
-      const ProxyAdminVerifier = await ethers.getContractFactory("ProxyAdminVerifier");
-      this.accountWithEmits = ProxyAdminVerifier.attach(this.account.address)
-    })
-
-    it('Should call upgradeTo through a signed metaDelegateCall', async function () {
-      const randomAddress = '0x13be228b8fc88ef382f0615f385b50690313a155'
-      const signedUpgradeFnCall = await this.accountSigner.signUpgrade(randomAddress)
-      const to = signedUpgradeFnCall.signedParams[0].value
-      const data = signedUpgradeFnCall.signedParams[1].value
-      const signature = signedUpgradeFnCall.signature
-      
-      const tx = await this.account.metaDelegateCall(to, data, signature)
-      expect(tx).to.not.be.undefined
-    })
-
-    it('Should call setProxyOwner through a signed metaDelegateCall', async function () {
-      const newOwner = '0x13be228b8fc88ef382f0615f385b50690313a177'
-      const signedSetProxyOwnerFnCall = await this.accountSigner.signSetProxyOwner(newOwner)
-      const to = signedSetProxyOwnerFnCall.signedParams[0].value
-      const data = signedSetProxyOwnerFnCall.signedParams[1].value
-      const signature = signedSetProxyOwnerFnCall.signature
-      
-      const tx = await this.account.metaDelegateCall(to, data, signature)
-      expect(tx).to.not.be.undefined
     })
   })
 

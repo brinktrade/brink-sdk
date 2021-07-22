@@ -1,7 +1,8 @@
+const _ = require('lodash')
 const Account = require('./Account')
 const AccountSigner = require('./AccountSigner')
-const MessageEncoder = require('./MessageEncoder')
 const PrivateKeySigner = require('./PrivateKeySigner')
+const EthersSigner = require('./EthersSigner')
 const computeAccountAddress = require('./computeAccountAddress')
 const computeAccountBytecode = require('./computeAccountBytecode')
 const computeInitBytecode = require('./computeInitBytecode')
@@ -13,58 +14,42 @@ const recoverSigner = require('./recoverSigner')
 const { loadEnvironment } = require('@brinkninja/environment')
 
 class BrinkSDK {
-  constructor (environmentConfiguration) {
-    if (typeof environmentConfiguration == 'string') {
-      this.environment = loadEnvironment(environmentConfiguration)
+
+  // environment: @brinkninja/environment network string or configuration object
+  // ethers: ethers.js instance
+  // signer: ethers.js signer (options, uses provider.signer by default)
+  constructor ({ environment, ethers, signer }) {
+    if (!environment) throw new Error(`no environment specified`)
+    this.ethers = ethers
+    this.signer = signer
+    if (typeof environment == 'string') {
+      this.environment = loadEnvironment(environment)
     } else {
-      this.environment = environmentConfiguration
+      this.environment = environment
     }
-    this.accounts = []
-    this.accountSigners = []
   }
 
-  newAccount(ethersSigner, signer, ethers) {
-
-    const contracts = {}
-    for (var i = 0; i < this.environment.deployments.length; i++) {
-      contracts[this.environment.deployments[i].name] = this.environment.deployments[i].address;
-    }
-
-    const accountSigner = new AccountSigner({
-      accountVersion: this.environment.accountVersion,
+  account (ownerAddress, signer) {
+    if (!this.ethers) throw new Error(`no ethers specified`)
+    const accountTxSigner = signer || this.signer || this.ethers.provider.getSigner()
+    if (!accountTxSigner) throw new Error(`no signer specified`)
+    return new Account({
+      ownerAddress,
       environment: this.environment,
-      signer: signer,
-      accountDeploymentSalt: this.environment.accountDeploymentSalt
+      ethers: this.ethers,
+      signer: accountTxSigner
     })
+  }
 
-    const account = new Account({
-      implementationAddress: contracts.account,
-      ownerAddress: ethersSigner.address,
-      accountVersion: this.environment.accountVersion,
-      accountDeploymentSalt: this.environment.accountDeploymentSalt,
-      chainId: this.environment.chainId,
-      ethers: ethers,
-      ethersSigner: ethersSigner,
-      deployerAddress: contracts.singletonFactory,
-      deployAndExecuteAddress: contracts.deployAndExecute
+  accountSigner (accountOwnerSigner) {
+    if (!accountOwnerSigner) throw new Error(`no accountOwnerSigner specified`)
+    return new AccountSigner({
+      environment: this.environment,
+      signer: accountOwnerSigner
     })
-
-    return { account: account, accountSigner: accountSigner }
   }
 }
 
-module.exports = {
-  Account,
-  AccountSigner,
-  MessageEncoder,
-  PrivateKeySigner,
-  computeAccountAddress,
-  computeAccountBytecode,
-  computeInitBytecode,
-  computeCreate2Address,
-  constants,
-  isAddress,
-  typedDataEIP712,
-  recoverSigner,
-  BrinkSDK
+module.exports = function (envConf) {
+  return new BrinkSDK(envConf)
 }
