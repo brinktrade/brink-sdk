@@ -8,7 +8,7 @@
     "hardhat": "^2.1.2"
   },
   "dependencies": {
-    "@brinkninja/environment": "^0.4.5",
+    "@brinkninja/environment": "^0.5.0",
     "@brinkninja/utils": "^0.1.4",
     "eth-lib": "^0.1.29",
     "eth-sig-util": "^2.5.3",
