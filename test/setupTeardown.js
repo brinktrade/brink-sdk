@@ -4,7 +4,7 @@ const { chainId } = require('@brinkninja/environment/config/network.config.local
 const tokens = require('@brinkninja/environment/config/tokens.local1.json')
 const brinkUtils = require('@brinkninja/utils')
 const Deployer = require('./helpers/Deployer')
-const brinkSDK = require('../src')
+const brinkSDK = require('../index')
 const { encodeFunctionCall } = brinkUtils
 const { BN, MAX_UINT_256 } = brinkUtils.test
 
