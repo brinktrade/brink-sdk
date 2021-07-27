@@ -1,8 +1,10 @@
 const { ethers } = require('hardhat')
-const { testHelpers, constants } = require('@brinkninja/utils')
+const chai = require('chai')
+const { constants } = require('@brinkninja/utils')
+const { solidity } = require('ethereum-waffle')
 const { MAX_UINT256 } = constants
-const { chaiSolidity } = testHelpers(ethers)
-const { expect } = chaiSolidity()
+chai.use(solidity)
+const { expect } = chai
 
 describe('AccountSigner', function () {
   describe('CancelVerifier Signing', function () {

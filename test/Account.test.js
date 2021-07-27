@@ -1,13 +1,13 @@
 const { ethers } = require('hardhat')
-const { randomHex } = require('web3-utils')
+const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
-const { testHelpers, BN, constants } = require('@brinkninja/utils')
+const { solidity } = require('ethereum-waffle')
+const { randomHex } = require('web3-utils')
+const { constants } = require('@brinkninja/utils')
 const computeAccountAddress = require('../src/computeAccountAddress')
-
 const { MAX_UINT256 } = constants
-const { chaiSolidity } = testHelpers(ethers)
-const chai = chaiSolidity()
 chai.use(chaiAsPromised)
+chai.use(solidity)
 const { expect } = chai
 
 const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
