@@ -2,11 +2,10 @@ const { ethers } = require('hardhat')
 const { randomHex } = require('web3-utils')
 const { chainId } = require('@brinkninja/environment/config/network.config.local1.json')
 const tokens = require('@brinkninja/environment/config/tokens.local1.json')
-const brinkUtils = require('@brinkninja/utils')
+const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
+const { MAX_UINT256 } = constants
 const Deployer = require('./helpers/Deployer')
 const brinkSDK = require('../index')
-const { encodeFunctionCall } = brinkUtils
-const { BN, MAX_UINT_256 } = brinkUtils.test
 
 beforeEach(async function () {
   const environment = {}
@@ -131,7 +130,7 @@ beforeEach(async function () {
 })
 
 async function encodeEthTransfer (
-  bitmapIndex, bit, recipientAddress, amount, expiryBlock = MAX_UINT_256
+  bitmapIndex, bit, recipientAddress, amount, expiryBlock = MAX_UINT256
 ) {
   return encodeFunctionCall(
     'ethTransfer',
@@ -147,7 +146,7 @@ async function encodeEthTransfer (
 }
 
 async function encodeTokenTransfer (
-  bitmapIndex, bit, tokenAddress, recipientAddress, amount, expiryBlock = MAX_UINT_256
+  bitmapIndex, bit, tokenAddress, recipientAddress, amount, expiryBlock = MAX_UINT256
 ) {
   return encodeFunctionCall(
     'tokenTransfer',

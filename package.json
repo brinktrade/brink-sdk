@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@brinkninja/environment": "^0.5.0",
-    "@brinkninja/utils": "^0.1.4",
+    "@brinkninja/utils": "^0.2.0",
     "eth-lib": "^0.1.29",
     "eth-sig-util": "^2.5.3",
     "ethereumjs-abi": "^0.6.8",

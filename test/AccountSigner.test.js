@@ -1,6 +1,7 @@
 const { ethers } = require('hardhat')
-const brinkUtils = require('@brinkninja/utils')
-const { chaiSolidity, MAX_UINT_256 } = brinkUtils.test
+const { testHelpers, constants } = require('@brinkninja/utils')
+const { MAX_UINT256 } = constants
+const { chaiSolidity } = testHelpers(ethers)
 const { expect } = chaiSolidity()
 
 describe('AccountSigner', function () {
@@ -32,7 +33,7 @@ describe('AccountSigner', function () {
       
       await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
         .to.emit(this.accountWithEmits, 'EthToToken')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256, ethers.utils.getAddress(randomAddress), '0x0123')
+        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
     })
 
     it('ethToToken swap (with account deployment)', async function () {
@@ -43,7 +44,7 @@ describe('AccountSigner', function () {
 
       await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
         .to.emit(this.accountWithEmits, 'EthToToken')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256, ethers.utils.getAddress(randomAddress), '0x0123')
+        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
     })
 
     it('tokenToEth swap (without account deployment)', async function () {
@@ -55,7 +56,7 @@ describe('AccountSigner', function () {
 
       await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
         .to.emit(this.accountWithEmits, 'TokenToEth')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256, ethers.utils.getAddress(randomAddress), '0x0123')
+        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
     })
 
     it('tokenToEth swap (with account deployment)', async function () {
@@ -66,30 +67,30 @@ describe('AccountSigner', function () {
 
       await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
         .to.emit(this.accountWithEmits, 'TokenToEth')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256, ethers.utils.getAddress(randomAddress), '0x0123')
+        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
     })
 
     it('tokenToToken swap (without account deployment)', async function () {
       await this.account.deploy()
       const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
       const signedTokenToTokenSwap = await this.accountSigner.signTokenToTokenSwap(
-        '0', '1', this.token.address, this.token.address, '10', '10', MAX_UINT_256
+        '0', '1', this.token.address, this.token.address, '10', '10', MAX_UINT256
       )
 
       await expect(this.account.sendLimitSwap(signedTokenToTokenSwap, randomAddress, '0x0123'))
         .to.emit(this.accountWithEmits, 'TokenToToken')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256, ethers.utils.getAddress(randomAddress), '0x0123')
+        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
     })
 
     it('tokenToToken swap (with account deployment)', async function () {
       const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
       const signedTokenToTokenSwap = await this.accountSigner.signTokenToTokenSwap(
-        '0', '1', this.token.address, this.token.address, '10', '10', MAX_UINT_256
+        '0', '1', this.token.address, this.token.address, '10', '10', MAX_UINT256
       )
 
       await expect(this.account.sendLimitSwap(signedTokenToTokenSwap, randomAddress, '0x0123'))
         .to.emit(this.accountWithEmits, 'TokenToToken')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256, ethers.utils.getAddress(randomAddress), '0x0123')
+        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
     })
   })
 })

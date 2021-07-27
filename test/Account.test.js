@@ -1,9 +1,11 @@
 const { ethers } = require('hardhat')
 const { randomHex } = require('web3-utils')
 const chaiAsPromised = require('chai-as-promised')
-const brinkUtils = require('@brinkninja/utils')
+const { testHelpers, BN, constants } = require('@brinkninja/utils')
 const computeAccountAddress = require('../src/computeAccountAddress')
-const { chaiSolidity, MAX_UINT_256 } = brinkUtils.test
+
+const { MAX_UINT256 } = constants
+const { chaiSolidity } = testHelpers(ethers)
 const chai = chaiSolidity()
 chai.use(chaiAsPromised)
 const { expect } = chai
@@ -42,7 +44,7 @@ describe('Account', function () {
         '0', '1', this.token.address, '10', '10'
       )
       const res = await this.account.estimateGas.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123')
-      expect(res.gas.toString()).to.be.bignumber.greaterThan('0')
+      expect(res.gas).to.be.gt(0)
     })
   })
 
@@ -64,7 +66,7 @@ describe('Account', function () {
       await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
         .to.emit(this.account_limitSwapVerifier, 'EthToToken')
         .withArgs(
-          '0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256,
+          '0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256,
           ethers.utils.getAddress(randomAddress), '0x0123'
         )
     })
@@ -146,7 +148,7 @@ describe('Account', function () {
 
     it('should send tx for metaDelegateCall', async function () {
       const signedUpgradeFnCall = await this.accountSigner.signEthTransfer(
-        '0', '1', this.recipientAddress, this.transferAmt.toString(), MAX_UINT_256
+        '0', '1', this.recipientAddress, this.transferAmt.toString(), MAX_UINT256
       )
       const to = signedUpgradeFnCall.signedParams[0].value
       const data = signedUpgradeFnCall.signedParams[1].value
@@ -162,7 +164,7 @@ describe('Account', function () {
     it('should send tx for metaPartialSignedDelegateCall', async function () {
       await this.account.deploy()
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10', MAX_UINT_256
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
       const { signedData, unsignedData } = this.account.getLimitSwapData(signedEthToTokenSwap, randomAddress, '0x0123')
       await expect(this.account.metaPartialSignedDelegateCall(
@@ -170,7 +172,7 @@ describe('Account', function () {
       ))
         .to.emit(this.account_limitSwapVerifier, 'EthToToken')
         .withArgs(
-          '0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT_256,
+          '0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256,
           ethers.utils.getAddress(randomAddress), '0x0123'
         )
     })

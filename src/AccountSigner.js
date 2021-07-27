@@ -1,22 +1,17 @@
 const _ = require('lodash')
-const { TypedDataUtils } = require('eth-sig-util')
-const typedDataEIP712 = require('./typedDataEIP712')
+const { signEIP712, constants } = require('@brinkninja/utils')
+const { MAX_UINT256 } = constants
 const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const {
   verifyTokenToTokenSwap,
   verifyEthToTokenSwap,
-  verifyTokenToEthSwap,
-  verifyUpgrade
+  verifyTokenToEthSwap
 } = require('./callVerifiers')
 const {
   metaDelegateCallSignedParamTypes,
   metaPartialSignedDelegateCallSignedParamTypes
 } = require('./constants')
-
-const brinkUtils = require('@brinkninja/utils')
-const { signEIP712 } = brinkUtils
-const { MAX_UINT_256 } = brinkUtils.test
 
 class AccountSigner {
 
@@ -98,7 +93,7 @@ class AccountSigner {
     return signedCall
   }
 
-  async signEthToTokenSwap(bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock=MAX_UINT_256) {
+  async signEthToTokenSwap(bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock = MAX_UINT256) {
     verifyEthToTokenSwap(tokenAddress, ethAmount, tokenAmount, expiryBlock)
     const call = {
       functionName: 'ethToToken',
@@ -121,7 +116,7 @@ class AccountSigner {
     return signedCall
   }
 
-  async signTokenToEthSwap(bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock=MAX_UINT_256) {
+  async signTokenToEthSwap(bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock = MAX_UINT256) {
     verifyTokenToEthSwap(tokenAddress, tokenAddress, ethAmount, expiryBlock)
     const call = {
       functionName: 'tokenToEth',
@@ -144,7 +139,7 @@ class AccountSigner {
     return signedCall
   }
 
-  async signTokenToTokenSwap(bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock=MAX_UINT_256) {
+  async signTokenToTokenSwap(bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock = MAX_UINT256) {
     verifyTokenToTokenSwap(tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock)
     const call = {
       functionName: 'tokenToToken',
