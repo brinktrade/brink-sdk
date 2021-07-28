@@ -2,6 +2,6 @@
 
 pragma solidity >=0.7.6;
 
-import "@brinkninja/test-helpers/contracts/TestERC20.sol";
+import "@brinkninja/utils/contracts/TestERC20.sol";
 
 contract Imports_brinkninja_test_helpers { }
