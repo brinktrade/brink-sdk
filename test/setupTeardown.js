@@ -106,16 +106,14 @@ beforeEach(async function () {
   this.ownerAddress = this.ethersAccountSigner.address
 
   // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  this.account = brink.account({
-    ownerAddress: this.ownerAddress,
-    ethers,
+  this.account = brink.account(this.ownerAddress, {
+    provider: ethers.provider,
     signer: this.defaultSigner
   })
 
   // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  this.account_ownerSigner = brink.account({
-    ownerAddress: this.ownerAddress,
-    ethers,
+  this.account_ownerSigner = brink.account(this.ownerAddress, {
+    provider: ethers.provider,
     signer: this.ethersAccountSigner
   })
 

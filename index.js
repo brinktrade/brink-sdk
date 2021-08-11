@@ -18,20 +18,16 @@ class BrinkSDK {
     }
   }
 
-  account ({ ownerAddress, ethers, provider, signer }) {
-    if (!ethers) throw new Error(`no ethers specified`)
+  account (ownerAddress, { provider, signer }) {
+    if (!provider) throw new Error(`no provider specified`)
 
-    const txProvider = provider || ethers.provider
-    if (!txProvider) throw new Error(`no provider specified`)
-
-    const accountTxSigner = signer || txProvider.getSigner()
+    const accountTxSigner = signer || provider.getSigner()
     if (!accountTxSigner) throw new Error(`no signer specified`)
 
     return new Account({
       ownerAddress,
       environment: this.environment,
-      ethers,
-      provider: txProvider,
+      provider,
       signer: accountTxSigner
     })
   }

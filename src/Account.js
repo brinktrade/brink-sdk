@@ -1,8 +1,10 @@
 const _ = require('lodash')
+const { ethers } = require('ethers')
 const computeAccountBytecode = require('./computeAccountBytecode')
 const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const { ZERO_ADDRESS } = require('./constants')
+
 
 const _directCalls = [
   'externalCall',
@@ -53,7 +55,6 @@ class Account {
   constructor ({
     ownerAddress,
     environment,
-    ethers,
     provider,
     signer
   }) {
@@ -63,7 +64,6 @@ class Account {
     this._accountVersion = this._environment.accountVersion
     this._accountDeploymentSalt = this._environment.accountDeploymentSalt
     this._chainId = this._environment.chainId
-    this._ethers = ethers
     this._provider = provider
     this._signer = signer
     this._deployerAddress = _.find(this._environment.deployments, { name: 'singletonFactory' }).address
@@ -273,7 +273,7 @@ class Account {
   }
 
   _ethersContract(contractName, contractAddress) {
-    return new this._ethers.Contract(
+    return new ethers.Contract(
       contractAddress, _abiMap[contractName], this._signer
     )
   }
