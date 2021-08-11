@@ -101,19 +101,23 @@ beforeEach(async function () {
   this.defaultSigner = signers[0]
   this.ethersAccountSigner = signers[1]
 
-  const brink = brinkSDK({
-    environment,
-    ethers,
-    signer: this.defaultSigner
-  })
+  const brink = brinkSDK(environment)
 
   this.ownerAddress = this.ethersAccountSigner.address
 
   // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  this.account = brink.account(this.ownerAddress)
+  this.account = brink.account({
+    ownerAddress: this.ownerAddress,
+    ethers,
+    signer: this.defaultSigner
+  })
 
   // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  this.account_ownerSigner = brink.account(this.ownerAddress, this.ethersAccountSigner)
+  this.account_ownerSigner = brink.account({
+    ownerAddress: this.ownerAddress,
+    ethers,
+    signer: this.ethersAccountSigner
+  })
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
   this.accountSigner = brink.accountSigner(this.ethersAccountSigner)

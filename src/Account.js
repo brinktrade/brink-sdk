@@ -54,6 +54,7 @@ class Account {
     ownerAddress,
     environment,
     ethers,
+    provider,
     signer
   }) {
     this._environment = environment
@@ -63,6 +64,7 @@ class Account {
     this._accountDeploymentSalt = this._environment.accountDeploymentSalt
     this._chainId = this._environment.chainId
     this._ethers = ethers
+    this._provider = provider
     this._signer = signer
     this._deployerAddress = _.find(this._environment.deployments, { name: 'singletonFactory' }).address
     this._deployAndExecuteAddress = _.find(this._environment.deployments, { name: 'deployAndExecute' }).address
@@ -169,7 +171,7 @@ class Account {
   
   async isDeployed () {
     if (!this.address) { throw new Error('Account not loaded') }
-    const code = await this._ethers.provider.getCode(this.address)
+    const code = await this._provider.getCode(this.address)
     return code !== '0x'
   }
 
@@ -178,8 +180,6 @@ class Account {
       functionCall: constructedFunctionCall, 
       numParams 
     } = this.constructLimitSwapFunctionCall(signedSwap, [to, data])
-    // console.log('constructedFunctionCall: ', constructedFunctionCall)
-    // console.log('numParams: ', numParams)
     const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), numParams)
     return { signedData, unsignedData }
   }
