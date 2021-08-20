@@ -1,10 +1,13 @@
 const _ = require('lodash')
 const { ethers } = require('ethers')
+const { padLeft } = require('web3-utils')
+const BigNumber = require('bignumber.js')
 const computeAccountBytecode = require('./computeAccountBytecode')
 const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const { ZERO_ADDRESS } = require('./constants')
-
+const bitmapPointer = require('./utils/bitmapPointer')
+const BN = ethers.BigNumber.from
 
 const _directCalls = [
   'externalCall',
@@ -63,7 +66,6 @@ class Account {
     this._ownerAddress = ownerAddress
     this._accountVersion = this._environment.accountVersion
     this._accountDeploymentSalt = this._environment.accountDeploymentSalt
-    this._chainId = this._environment.chainId
     this._provider = provider
     this._signer = signer
     this._deployerAddress = _.find(this._environment.deployments, { name: 'singletonFactory' }).address
@@ -73,7 +75,6 @@ class Account {
       this._deployerAddress,
       this._implementationAddress,
       this._ownerAddress,
-      this._chainId,
       this._accountDeploymentSalt
     )
 
@@ -213,6 +214,34 @@ class Account {
     return { functionCall, numParams }
   }
 
+  async nextBit () {
+    let bitmapIndex = BN(0)
+    let bit = BN(1)
+    if (await this.isDeployed()) {
+      const account = this.accountContract()
+      let curBitmap, curBitmapBinStr
+      let curBitmapIndex = -1
+      let nextBitIndex = -1
+      while(nextBitIndex < 0) {
+        curBitmapIndex++
+        curBitmap = await account.storageLoad(bitmapPointer(curBitmapIndex))
+        // using bignumber.js here for the base-2 support
+        const curBitmapBN = new BigNumber(curBitmap)
+        curBitmapBinStr = padLeft(curBitmapBN.toString(2), 256, '0')
+        curBitmapBinStr = curBitmapBinStr.split("").reverse().join("")
+        for (let i = 0; i < curBitmapBinStr.length; i++) {
+          if (curBitmapBinStr.charAt(i) == '0') {
+            nextBitIndex = i
+            break
+          }
+        }
+      }
+      bitmapIndex = BN(curBitmapIndex)
+      bit = BN(2).pow(BN(nextBitIndex))
+    }
+    return { bitmapIndex, bit }
+  }
+
   async _sendAccountTransaction (functionName, params = []) {
     const {
       contract,
@@ -314,7 +343,7 @@ class Account {
 
   _getAccountBytecode () {
     const bytecode = computeAccountBytecode(
-      this._implementationAddress, this._ownerAddress, this._chainId
+      this._implementationAddress, this._ownerAddress
     )
 
     return bytecode

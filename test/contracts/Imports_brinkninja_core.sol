@@ -4,6 +4,6 @@ pragma solidity >=0.7.6;
 
 import "@brinkninja/core/contracts/Account/Account.sol";
 import "@brinkninja/core/contracts/Batched/DeployAndExecute.sol";
-import "@brinkninja/core/contracts/Called/CallExecutor.sol";
+import "@brinkninja/core/contracts/Test/MockAccount.sol";
 
 contract Imports_brinkninja_core { }

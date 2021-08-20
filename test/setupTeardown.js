@@ -23,17 +23,9 @@ beforeEach(async function () {
   // Create deployer
   this.deployer = new Deployer(this.singletonFactory)
 
-  // Call executor 
-  this.callExecutor = await this.deployer.deploy('CallExecutor', [], [])
-  const callExecutorItem = {
-    name: 'callExecutor',
-    contract: 'CallExecutor',
-    address: this.callExecutor.address
-  }
-
-  // Account contract
+  // Account contract (uses MockAccount for test state overriding fns)
   this.accountContract = await this.deployer.deploy(
-    'Account', ['address'], [this.callExecutor.address]
+    'MockAccount', ['uint256'], [chainId]
   )
   const accountContractItem = {
     name: 'account',
@@ -81,9 +73,8 @@ beforeEach(async function () {
   }
 
   deployments.push(
-    singletonFactoryItem, 
-    callExecutorItem, 
-    accountContractItem, 
+    singletonFactoryItem,
+    accountContractItem,
     deployAndExecuteItem,
     transferVerifierItem,
     limitSwapVerifierItem,
@@ -116,6 +107,9 @@ beforeEach(async function () {
     provider: ethers.provider,
     signer: this.ethersAccountSigner
   })
+
+  const MockAccount = await ethers.getContractFactory('MockAccount')
+  this.proxyAccountContract = await MockAccount.attach(this.account.address)
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
   this.accountSigner = brink.accountSigner(this.ethersAccountSigner)

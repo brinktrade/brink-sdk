@@ -27,7 +27,6 @@ class AccountSigner {
       this._findContractAddress('singletonFactory'),
       this._findContractAddress('account'),
       await this.signerAddress(),
-      this._environment.chainId,
       this._environment.accountDeploymentSalt
     )
     return addr

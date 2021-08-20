@@ -3,7 +3,6 @@ pragma solidity >=0.7.6;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@brinkninja/core/contracts/Proxy/ProxyGettable.sol";
-import "@brinkninja/core/contracts/Called/CallExecutable.sol";
 
 /// @title Verifier for ERC20 limit swaps
 /// @notice These functions should be executed by metaPartialSignedDelegateCall() on Brink account proxy contracts

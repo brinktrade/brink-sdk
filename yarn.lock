@@ -2,10 +2,18 @@
 # yarn lockfile v1
 
 
-"@brinkninja/core@^0.1.0", "@brinkninja/core@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@brinkninja/core/-/core-0.1.1.tgz#490535bc7551f31bb1bf9d8f8c72900b1655ef46"
-  integrity sha512-ykfT8NY4s0H6sudsFs7aaPR94cjZr0wrLLqEz3dgR9Xvpbi93twJvqESrB5vaxjb73bSm8fl3R0+TdpqodBdEg==
+"@brinkninja/core@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@brinkninja/core/-/core-0.4.0.tgz#8ae41c8563d4cc4b858dd8507cbdd6f905af865f"
+  integrity sha512-gWLM8MhQMlDS8hSGUl3Qq92S8cTNtjhcn04bL8B2HmTF8cez39TMc55OssNu8rGkGBNvKiDA9Y4BWwGz8Cpl8Q==
+  dependencies:
+    "@openzeppelin/contracts" "3.4.1-solc-0.7-2"
+    require-directory "^2.1.1"
+
+"@brinkninja/core@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@brinkninja/core/-/core-0.4.1.tgz#658305080b4c0694f25bad17da7720735d06b13a"
+  integrity sha512-a6t9uYN7wboz/Iwu7QVCxmLQfhUwLRezCdLBacAeu4agU1mY8XTWH/6kVUDAI65AQClklqX+TmuD/ed9wlVjsw==
   dependencies:
     "@openzeppelin/contracts" "3.4.1-solc-0.7-2"
     require-directory "^2.1.1"
@@ -28,12 +36,12 @@
     web3-eth-abi "^1.2.7"
     web3-utils "^1.3.6"
 
-"@brinkninja/verifiers@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@brinkninja/verifiers/-/verifiers-0.1.2.tgz#2d0bf87849eed5fe57d1bfd2ada6c60e5a80ac05"
-  integrity sha512-LpQhx/sudLhFQzDViTIjuAl4vVBl8wn29voBPykU4cArdtoNZxCJKLOrbMf7OAxwueStq2Ph/zcYHdlGQv60yQ==
+"@brinkninja/verifiers@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@brinkninja/verifiers/-/verifiers-0.2.0.tgz#cafc34122e2a6d1d4b498d5b04c1548b6bd91450"
+  integrity sha512-y54iIYyZilVvkZQZX6B7111ZPDZ5Nsolvi18NoGul90ZKRBUYRkWx9vj5MxhVO7d0MWcUg4vn97B3JfCAnwdUA==
   dependencies:
-    "@brinkninja/core" "^0.1.0"
+    "@brinkninja/core" "^0.4.0"
 
 "@ensdomains/ens@^0.4.4":
   version "0.4.5"
@@ -1689,7 +1697,7 @@ bech32@1.1.4:
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
 
-bignumber.js@^9.0.0:
+bignumber.js@^9.0.0, bignumber.js@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.1.tgz#8d7ba124c882bfd8e43260c67475518d0689e4e5"
   integrity sha512-IdZR9mh6ahOBv/hYGiXyVuyCetmGJhtYkqLBpTStdhEGjegpPlUawydyaF3pbIOFynJTpllEs+NP+CS9jKFLjA==

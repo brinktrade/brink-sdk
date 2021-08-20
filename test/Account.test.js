@@ -3,8 +3,10 @@ const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
 const { solidity } = require('ethereum-waffle')
 const { randomHex } = require('web3-utils')
+const BigNumber = require('bignumber.js')
 const { constants } = require('@brinkninja/utils')
 const computeAccountAddress = require('../src/computeAccountAddress')
+const BN = ethers.BigNumber.from
 const { MAX_UINT256 } = constants
 chai.use(chaiAsPromised)
 chai.use(solidity)
@@ -15,8 +17,9 @@ const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
 describe('Account', function () {
 
   beforeEach(async function () {
-    const LimitSwapVerifier = await ethers.getContractFactory('LimitSwapVerifierMock')
-    this.account_limitSwapVerifier = LimitSwapVerifier.attach(this.account.address)
+    this.LimitSwapVerifier = await ethers.getContractFactory('LimitSwapVerifierMock')
+    this.MockAccount = await ethers.getContractFactory('MockAccount')
+    this.account_limitSwapVerifier = this.LimitSwapVerifier.attach(this.account.address)
 
     this.recipientAddress = randomHex(20)
   })
@@ -87,7 +90,6 @@ describe('Account', function () {
           this.singletonFactory.address,
           this.accountContract.address,
           this.ownerAddress,
-          this.chainId,
           this.accountSalt
         )
         expect(this.account.address).to.equal(expectedAccountAddress)
@@ -184,4 +186,68 @@ describe('Account', function () {
       expect(await this.account.isDeployed()).to.be.true
     })
   })
+
+  describe.only('nextBit()', function () {
+    describe('when the account proxy is deployed', function () {
+      it('should return next available bit', async function () {
+        await this.account.deploy()
+        const { bitmapIndex, bit } = await this.account.nextBit()
+        expect(bitmapIndex).to.equal(0)
+        expect(bit).to.equal(1)
+      })
+    })
+
+    describe('when the account proxy has not been deployed', function () {
+      it('should return the first bit', async function () {
+        const { bitmapIndex, bit } = await this.account.nextBit()
+        expect(bitmapIndex).to.equal(0)
+        expect(bit).to.equal(1)
+      })
+    })
+
+    describe('when bits have been stored consecutively', function () {
+      it('should return first available bit after stored bits', async function () {
+        await this.account.deploy()
+        await this.proxyAccountContract.__mockBitmap(0, base2BN('111'))
+        const { bitmapIndex, bit } = await this.account.nextBit()
+        const expectedBitIndex = BN(3)
+        expect(bitmapIndex).to.equal(BN(0))
+        expect(bit).to.equal(BN(2).pow(expectedBitIndex))
+      })
+    })
+
+    describe('when bits have been stored non-consecutively', function () {
+      it('should return first available bit', async function () {
+        await this.account.deploy()
+        // mock first 4 bits flipped, 5th unflipped, 6 and 7th flipped
+        await this.proxyAccountContract.__mockBitmap(BN(0), base2BN(reverseBinStr('1111011')))
+        const { bitmapIndex, bit } = await this.account.nextBit()
+        const expectedBitIndex = BN(4)
+        expect(bitmapIndex).to.equal(BN(0))
+        expect(bit).to.equal(BN(2).pow(expectedBitIndex))
+      })
+    })
+
+    describe('when exactly 256 bits have been stored', function () {
+      it('should return first bit from the next storage slot', async function () {
+        await this.account.deploy()
+        // mock 256 bits flipped
+        await this.proxyAccountContract.__mockBitmap(BN(0), base2BN('1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111'))
+        const { bitmapIndex, bit } = await this.account.nextBit()
+        const expectedBitIndex = BN(0)
+        expect(bitmapIndex).to.equal(BN(1))
+        expect(bit).to.equal(BN(2).pow(expectedBitIndex))
+      })
+    })
+  })
 })
+
+// convert a base 2 (binary) string to an ethers.js BigNumber
+function base2BN (str) {
+  // uses the bignumber.js lib which supports base 2 conversion
+  return BN(new BigNumber(str, 2).toFixed())
+}
+
+function reverseBinStr (str) {
+  return str.split('').reverse().join('')
+}

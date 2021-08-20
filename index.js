@@ -43,13 +43,11 @@ class BrinkSDK {
   computeAccountAddress (ownerAddress) {
     const deployerAddress = _.find(this.environment.deployments, { name: 'singletonFactory' }).address
     const implementationAddress = _.find(this.environment.deployments, { name: 'account' }).address
-    const chainId = this.environment.chainId 
     const accountDeploymentSalt = this.environment.accountDeploymentSalt
     return computeAccountAddress(
       deployerAddress,
       implementationAddress,
       ownerAddress,
-      chainId,
       accountDeploymentSalt
     )
   }
