@@ -226,10 +226,7 @@ class Account {
       while(nextBitIndex < 0) {
         curBitmapIndex++
         curBitmap = await account.storageLoad(bitmapPointer(curBitmapIndex))
-        // using bignumber.js here for the base-2 support
-        const curBitmapBN = new BigNumber(curBitmap)
-        curBitmapBinStr = padLeft(curBitmapBN.toString(2), 256, '0')
-        curBitmapBinStr = curBitmapBinStr.split("").reverse().join("")
+        curBitmapBinStr = bnToBinaryString(curBitmap)
         for (let i = 0; i < curBitmapBinStr.length; i++) {
           if (curBitmapBinStr.charAt(i) == '0') {
             nextBitIndex = i
@@ -241,6 +238,38 @@ class Account {
       bit = BN(2).pow(BN(nextBitIndex))
     }
     return { bitmapIndex, bit }
+  }
+
+  async loadBitmap (bitmapIndex) {
+    const account = this.accountContract()
+    const bmp = await account.storageLoad(bitmapPointer(bitmapIndex))
+    // using bignumber.js here for the base-2 support
+    return new BN(bmp)
+  }
+
+  async bitUsed (bitmapIndex, bit) {
+    const account = this.accountContract()
+
+    if (!await this.isDeployed()) {
+      return false
+    }
+
+    const bitmap = await account.storageLoad(bitmapPointer(bitmapIndex))
+    const bmpBinStr = bnToBinaryString(bitmap)
+    const bitBinStr = bnToBinaryString(bit)
+
+    if (bmpBinStr.length !== bitBinStr.length) {
+      throw new Error(`binary string length mismatch`)
+    }
+
+    for (let i = 0; i < bmpBinStr.length; i++) {
+      const bmpChar = bmpBinStr[i]
+      const bitChar = bitBinStr[i]
+      if (bmpChar == 1 && bitChar == 1) {
+        return true
+      }
+    }
+    return false
   }
 
   async _sendAccountTransaction (functionName, params = []) {
@@ -364,6 +393,13 @@ function splitCallData (callData, numSignedParams) {
   // unsigned data is the rest
   const unsignedData = `0x${parsedCallData.slice(signedDataLen)}`
   return { signedData, unsignedData }
+}
+
+function bnToBinaryString (bn) {
+  // using bignumber.js here for the base-2 support
+  const bitmapBN = new BigNumber(bn.toString())
+  const bitmapBinStr = padLeft(bitmapBN.toString(2), 256, '0').split("").reverse().join("")
+  return bitmapBinStr
 }
 
 module.exports = Account
