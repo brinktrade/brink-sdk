@@ -23,17 +23,9 @@ beforeEach(async function () {
   // Create deployer
   this.deployer = new Deployer(this.singletonFactory)
 
-  // Call executor 
-  this.callExecutor = await this.deployer.deploy('CallExecutor', [], [])
-  const callExecutorItem = {
-    name: 'callExecutor',
-    contract: 'CallExecutor',
-    address: this.callExecutor.address
-  }
-
-  // Account contract
+  // Account contract (uses MockAccount for test state overriding fns)
   this.accountContract = await this.deployer.deploy(
-    'Account', ['address'], [this.callExecutor.address]
+    'MockAccount', ['uint256'], [chainId]
   )
   const accountContractItem = {
     name: 'account',
@@ -81,9 +73,8 @@ beforeEach(async function () {
   }
 
   deployments.push(
-    singletonFactoryItem, 
-    callExecutorItem, 
-    accountContractItem, 
+    singletonFactoryItem,
+    accountContractItem,
     deployAndExecuteItem,
     transferVerifierItem,
     limitSwapVerifierItem,
@@ -101,19 +92,24 @@ beforeEach(async function () {
   this.defaultSigner = signers[0]
   this.ethersAccountSigner = signers[1]
 
-  const brink = brinkSDK({
-    environment,
-    ethers,
-    signer: this.defaultSigner
-  })
+  const brink = brinkSDK(environment)
 
   this.ownerAddress = this.ethersAccountSigner.address
 
   // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  this.account = brink.account(this.ownerAddress)
+  this.account = brink.account(this.ownerAddress, {
+    provider: ethers.provider,
+    signer: this.defaultSigner
+  })
 
   // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  this.account_ownerSigner = brink.account(this.ownerAddress, this.ethersAccountSigner)
+  this.account_ownerSigner = brink.account(this.ownerAddress, {
+    provider: ethers.provider,
+    signer: this.ethersAccountSigner
+  })
+
+  const MockAccount = await ethers.getContractFactory('MockAccount')
+  this.proxyAccountContract = await MockAccount.attach(this.account.address)
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
   this.accountSigner = brink.accountSigner(this.ethersAccountSigner)

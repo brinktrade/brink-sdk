@@ -1,13 +1,13 @@
 const ProxyBytecode = require('./contracts/Proxy.bytecode')
 const computeCreate2Address = require('./computeCreate2Address')
 
-const computeAccountAddress = (deployerAddress, implementationAddress, ownerAddress, chainId, accountDeploymentSalt) => {
+const computeAccountAddress = (deployerAddress, implementationAddress, ownerAddress, accountDeploymentSalt) => {
   return computeCreate2Address({
     bytecode: ProxyBytecode,
     deployerAddress,
     salt: accountDeploymentSalt,
-    paramTypes: ['address', 'address', 'uint256'],
-    params: [implementationAddress, ownerAddress, chainId]
+    paramTypes: ['address', 'address'],
+    params: [implementationAddress, ownerAddress]
   })
 }
 

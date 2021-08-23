@@ -2,26 +2,13 @@ module.exports = [
   {
     "inputs": [
       {
-        "internalType": "contract CallExecutor",
-        "name": "callExecutor",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "chainId_",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "inputs": [],
-    "name": "callExecutor",
-    "outputs": [
-      {
-        "internalType": "contract CallExecutor",
-        "name": "_callExecutor",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [
@@ -93,6 +80,11 @@ module.exports = [
         "internalType": "bytes",
         "name": "signature",
         "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "unsignedData",
+        "type": "bytes"
       }
     ],
     "name": "metaDelegateCall",
@@ -123,7 +115,7 @@ module.exports = [
         "type": "bytes"
       }
     ],
-    "name": "metaPartialSignedDelegateCall",
+    "name": "metaDelegateCall_EIP1271",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -136,6 +128,25 @@ module.exports = [
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "ptr",
+        "type": "bytes32"
+      }
+    ],
+    "name": "storageLoad",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "data",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",

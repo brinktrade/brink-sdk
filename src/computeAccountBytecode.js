@@ -1,11 +1,11 @@
 const computeInitBytecode = require('./computeInitBytecode')
 const ProxyBytecode = require('./contracts/Proxy.bytecode')
 
-const computeAccountBytecode = (implementationAddress, ownerAddress, chainId) => {
+const computeAccountBytecode = (implementationAddress, ownerAddress) => {
   return computeInitBytecode({
     bytecode: ProxyBytecode,
-    paramTypes: ['address', 'address', 'uint256'],
-    params: [implementationAddress, ownerAddress, chainId]
+    paramTypes: ['address', 'address'],
+    params: [implementationAddress, ownerAddress]
   })
 }
 

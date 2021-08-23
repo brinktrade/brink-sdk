@@ -2,16 +2,15 @@ const _ = require('lodash')
 const { loadEnvironment } = require('@brinkninja/environment')
 const Account = require('./src/Account')
 const AccountSigner = require('./src/AccountSigner')
+const computeAccountAddress = require('./src/computeAccountAddress')
 
 class BrinkSDK {
 
   // environment: @brinkninja/environment network string or configuration object
   // ethers: ethers.js instance
   // signer: ethers.js signer (options, uses provider.signer by default)
-  constructor ({ environment, ethers, signer }) {
+  constructor (environment) {
     if (!environment) throw new Error(`no environment specified`)
-    this.ethers = ethers
-    this.signer = signer
     if (typeof environment == 'string') {
       this.environment = loadEnvironment(environment)
     } else {
@@ -19,14 +18,16 @@ class BrinkSDK {
     }
   }
 
-  account (ownerAddress, signer) {
-    if (!this.ethers) throw new Error(`no ethers specified`)
-    const accountTxSigner = signer || this.signer || this.ethers.provider.getSigner()
+  account (ownerAddress, { provider, signer }) {
+    if (!provider) throw new Error(`no provider specified`)
+
+    const accountTxSigner = signer || provider.getSigner()
     if (!accountTxSigner) throw new Error(`no signer specified`)
+
     return new Account({
       ownerAddress,
       environment: this.environment,
-      ethers: this.ethers,
+      provider,
       signer: accountTxSigner
     })
   }
@@ -37,6 +38,18 @@ class BrinkSDK {
       environment: this.environment,
       signer: accountOwnerSigner
     })
+  }
+
+  computeAccountAddress (ownerAddress) {
+    const deployerAddress = _.find(this.environment.deployments, { name: 'singletonFactory' }).address
+    const implementationAddress = _.find(this.environment.deployments, { name: 'account' }).address
+    const accountDeploymentSalt = this.environment.accountDeploymentSalt
+    return computeAccountAddress(
+      deployerAddress,
+      implementationAddress,
+      ownerAddress,
+      accountDeploymentSalt
+    )
   }
 }
 

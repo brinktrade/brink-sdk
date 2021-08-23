@@ -7,19 +7,6 @@ chai.use(solidity)
 const { expect } = chai
 
 describe('AccountSigner', function () {
-  describe('CancelVerifier Signing', function () {
-    it('Should call cancel through a signed metaDelegateCall', async function () {
-      const signedCancelFnCall = await this.accountSigner.signCancel('0', '1')
-      const to = signedCancelFnCall.signedParams[0].value
-      const data = signedCancelFnCall.signedParams[1].value
-      const signature = signedCancelFnCall.signature
-      const tx = this.account.metaDelegateCall(to, data, signature)
-      expect(tx).to.not.be.undefined
-      await expect(this.account.metaDelegateCall(to, data, signature))
-        .to.be.reverted
-    })
-  })
-
   describe('Limit Swap Signing', function () {
     beforeEach(async function () {
       const LimitSwapVerifier = await ethers.getContractFactory("LimitSwapVerifierMock");

@@ -9,8 +9,7 @@ const {
   verifyTokenToEthSwap
 } = require('./callVerifiers')
 const {
-  metaDelegateCallSignedParamTypes,
-  metaPartialSignedDelegateCallSignedParamTypes
+  metaDelegateCallSignedParamTypes
 } = require('./constants')
 
 class AccountSigner {
@@ -27,7 +26,6 @@ class AccountSigner {
       this._findContractAddress('singletonFactory'),
       this._findContractAddress('account'),
       await this.signerAddress(),
-      this._environment.chainId,
       this._environment.accountDeploymentSalt
     )
     return addr
@@ -36,22 +34,6 @@ class AccountSigner {
   async signerAddress () {
     const addr = await this._signer.getAddress()
     return addr
-  }
-
-  async signCancel(bitmapIndex, bit) {
-    const call = {
-      functionName: 'cancel',
-      paramTypes: [
-        { name: 'bitmapIndex', type: 'uint256' },
-        { name: 'bit', type: 'uint256'}
-      ],
-      params: [bitmapIndex, bit]
-    }
-
-    const signedCall = await this.signMetaDelegateCall(
-      this._findContractAddress('cancelVerifier'), call
-    )
-    return signedCall
   }
 
   async signEthTransfer(bitmapIndex, bit, recipient, amount, expiryBlock) {
@@ -110,7 +92,7 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaPartialSignedDelegateCall(
+    const signedCall = await this.signMetaDelegateCall(
       this._findContractAddress('limitSwapVerifier'), call
     )
     return signedCall
@@ -133,7 +115,7 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaPartialSignedDelegateCall(
+    const signedCall = await this.signMetaDelegateCall(
       this._findContractAddress('limitSwapVerifier'), call
     )
     return signedCall
@@ -157,7 +139,7 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaPartialSignedDelegateCall(
+    const signedCall = await this.signMetaDelegateCall(
       this._findContractAddress('limitSwapVerifier'), call
     )
     return signedCall
@@ -167,15 +149,6 @@ class AccountSigner {
     const signedFnCall = await this.signFunctionCall(
       'metaDelegateCall',
       metaDelegateCallSignedParamTypes,
-      [ toAddress, call ]
-    )
-    return signedFnCall
-  }
-
-  async signMetaPartialSignedDelegateCall (toAddress, call) {
-    const signedFnCall = await this.signFunctionCall(
-      'metaPartialSignedDelegateCall',
-      metaPartialSignedDelegateCallSignedParamTypes,
       [ toAddress, call ]
     )
     return signedFnCall

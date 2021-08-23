@@ -1,8 +1,13 @@
 const _ = require('lodash')
+const { ethers } = require('ethers')
+const { padLeft } = require('web3-utils')
+const BigNumber = require('bignumber.js')
 const computeAccountBytecode = require('./computeAccountBytecode')
 const computeAccountAddress = require('./computeAccountAddress')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const { ZERO_ADDRESS } = require('./constants')
+const bitmapPointer = require('./utils/bitmapPointer')
+const BN = ethers.BigNumber.from
 
 const _directCalls = [
   'externalCall',
@@ -11,16 +16,17 @@ const _directCalls = [
 
 const _metaCalls = [
   'metaDelegateCall',
-  'metaPartialSignedDelegateCall'
+  'metaDelegateCall_EIP1271'
 ]
 
 const _paramTypesMap = {
   'metaDelegateCall': [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes' },
-    { name: 'signature', type: 'bytes' }
+    { name: 'signature', type: 'bytes' },
+    { name: 'unsignedData', type: 'bytes'}
   ],
-  'metaPartialSignedDelegateCall': [
+  'metaDelegateCall_EIP1271': [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes' },
     { name: 'signature', type: 'bytes' },
@@ -53,7 +59,7 @@ class Account {
   constructor ({
     ownerAddress,
     environment,
-    ethers,
+    provider,
     signer
   }) {
     this._environment = environment
@@ -61,8 +67,7 @@ class Account {
     this._ownerAddress = ownerAddress
     this._accountVersion = this._environment.accountVersion
     this._accountDeploymentSalt = this._environment.accountDeploymentSalt
-    this._chainId = this._environment.chainId
-    this._ethers = ethers
+    this._provider = provider
     this._signer = signer
     this._deployerAddress = _.find(this._environment.deployments, { name: 'singletonFactory' }).address
     this._deployAndExecuteAddress = _.find(this._environment.deployments, { name: 'deployAndExecute' }).address
@@ -71,7 +76,6 @@ class Account {
       this._deployerAddress,
       this._implementationAddress,
       this._ownerAddress,
-      this._chainId,
       this._accountDeploymentSalt
     )
 
@@ -114,7 +118,7 @@ class Account {
     _setupEthersWrappedTx('sendLimitSwap', async (signedLimitSwapMessage, to, data) => {
       const { signedData, unsignedData } = this.getLimitSwapData(signedLimitSwapMessage, to, data)
       const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
-        'metaPartialSignedDelegateCall',
+        'metaDelegateCall',
         [signedLimitSwapMessage.signedParams[0].value, signedData, signedLimitSwapMessage.signature, unsignedData]
       )
       return { contract, contractName, functionName, params, paramTypes }
@@ -159,9 +163,9 @@ class Account {
       return { contract, contractName, functionName, params, paramTypes }
     })
 
-    _setupEthersWrappedTx('metaPartialSignedDelegateCall', async (to, data, signature, unsignedData) => {
+    _setupEthersWrappedTx('metaDelegateCall', async (to, data, signature, unsignedData) => {
       const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
-        'metaPartialSignedDelegateCall', [to, data, signature, unsignedData]
+        'metaDelegateCall', [to, data, signature, unsignedData]
       )
       return { contract, contractName, functionName, params, paramTypes }
     })
@@ -169,7 +173,7 @@ class Account {
   
   async isDeployed () {
     if (!this.address) { throw new Error('Account not loaded') }
-    const code = await this._ethers.provider.getCode(this.address)
+    const code = await this._provider.getCode(this.address)
     return code !== '0x'
   }
 
@@ -178,8 +182,6 @@ class Account {
       functionCall: constructedFunctionCall, 
       numParams 
     } = this.constructLimitSwapFunctionCall(signedSwap, [to, data])
-    // console.log('constructedFunctionCall: ', constructedFunctionCall)
-    // console.log('numParams: ', numParams)
     const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), numParams)
     return { signedData, unsignedData }
   }
@@ -211,6 +213,34 @@ class Account {
       functionCall.params.push(unsignedDataList[k])
     }
     return { functionCall, numParams }
+  }
+
+  async nextBit () {
+    let bitmapIndex = BN(0)
+    let bit = BN(1)
+    if (await this.isDeployed()) {
+      const account = this.accountContract()
+      let curBitmap, curBitmapBinStr
+      let curBitmapIndex = -1
+      let nextBitIndex = -1
+      while(nextBitIndex < 0) {
+        curBitmapIndex++
+        curBitmap = await account.storageLoad(bitmapPointer(curBitmapIndex))
+        // using bignumber.js here for the base-2 support
+        const curBitmapBN = new BigNumber(curBitmap)
+        curBitmapBinStr = padLeft(curBitmapBN.toString(2), 256, '0')
+        curBitmapBinStr = curBitmapBinStr.split("").reverse().join("")
+        for (let i = 0; i < curBitmapBinStr.length; i++) {
+          if (curBitmapBinStr.charAt(i) == '0') {
+            nextBitIndex = i
+            break
+          }
+        }
+      }
+      bitmapIndex = BN(curBitmapIndex)
+      bit = BN(2).pow(BN(nextBitIndex))
+    }
+    return { bitmapIndex, bit }
   }
 
   async _sendAccountTransaction (functionName, params = []) {
@@ -273,7 +303,7 @@ class Account {
   }
 
   _ethersContract(contractName, contractAddress) {
-    return new this._ethers.Contract(
+    return new ethers.Contract(
       contractAddress, _abiMap[contractName], this._signer
     )
   }
@@ -314,14 +344,14 @@ class Account {
 
   _getAccountBytecode () {
     const bytecode = computeAccountBytecode(
-      this._implementationAddress, this._ownerAddress, this._chainId
+      this._implementationAddress, this._ownerAddress
     )
 
     return bytecode
   }
 }
 
-// splits a call for metaPartialSignedDelegateCall into signedData and unsignedData
+// splits a call for metaDelegateCall into signedData and unsignedData
 // TODO: this only works if all signed data params are fixed bytes32, will not work for dynamic params
 function splitCallData (callData, numSignedParams) {
   let parsedCallData = callData.indexOf('0x') == 0 ? callData.slice(2) : callData

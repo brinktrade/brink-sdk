@@ -29,7 +29,7 @@ module.exports = {
     { name: 'data', type: 'bytes', calldata: true }
   ],
 
-  metaPartialSignedDelegateCallSignedParamTypes: [
+  metaDelegateCall_EIP1271SignedParamTypes: [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes', calldata: true }
   ]
