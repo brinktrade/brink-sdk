@@ -10,8 +10,8 @@
     "hardhat": "^2.1.2"
   },
   "dependencies": {
-    "@brinkninja/environment": "^0.5.0",
-    "@brinkninja/utils": "^0.2.1",
+    "@brinkninja/environment": "^0.5.3",
+    "@brinkninja/utils": "^0.3.1",
     "bignumber.js": "^9.0.1",
     "eth-lib": "^0.1.29",
     "eth-sig-util": "^2.5.3",

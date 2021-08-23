@@ -18,15 +18,15 @@
     "@openzeppelin/contracts" "3.4.1-solc-0.7-2"
     require-directory "^2.1.1"
 
-"@brinkninja/environment@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@brinkninja/environment/-/environment-0.5.0.tgz#406041f496d841098ab64048c96cac47699aee75"
-  integrity sha512-qH9cJodhW+N3LHgx2rK5od744+HmXvtc7Zshcc8+f5twjiDsrUQXrHi9pl+ZJj9m6JYmfi/Gz2D6sr9cyCx2SQ==
+"@brinkninja/environment@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@brinkninja/environment/-/environment-0.5.3.tgz#831b8fe773bbc60be1b83fd914ab276cc830f216"
+  integrity sha512-tEcStAp4YhGErfAkysDgQxu/LCCz4caVSR9IEG7ITV+Os7mt5Sl39+cqfUdzCmZxUIg8Yybd8+PQtoc3V2yipQ==
 
-"@brinkninja/utils@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@brinkninja/utils/-/utils-0.2.1.tgz#62d8dd9479aa82ca7e489a0008565d9158c92159"
-  integrity sha512-mh3uVMSb/V+7+6ThXSTD7AYew5n0K4Ios0qaZc3mnTbuOXI6Ox2pIOC052sVdzjhEEUictP3OAeiJAG2bXYhrg==
+"@brinkninja/utils@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@brinkninja/utils/-/utils-0.3.1.tgz#518467529cb652261139303c4f720b42ce143668"
+  integrity sha512-3xXV/3XSVRBLHkk+ASTFWEcqhijvViCUp5fAqQmOBo0RjejxUN/V8voNzgXbnMDE3M+OXSRsuoLEq1xPnaJlww==
   dependencies:
     "@ethersproject/bignumber" "^5.4.1"
     eth-sig-util "2.5.3"
