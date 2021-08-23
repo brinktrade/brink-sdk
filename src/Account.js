@@ -16,16 +16,17 @@ const _directCalls = [
 
 const _metaCalls = [
   'metaDelegateCall',
-  'metaPartialSignedDelegateCall'
+  'metaDelegateCall_EIP1271'
 ]
 
 const _paramTypesMap = {
   'metaDelegateCall': [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes' },
-    { name: 'signature', type: 'bytes' }
+    { name: 'signature', type: 'bytes' },
+    { name: 'unsignedData', type: 'bytes'}
   ],
-  'metaPartialSignedDelegateCall': [
+  'metaDelegateCall_EIP1271': [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes' },
     { name: 'signature', type: 'bytes' },
@@ -117,7 +118,7 @@ class Account {
     _setupEthersWrappedTx('sendLimitSwap', async (signedLimitSwapMessage, to, data) => {
       const { signedData, unsignedData } = this.getLimitSwapData(signedLimitSwapMessage, to, data)
       const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
-        'metaPartialSignedDelegateCall',
+        'metaDelegateCall',
         [signedLimitSwapMessage.signedParams[0].value, signedData, signedLimitSwapMessage.signature, unsignedData]
       )
       return { contract, contractName, functionName, params, paramTypes }
@@ -162,9 +163,9 @@ class Account {
       return { contract, contractName, functionName, params, paramTypes }
     })
 
-    _setupEthersWrappedTx('metaPartialSignedDelegateCall', async (to, data, signature, unsignedData) => {
+    _setupEthersWrappedTx('metaDelegateCall', async (to, data, signature, unsignedData) => {
       const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
-        'metaPartialSignedDelegateCall', [to, data, signature, unsignedData]
+        'metaDelegateCall', [to, data, signature, unsignedData]
       )
       return { contract, contractName, functionName, params, paramTypes }
     })
@@ -350,7 +351,7 @@ class Account {
   }
 }
 
-// splits a call for metaPartialSignedDelegateCall into signedData and unsignedData
+// splits a call for metaDelegateCall into signedData and unsignedData
 // TODO: this only works if all signed data params are fixed bytes32, will not work for dynamic params
 function splitCallData (callData, numSignedParams) {
   let parsedCallData = callData.indexOf('0x') == 0 ? callData.slice(2) : callData

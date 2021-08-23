@@ -2,8 +2,8 @@
   "name": "@brinkninja/sdk",
   "version": "0.1.3",
   "devDependencies": {
-    "@brinkninja/verifiers": "^0.2.0",
-    "@brinkninja/core": "^0.4.1",
+    "@brinkninja/verifiers": "^1.0.0-beta.0",
+    "@brinkninja/core": "^1.0.0-beta.0",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "ethereum-waffle": "^3.3.0",

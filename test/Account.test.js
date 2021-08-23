@@ -140,15 +140,13 @@ describe('Account', function () {
   })
 
   describe('metaDelegateCall', function () {
-    beforeEach(async function () {
+    it('should send eth transfer via metaDelegateCall', async function () {
       this.transferAmt = ethers.utils.parseEther('1.0')
       await this.defaultSigner.sendTransaction({
         to: this.account.address,
         value: this.transferAmt
       })
-    })
 
-    it('should send tx for metaDelegateCall', async function () {
       const signedUpgradeFnCall = await this.accountSigner.signEthTransfer(
         '0', '1', this.recipientAddress, this.transferAmt.toString(), MAX_UINT256
       )
@@ -156,20 +154,18 @@ describe('Account', function () {
       const data = signedUpgradeFnCall.signedParams[1].value
       const signature = signedUpgradeFnCall.signature
       
-      const tx = await this.account.metaDelegateCall(to, data, signature)
+      const tx = await this.account.metaDelegateCall(to, data, signature, '0x')
       expect(tx).to.not.be.undefined
       expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('1.0'))
     })
-  })
 
-  describe('metaPartialSignedDelegateCall', function () {
-    it('should send tx for metaPartialSignedDelegateCall', async function () {
+    it('should send swap via metaDelegateCall', async function () {
       await this.account.deploy()
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
         '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
       const { signedData, unsignedData } = this.account.getLimitSwapData(signedEthToTokenSwap, randomAddress, '0x0123')
-      await expect(this.account.metaPartialSignedDelegateCall(
+      await expect(this.account.metaDelegateCall(
         signedEthToTokenSwap.signedParams[0].value, signedData, signedEthToTokenSwap.signature, unsignedData
       ))
         .to.emit(this.account_limitSwapVerifier, 'EthToToken')
@@ -187,7 +183,7 @@ describe('Account', function () {
     })
   })
 
-  describe.only('nextBit()', function () {
+  describe('nextBit()', function () {
     describe('when the account proxy is deployed', function () {
       it('should return next available bit', async function () {
         await this.account.deploy()
