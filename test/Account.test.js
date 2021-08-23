@@ -236,6 +236,27 @@ describe('Account', function () {
       })
     })
   })
+
+  describe('bitUsed', function () {
+    it('when given bit is used, should return true', async function () {
+      await this.account.deploy()
+      // mock bits 0,1,2 unused. 3,4,5 used 
+      await this.proxyAccountContract.__mockBitmap(BN(0), base2BN(reverseBinStr('000111')))
+      const bit = BN(2).pow(BN(3))
+      expect(await this.account.bitUsed(0, bit)).to.equal(true)
+    })
+    it('when given bit is not used, should return false', async function () {
+      await this.account.deploy()
+      // mock bits 0,1,2 unused. 3,4,5 used 
+      await this.proxyAccountContract.__mockBitmap(BN(0), base2BN(reverseBinStr('000111')))
+      const bit = BN(2).pow(BN(2))
+      expect(await this.account.bitUsed(0, bit)).to.equal(false)
+    })
+    it('when account is not deployed, should return false', async function () {
+      const bit = BN(2).pow(BN(3))
+      expect(await this.account.bitUsed(0, bit)).to.equal(false)
+    })
+  })
 })
 
 // convert a base 2 (binary) string to an ethers.js BigNumber
