@@ -182,6 +182,10 @@ class Account {
       functionCall: constructedFunctionCall, 
       numParams 
     } = this.constructLimitSwapFunctionCall(signedSwap, [to, data])
+    if (constructedFunctionCall.params.length > constructedFunctionCall.paramTypes.length) {
+      constructedFunctionCall.paramTypes.push({ name: 'to', type: 'address' })
+      constructedFunctionCall.paramTypes.push({ name: 'data', type: 'bytes' })
+    }
     const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), numParams)
     return { signedData, unsignedData }
   }
