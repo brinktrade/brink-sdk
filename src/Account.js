@@ -241,10 +241,14 @@ class Account {
   }
 
   async loadBitmap (bitmapIndex) {
-    const account = this.accountContract()
-    const bmp = await account.storageLoad(bitmapPointer(bitmapIndex))
-    // using bignumber.js here for the base-2 support
-    return new BN(bmp)
+    if (await this.isDeployed()) {
+      const account = this.accountContract()
+      const bmp = await account.storageLoad(bitmapPointer(bitmapIndex))
+      // using bignumber.js here for the base-2 support
+      return new BN(bmp)
+    } else {
+      return new BN(0)
+    }
   }
 
   async bitUsed (bitmapIndex, bit) {

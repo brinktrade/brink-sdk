@@ -237,6 +237,20 @@ describe('Account', function () {
     })
   })
 
+  describe('loadBitmap', function () {
+    it('when account is not deployed, should return 0', async function () {
+      const bmp = await this.account.loadBitmap(0)
+      expect(bmp).to.equal(0)
+    })
+    it('when account is deployed, should return the bitmap', async function () {
+      await this.account.deploy()
+      const bnVal = base2BN(reverseBinStr('0011'))
+      await this.proxyAccountContract.__mockBitmap(BN(0), bnVal)
+      const bmp = await this.account.loadBitmap(0)
+      expect(bmp).to.equal(bnVal)
+    })
+  })
+
   describe('bitUsed', function () {
     it('when given bit is used, should return true', async function () {
       await this.account.deploy()
