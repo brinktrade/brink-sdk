@@ -89,7 +89,10 @@ class AccountSigner {
         { name: 'to', type: 'address'},
         { name: 'data', type: 'bytes'}
       ],
-      params: [bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock]
+      params: [
+        bnToStr(bitmapIndex), bnToStr(bit), tokenAddress, bnToStr(ethAmount), bnToStr(tokenAmount),
+        bnToStr(expiryBlock)
+      ]
     }
 
     const signedCall = await this.signMetaDelegateCall(
@@ -112,7 +115,10 @@ class AccountSigner {
         { name: 'to', type: 'address'},
         { name: 'data', type: 'bytes'}
       ],
-      params: [bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock]
+      params: [
+        bnToStr(bitmapIndex), bnToStr(bit), tokenAddress, bnToStr(tokenAmount), bnToStr(ethAmount),
+        bnToStr(expiryBlock)
+      ]
     }
 
     const signedCall = await this.signMetaDelegateCall(
@@ -136,7 +142,10 @@ class AccountSigner {
         { name: 'to', type: 'address'},
         { name: 'data', type: 'bytes'}
       ],
-      params: [bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock]
+      params: [
+        bnToStr(bitmapIndex), bnToStr(bit), tokenInAddress, tokenOutAddress, bnToStr(tokenInAmount),
+        bnToStr(tokenOutAmount), bnToStr(expiryBlock)
+      ]
     }
 
     const signedCall = await this.signMetaDelegateCall(
@@ -214,6 +223,10 @@ function parseParams (paramTypes, params) {
     }
   }
   return paramsArray
+}
+
+function bnToStr (bnOrString) {
+  return bnOrString.toString()
 }
 
 module.exports = AccountSigner
