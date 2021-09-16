@@ -3,6 +3,7 @@ const { loadEnvironment } = require('@brinkninja/environment')
 const Account = require('./src/Account')
 const AccountSigner = require('./src/AccountSigner')
 const computeAccountAddress = require('./src/computeAccountAddress')
+const recoverSigner = require('./src/recoverSigner')
 
 class BrinkSDK {
 
@@ -50,6 +51,10 @@ class BrinkSDK {
       ownerAddress,
       accountDeploymentSalt
     )
+  }
+
+  recoverSigner ({ signature, typedDataHash }) {
+    return recoverSigner({ signature, typedDataHash })
   }
 }
 
