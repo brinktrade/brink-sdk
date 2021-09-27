@@ -11,19 +11,23 @@ npm install @brinkninja/sdk
 ## Setup
 
 ```
+const ethers = require('ethers)
 const brinkSDK = require('@brinkninja/sdk')
 
-// Instantiate with environment config: `local`, `dev`, `prod` (see [brink-environment](https://github.com/brinktrade/brink-environment) and an instance of [ethers.js](https://github.com/ethers-io/ethers.js/)
-const brink = brinkSDK({
-  environment: 'dev',
-  ethers
-})
+// Obtain a signer and a provider from the Ethers Library [link above]
+const ethersProvider = await ethers.getDefaultProvider(process.env.RPC_URLS)
+const ethersSigner = await new ethers.Wallet(process.env.ETH_PRIVATE_KEY)
+
+// Instantiate with environment config: `local`, `dev`, `prod` (see [brink-environment](https://github.com/brinktrade/brink-environment)
+const brink = brinkSDK('dev')
 
 // Get an Account instance for any account owner, to read account state and execute meta transactions for this account
-const account = brink.account(ownerAddress)
+// Requires: ownerAddress, provider
+// Optional: signer (If not provided, uses [provider.getSigner()](https://docs.ethers.io/v5/api/providers/jsonrpc-provider/#JsonRpcProvider-getSigner))
+const account = brink.account(ownerAddress, { provider: ethersProvider, signer: ethersSigner })
 
 // Get an AccountSigner instance to sign messages as the owner of an account. Takes an ethers.js [Signer](https://docs.ethers.io/v5/api/signer/#Signer)
-const accountSigner = brink.accountSigner(ethers)
+const accountSigner = brink.accountSigner(ethersSigner)
 ```
 
 ## Account
@@ -46,6 +50,22 @@ Returns true if the account has been deployed
 
 ```
 const deployed = await account.isDeployed()
+```
+
+#### nextBit()
+
+Returns the next valid bit of the account
+
+```
+const nextBit = await account.nextBit()
+````
+
+#### loadBitmap()
+
+Loads the bitmap
+
+```
+const bitmap = await account.loadBitmap()
 ```
 
 ### Transaction Methods
