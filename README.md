@@ -78,6 +78,12 @@ The Account instance exposes the [ethers.js write method analysis properties](ht
 const txData = await account.populateTransaction.sendLimitSwap(swapSignedMsg, toAddress, callData)
 ```
 
+And an example of getting a gas estimate is below:
+
+```
+const gasEstimate = await account.estimateGas.sendLimitSwap(swapSignedMsg, toAddress, callData)
+```
+
 All of these transactions (except for `deploy()`) will include the desired action after account deployment, if the account has not been deployed yet, using [DeployAndExecute.sol](https://github.com/brinktrade/brink-core/blob/2b2fda4bd5b3f91e31e8d736a60155755c2376f6/contracts/Batched/DeployAndExecute.sol). If the account is already deployed, the action will be executed directly on the account contract.
 
 #### sendLimitSwap(limitSwapSignedMessage, to, data)
@@ -179,12 +185,6 @@ Returns the address of the account
 ### signerAddress()
 
 Returns the address of the signer
-
-### signCancel(bitmapIndex, bit)
-
-Returns a signed `metaDelegatedCall` message that allows execution of a cancel.
-
-Verifier function: [CancelVerifier.cancel()](https://github.com/brinktrade/brink-verifiers/blob/4e2b607e7eefb3dc00dbc725bacedaeb28f647ed/contracts/Verifiers/CancelVerifier.sol)
 
 ### signEthTransfer(bitmapIndex, bit, recipient, amount, expiryBlock)
 
