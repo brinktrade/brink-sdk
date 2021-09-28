@@ -14,6 +14,14 @@ describe('AccountSigner', function () {
       this.accountWithEmits = LimitSwapVerifier.attach(this.account.address)
     })
 
+    it('Cancels a messsage by flipping the bit', async function () {
+      await this.account_ownerSigner.deploy()
+      expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.false
+      const signedCancel = await this.accountSigner.signCancel('0', '1')
+      await this.account_ownerSigner.delegateCall(this.cancelVerifier.address, signedCancel)
+      expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.true
+    })
+
     it('ethToToken swap (without account deployment)', async function () {
       await this.account.deploy()
       const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'

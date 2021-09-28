@@ -36,6 +36,19 @@ class AccountSigner {
     return addr
   }
 
+  async signCancel(bitmapIndex, bit) {
+    const call = {
+      functionName: 'cancel',
+      paramTypes: [
+        { name: 'bitmapIndex', type: 'uint256' },
+        { name: 'bit', type: 'uint256'}
+      ],
+      params: [bitmapIndex, bit]
+    }
+    const signedCall = encodeFunctionCall(call)
+    return signedCall
+  }
+
   async signEthTransfer(bitmapIndex, bit, recipient, amount, expiryBlock) {
     const call = {
       functionName: 'ethTransfer',

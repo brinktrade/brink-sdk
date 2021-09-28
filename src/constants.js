@@ -23,7 +23,7 @@ module.exports = {
     ETH: 'ETH',
     TOKEN: 'TOKEN',
   },
-
+  
   metaDelegateCallSignedParamTypes: [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes', calldata: true }
