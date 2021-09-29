@@ -1,5 +1,6 @@
 const { ethers } = require('hardhat')
 const chai = require('chai')
+const { randomHex } = require('web3-utils')
 const { constants, BN: ethersBN } = require('@brinkninja/utils')
 const { toBN: web3BN } = require('web3-utils')
 const { solidity } = require('ethereum-waffle')
@@ -8,6 +9,92 @@ chai.use(solidity)
 const { expect } = chai
 
 describe('AccountSigner', function () {
+  describe('Cancel Signing', function() {
+    it('Cancel (without account deployment)', async function () {
+      await this.account_ownerSigner.deploy()
+      expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.false
+      const signedCancel = await this.accountSigner.signCancel('0', '1')
+      await this.account_ownerSigner.cancel(signedCancel)
+      expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.true
+      const { bitmapIndex, bit } = await this.account_ownerSigner.nextBit()
+      expect(await this.account_ownerSigner.bitUsed(bitmapIndex, bit)).to.be.false
+    })
+
+    it('Cancel (with account deployment)', async function () {
+      expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.false
+      const signedCancel = await this.accountSigner.signCancel('0', '1')
+      await this.account_ownerSigner.cancel(signedCancel)
+      expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.true
+      const { bitmapIndex, bit } = await this.account_ownerSigner.nextBit()
+      expect(await this.account_ownerSigner.bitUsed(bitmapIndex, bit)).to.be.false
+    })
+  })
+
+  describe('Transfer Signing', function() {
+    beforeEach(async function () {
+      this.recipientAddress = randomHex(20)
+    })
+
+    it('transferEth (without account deployment)', async function () {
+      await this.account.deploy()
+      this.transferAmt = ethers.utils.parseEther('1.0')
+      await this.defaultSigner.sendTransaction({
+        to: this.account.address,
+        value: this.transferAmt
+      })
+
+      const signedEthTransfer = await this.accountSigner.signEthTransfer(
+        '0', '1', this.recipientAddress, this.transferAmt.toString()
+      )
+      
+      const tx = await this.account.transferEth(signedEthTransfer)
+      expect(tx).to.not.be.undefined
+      expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('1.0'))
+      expect(await this.account.bitUsed('0', '1')).to.be.true
+    })
+
+    it('transferEth (with account deployment)', async function () {
+      this.transferAmt = ethers.utils.parseEther('1.0')
+      await this.defaultSigner.sendTransaction({
+        to: this.account.address,
+        value: this.transferAmt
+      })
+
+      const signedEthTransfer = await this.accountSigner.signEthTransfer(
+        '0', '1', this.recipientAddress, this.transferAmt.toString()
+      )
+      
+      const tx = await this.account.transferEth(signedEthTransfer)
+      expect(tx).to.not.be.undefined
+      expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('1.0'))
+      expect(await this.account.bitUsed('0', '1')).to.be.true
+    })
+
+    it('transferToken (without account deployment)', async function () {
+      await this.account.deploy()
+
+      const signedTokenTransfer = await this.accountSigner.signTokenTransfer(
+        '0', '1', this.token.address, this.recipientAddress, '1000'
+      )
+      
+      const tx = await this.account.transferToken(signedTokenTransfer)
+      expect(tx).to.not.be.undefined
+      expect(await this.token.balanceOf(this.recipientAddress)).to.equal('1000')
+      expect(await this.account.bitUsed('0', '1')).to.be.true
+    })
+
+    it('transferToken (with account deployment)', async function () {
+      const signedTokenTransfer = await this.accountSigner.signTokenTransfer(
+        '0', '1', this.token.address, this.recipientAddress, '1000'
+      )
+      
+      const tx = await this.account.transferToken(signedTokenTransfer)
+      expect(tx).to.not.be.undefined
+      expect(await this.token.balanceOf(this.recipientAddress)).to.equal('1000')
+      expect(await this.account.bitUsed('0', '1')).to.be.true
+    })
+  })
+
   describe('Limit Swap Signing', function () {
     beforeEach(async function () {
       const LimitSwapVerifier = await ethers.getContractFactory("LimitSwapVerifierMock");

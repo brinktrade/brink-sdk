@@ -36,7 +36,24 @@ class AccountSigner {
     return addr
   }
 
-  async signEthTransfer(bitmapIndex, bit, recipient, amount, expiryBlock) {
+  async signCancel(bitmapIndex, bit) {
+    const call = {
+      functionName: 'cancel',
+      paramTypes: [
+        { name: 'bitmapIndex', type: 'uint256' },
+        { name: 'bit', type: 'uint256'}
+      ],
+      params: [bitmapIndex, bit]
+    }
+
+    const signedCall = await this.signMetaDelegateCall(
+      this._findContractAddress('cancelVerifier'), call
+    )
+
+    return signedCall
+  }
+
+  async signEthTransfer(bitmapIndex, bit, recipient, amount, expiryBlock=MAX_UINT256) {
     const call = {
       functionName: 'ethTransfer',
       paramTypes: [
@@ -55,7 +72,7 @@ class AccountSigner {
     return signedCall
   }
 
-  async signTokenTransfer(bitmapIndex, bit, tokenAddress, recipient, amount, expiryBlock) {
+  async signTokenTransfer(bitmapIndex, bit, tokenAddress, recipient, amount, expiryBlock=MAX_UINT256) {
     const call = {
       functionName: 'tokenTransfer',
       paramTypes: [
