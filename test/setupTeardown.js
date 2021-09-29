@@ -97,14 +97,14 @@ beforeEach(async function () {
   this.ownerAddress = this.ethersAccountSigner.address
 
   // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  this.account = brink.account(this.ownerAddress, {
-    provider: ethers.provider,
-    signer: this.defaultSigner
+  this.account = await brink.account({
+    ownerAddress: this.ownerAddress,
+    provider: ethers.provider
   })
 
   // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  this.account_ownerSigner = brink.account(this.ownerAddress, {
-    provider: ethers.provider,
+  this.account_ownerSigner = await brink.account({
+    ownerAddress: this.ownerAddress,
     signer: this.ethersAccountSigner
   })
 
@@ -112,7 +112,9 @@ beforeEach(async function () {
   this.proxyAccountContract = await MockAccount.attach(this.account.address)
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
-  this.accountSigner = brink.accountSigner(this.ethersAccountSigner)
+  this.accountSigner = await brink.account({
+    signer: this.ethersAccountSigner
+  })
 
   this.token = await this.deployer.deploy(
     'TestERC20',

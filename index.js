@@ -1,7 +1,6 @@
 const _ = require('lodash')
 const { loadEnvironment } = require('@brinkninja/environment')
 const Account = require('./src/Account')
-const AccountSigner = require('./src/AccountSigner')
 const computeAccountAddress = require('./src/computeAccountAddress')
 const recoverSigner = require('./src/recoverSigner')
 
@@ -19,25 +18,34 @@ class BrinkSDK {
     }
   }
 
-  account (ownerAddress, { provider, signer }) {
-    if (!provider) throw new Error(`no provider specified`)
+  async account ({ ownerAddress, provider, signer }) {
+    let accountTxSigner
+    let accountTxProvider
+    if (!provider && !signer) {
+      throw new Error(`no provider or signer specified`)
+    } else if (!provider) {
+      accountTxProvider = signer.provider
+      accountTxSigner = signer
+    } else if (!signer) {
+      accountTxSigner = provider.getSigner()
+      accountTxProvider = provider
+    } else {
+      accountTxSigner = signer
+      accountTxProvider = provider
+    }
 
-    const accountTxSigner = signer || provider.getSigner()
-    if (!accountTxSigner) throw new Error(`no signer specified`)
+    let accountOwnerAddress
+    if (!ownerAddress) {
+      accountOwnerAddress = await signer.getAddress()
+    } else {
+      accountOwnerAddress = ownerAddress
+    }
 
     return new Account({
-      ownerAddress,
+      ownerAddress: accountOwnerAddress,
       environment: this.environment,
-      provider,
+      provider: accountTxProvider,
       signer: accountTxSigner
-    })
-  }
-
-  accountSigner (accountOwnerSigner) {
-    if (!accountOwnerSigner) throw new Error(`no accountOwnerSigner specified`)
-    return new AccountSigner({
-      environment: this.environment,
-      signer: accountOwnerSigner
     })
   }
 
