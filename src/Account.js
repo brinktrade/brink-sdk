@@ -124,6 +124,16 @@ class Account {
       return { contract, contractName, functionName, params, paramTypes }
     })
 
+    _setupEthersWrappedTx('cancel', async (signedCancelMessage) => {
+      const toAddress = signedCancelMessage.signedParams[0].value
+      const signedData = signedCancelMessage.signedParams[1].value
+      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
+        'metaDelegateCall',
+        [toAddress, signedData, signedCancelMessage.signature, '0x']
+      )
+      return { contract, contractName, functionName, params, paramTypes }
+    })
+
     _setupEthersWrappedTx('deploy', async () => {
       if (await this.isDeployed()) {
         throw new Error(`Account contract already deployed`)

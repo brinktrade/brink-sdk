@@ -14,12 +14,23 @@ describe('AccountSigner', function () {
       this.accountWithEmits = LimitSwapVerifier.attach(this.account.address)
     })
 
-    it('Cancels a messsage by flipping the bit', async function () {
+    it('Cancels a messsage by flipping the bit (without account deployment)', async function () {
       await this.account_ownerSigner.deploy()
       expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.false
       const signedCancel = await this.accountSigner.signCancel('0', '1')
-      await this.account_ownerSigner.delegateCall(this.cancelVerifier.address, signedCancel)
+      await this.account_ownerSigner.cancel(signedCancel)
       expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.true
+      const { bitmapIndex, bit } = await this.account_ownerSigner.nextBit()
+      expect(await this.account_ownerSigner.bitUsed(bitmapIndex, bit)).to.be.false
+    })
+
+    it('Cancels a messsage by flipping the bit (with account deployment)', async function () {
+      expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.false
+      const signedCancel = await this.accountSigner.signCancel('0', '1')
+      await this.account_ownerSigner.cancel(signedCancel)
+      expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.true
+      const { bitmapIndex, bit } = await this.account_ownerSigner.nextBit()
+      expect(await this.account_ownerSigner.bitUsed(bitmapIndex, bit)).to.be.false
     })
 
     it('ethToToken swap (without account deployment)', async function () {

@@ -45,7 +45,11 @@ class AccountSigner {
       ],
       params: [bitmapIndex, bit]
     }
-    const signedCall = encodeFunctionCall(call)
+
+    const signedCall = await this.signMetaDelegateCall(
+      this._findContractAddress('cancelVerifier'), call
+    )
+
     return signedCall
   }
 
