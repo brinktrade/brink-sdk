@@ -53,7 +53,7 @@ class AccountSigner {
     return signedCall
   }
 
-  async signEthTransfer(bitmapIndex, bit, recipient, amount, expiryBlock) {
+  async signEthTransfer(bitmapIndex, bit, recipient, amount, expiryBlock=MAX_UINT256) {
     const call = {
       functionName: 'ethTransfer',
       paramTypes: [
@@ -72,7 +72,7 @@ class AccountSigner {
     return signedCall
   }
 
-  async signTokenTransfer(bitmapIndex, bit, tokenAddress, recipient, amount, expiryBlock) {
+  async signTokenTransfer(bitmapIndex, bit, tokenAddress, recipient, amount, expiryBlock=MAX_UINT256) {
     const call = {
       functionName: 'tokenTransfer',
       paramTypes: [

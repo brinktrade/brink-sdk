@@ -125,13 +125,15 @@ class Account {
     })
 
     _setupEthersWrappedTx('cancel', async (signedCancelMessage) => {
-      const toAddress = signedCancelMessage.signedParams[0].value
-      const signedData = signedCancelMessage.signedParams[1].value
-      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
-        'metaDelegateCall',
-        [toAddress, signedData, signedCancelMessage.signature, '0x']
-      )
-      return { contract, contractName, functionName, params, paramTypes }
+      return this._metaDelegateHelper(signedCancelMessage)
+    })
+
+    _setupEthersWrappedTx('transferEth', async (signedTransferEthMessage) => {
+      return this._metaDelegateHelper(signedTransferEthMessage)
+    })
+
+    _setupEthersWrappedTx('transferToken', async (signedTransferTokenMessage) => {
+      return this._metaDelegateHelper(signedTransferTokenMessage)
     })
 
     _setupEthersWrappedTx('deploy', async () => {
@@ -179,6 +181,16 @@ class Account {
       )
       return { contract, contractName, functionName, params, paramTypes }
     })
+  }
+
+  async _metaDelegateHelper (signedMessage) {
+    const toAddress = signedMessage.signedParams[0].value
+    const signedData = signedMessage.signedParams[1].value
+    const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
+      'metaDelegateCall',
+      [toAddress, signedData, signedMessage.signature, '0x']
+    )
+    return { contract, contractName, functionName, params, paramTypes }
   }
   
   async isDeployed () {
