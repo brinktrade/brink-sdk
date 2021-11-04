@@ -89,7 +89,8 @@ class Account {
     const _setupEthersWrappedTx = (fnName, fn) => {
       this[fnName] = (async function () {
         const { contract, functionName, params } = await fn.apply(this, arguments)
-        const tx = await contract[functionName].apply(contract, params)
+        const txOptions = arguments[fn.length] || {}
+        const tx = await contract[functionName].apply(contract, params, txOptions)
         return tx
       }).bind(this)
 
