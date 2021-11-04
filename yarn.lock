@@ -18,10 +18,10 @@
     "@openzeppelin/contracts" "3.4.1-solc-0.7-2"
     require-directory "^2.1.1"
 
-"@brinkninja/environment@^0.5.4":
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/@brinkninja/environment/-/environment-0.5.4.tgz#703306f1c4cc1d4300ea551ea40a9dfe49cb7d6d"
-  integrity sha512-KyxP72o8bbTLrqmHPv6xyPnV5kiA04hRmOOo97RI8w/mI/m+k9W0kJ0rqBDdtw6ATBB6Z9Z5nT+cqaFK1BQAoA==
+"@brinkninja/environment@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@brinkninja/environment/-/environment-0.7.1.tgz#d9b56e77b8364944f01e85f36f3be39a550461f8"
+  integrity sha512-lp4dMwNj0U5y/KKJ0WLIf7KDvC8BUUElsnEker6tx/kbWliO/hrRNgsKLr/k6bpEfZKuIMNEtqkfabK8F6Xirw==
 
 "@brinkninja/utils@^0.3.1":
   version "0.3.1"
