@@ -4,7 +4,7 @@ const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySalted
 const { CALL_EXECUTOR } = require('@brinkninja/verifiers/constants')
 const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
 const { MAX_UINT256 } = constants
-const brinkSDK = require('../index')
+const brink = require('../index')
 const randomSigner = require('./helpers/randomSigner')
 
 beforeEach(async function () {
@@ -18,8 +18,6 @@ beforeEach(async function () {
 
   const signers = await ethers.getSigners()
   this.defaultSigner = signers[0]
-
-  const brink = brinkSDK()
 
   this.ethersAccountSigner = await randomSigner()
   this.ownerAddress = this.ethersAccountSigner.address
