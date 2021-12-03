@@ -1,7 +1,12 @@
 const _ = require('lodash')
 const { signEIP712, constants } = require('@brinkninja/utils')
 const { MAX_UINT256 } = constants
-const computeAccountAddress = require('./computeAccountAddress')
+const {
+  LIMIT_SWAP_VERIFIER,
+  TRANSFER_VERIFIER,
+  CANCEL_VERIFIER
+} = require('@brinkninja/verifiers/constants')
+const proxyAccountFromOwner = require('./proxyAccountFromOwner')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const {
   verifyTokenToTokenSwap,
@@ -14,20 +19,14 @@ const {
 
 class AccountSigner {
 
-  constructor ({ environment, signer }) {
-    this._environment = environment
+  constructor ({ signer, chainId }) {
     this._signer = signer
-    this._chainId = environment.chainId
-    this._accountVersion = environment.accountVersion
+    this._chainId = chainId
+    this._accountVersion = '1'
   }
 
   async accountAddress () {
-    const addr = computeAccountAddress(
-      this._findContractAddress('singletonFactory'),
-      this._findContractAddress('account'),
-      await this.signerAddress(),
-      this._environment.accountDeploymentSalt
-    )
+    const addr = proxyAccountFromOwner(await this.signerAddress())
     return addr
   }
 
@@ -46,10 +45,7 @@ class AccountSigner {
       params: [bitmapIndex, bit]
     }
 
-    const signedCall = await this.signMetaDelegateCall(
-      this._findContractAddress('cancelVerifier'), call
-    )
-
+    const signedCall = await this.signMetaDelegateCall(CANCEL_VERIFIER, call)
     return signedCall
   }
 
@@ -66,9 +62,7 @@ class AccountSigner {
       params: [bitmapIndex, bit, recipient, amount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaDelegateCall(
-      this._findContractAddress('transferVerifier'), call
-    )
+    const signedCall = await this.signMetaDelegateCall(TRANSFER_VERIFIER, call)
     return signedCall
   }
 
@@ -86,9 +80,7 @@ class AccountSigner {
       params: [bitmapIndex, bit, tokenAddress, recipient, amount, expiryBlock]
     }
 
-    const signedCall = await this.signMetaDelegateCall(
-      this._findContractAddress('transferVerifier'), call
-    )
+    const signedCall = await this.signMetaDelegateCall(TRANSFER_VERIFIER, call)
     return signedCall
   }
 
@@ -112,9 +104,7 @@ class AccountSigner {
       ]
     }
 
-    const signedCall = await this.signMetaDelegateCall(
-      this._findContractAddress('limitSwapVerifier'), call
-    )
+    const signedCall = await this.signMetaDelegateCall(LIMIT_SWAP_VERIFIER, call)
     return signedCall
   }
 
@@ -138,9 +128,7 @@ class AccountSigner {
       ]
     }
 
-    const signedCall = await this.signMetaDelegateCall(
-      this._findContractAddress('limitSwapVerifier'), call
-    )
+    const signedCall = await this.signMetaDelegateCall(LIMIT_SWAP_VERIFIER, call)
     return signedCall
   }
 
@@ -165,9 +153,7 @@ class AccountSigner {
       ]
     }
 
-    const signedCall = await this.signMetaDelegateCall(
-      this._findContractAddress('limitSwapVerifier'), call
-    )
+    const signedCall = await this.signMetaDelegateCall(LIMIT_SWAP_VERIFIER, call)
     return signedCall
   }
 
@@ -214,10 +200,6 @@ class AccountSigner {
       functionName,
       signedParams: parseParams(paramTypes, params)
     }
-  }
-
-  _findContractAddress (contractName) {
-    return _.find(this._environment.deployments, { name: contractName }).address
   }
 }
 

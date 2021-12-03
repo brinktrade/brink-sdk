@@ -1,24 +1,11 @@
 const _ = require('lodash')
-const { loadEnvironment } = require('@brinkninja/environment')
 const Account = require('./src/Account')
 const AccountSigner = require('./src/AccountSigner')
-const computeAccountAddress = require('./src/computeAccountAddress')
+const proxyAccountFromOwner = require('./src/proxyAccountFromOwner')
 const recoverSigner = require('./src/recoverSigner')
+const getChainId = require('./src/getChainId')
 
 class BrinkSDK {
-
-  // environment: @brinkninja/environment network string or configuration object
-  // ethers: ethers.js instance
-  // signer: ethers.js signer (options, uses provider.signer by default)
-  constructor (environment) {
-    if (!environment) throw new Error(`no environment specified`)
-    if (typeof environment == 'string') {
-      this.environment = loadEnvironment(environment)
-    } else {
-      this.environment = environment
-    }
-  }
-
   account (ownerAddress, { provider, signer }) {
     if (!provider) throw new Error(`no provider specified`)
 
@@ -27,30 +14,21 @@ class BrinkSDK {
 
     return new Account({
       ownerAddress,
-      environment: this.environment,
       provider,
       signer: accountTxSigner
     })
   }
 
-  accountSigner (accountOwnerSigner) {
+  accountSigner (accountOwnerSigner, network) {
     if (!accountOwnerSigner) throw new Error(`no accountOwnerSigner specified`)
     return new AccountSigner({
-      environment: this.environment,
-      signer: accountOwnerSigner
+      signer: accountOwnerSigner,
+      chainId: getChainId(network)
     })
   }
 
   computeAccountAddress (ownerAddress) {
-    const deployerAddress = _.find(this.environment.deployments, { name: 'singletonFactory' }).address
-    const implementationAddress = _.find(this.environment.deployments, { name: 'account' }).address
-    const accountDeploymentSalt = this.environment.accountDeploymentSalt
-    return computeAccountAddress(
-      deployerAddress,
-      implementationAddress,
-      ownerAddress,
-      accountDeploymentSalt
-    )
+    return proxyAccountFromOwner(ownerAddress)
   }
 
   recoverSigner ({ signature, typedDataHash }) {
@@ -58,6 +36,6 @@ class BrinkSDK {
   }
 }
 
-module.exports = function (envConf) {
-  return new BrinkSDK(envConf)
+module.exports = function () {
+  return new BrinkSDK()
 }

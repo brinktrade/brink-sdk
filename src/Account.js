@@ -1,11 +1,10 @@
 const _ = require('lodash')
 const { ethers } = require('ethers')
-const { padLeft } = require('web3-utils')
+const { toChecksumAddress, padLeft } = require('web3-utils')
 const BigNumber = require('bignumber.js')
-const computeAccountBytecode = require('./computeAccountBytecode')
-const computeAccountAddress = require('./computeAccountAddress')
+const { DEPLOY_AND_CALL, ACCOUNT_FACTORY } = require('@brinkninja/core/constants')
+const proxyAccountFromOwner = require('./proxyAccountFromOwner')
 const encodeFunctionCall = require('./encodeFunctionCall')
-const { ZERO_ADDRESS } = require('./constants')
 const bitmapPointer = require('./utils/bitmapPointer')
 const BN = ethers.BigNumber.from
 
@@ -32,10 +31,9 @@ const _paramTypesMap = {
     { name: 'signature', type: 'bytes' },
     { name: 'unsignedData', type: 'bytes'}
   ],
-  'deployAndExecute': [
-    { name: 'initCode', type: 'bytes' },
-    { name: 'salt', type: 'bytes32' },
-    { name: 'execData', type: 'bytes' }
+  'deployAndCall': [
+    { name: 'owner', type: 'address' },
+    { name: 'callData', type: 'bytes' }
   ],
   'delegateCall': [
     { name: 'to', type: 'address' },
@@ -50,36 +48,22 @@ const _paramTypesMap = {
 
 const _abiMap = {
   Account: require('./contracts/Account.abi'),
-  IDeployer: require('./contracts/IDeployer.abi'),
-  DeployAndExecute: require('./contracts/DeployAndExecute.abi'),
+  AccountFactory: require('./contracts/AccountFactory.abi'),
+  DeployAndCall: require('./contracts/DeployAndCall.abi'),
   ERC20: require('./contracts/ERC20.abi')
 }
 
 class Account {
   constructor ({
     ownerAddress,
-    environment,
     provider,
     signer
   }) {
-    this._environment = environment
-    this._implementationAddress = _.find(this._environment.deployments, { name: 'account' }).address
     this._ownerAddress = ownerAddress
-    this._accountVersion = this._environment.accountVersion
-    this._accountDeploymentSalt = this._environment.accountDeploymentSalt
     this._provider = provider
     this._signer = signer
-    this._deployerAddress = _.find(this._environment.deployments, { name: 'singletonFactory' }).address
-    this._deployAndExecuteAddress = _.find(this._environment.deployments, { name: 'deployAndExecute' }).address
 
-    this.address = computeAccountAddress(
-      this._deployerAddress,
-      this._implementationAddress,
-      this._ownerAddress,
-      this._accountDeploymentSalt
-    )
-
-    this._accountImpl = this._ethersContract('Account', this._implementationAddress)
+    this.address = proxyAccountFromOwner(this._ownerAddress)
 
     this.estimateGas = {}
     this.populateTransaction = {}
@@ -89,8 +73,17 @@ class Account {
     const _setupEthersWrappedTx = (fnName, fn) => {
       this[fnName] = (async function () {
         const { contract, functionName, params } = await fn.apply(this, arguments)
-        const txOptions = arguments[fn.length] || {}
-        const tx = await contract[functionName].apply(contract, params, txOptions)
+        let txOptions = arguments[fn.length] || {}
+
+        if (!txOptions.gasLimit && functionName == 'deployAccount') {
+          // AccountFactory.deployAccount should use 0x010545 (66885) gas. estimateGas call returns 0x010545,
+          // tx succeeds, but create2 does not execute. Increasing the gasLimit slightly fixes this. Oddly, the actual
+          // gas used is still 66885. My guess is this is a bug in the way gas is estimated for create2 by hardhat or
+          // ethers.js
+          txOptions.gasLimit = 70000
+        }
+
+        const tx = await contract[functionName].apply(contract, [...params, txOptions])
         return tx
       }).bind(this)
 
@@ -141,17 +134,13 @@ class Account {
       if (await this.isDeployed()) {
         throw new Error(`Account contract already deployed`)
       }
-      const bytecode = this._getAccountBytecode()
-      const deployer = this._getDeployer()
+      const accountFactory = this.accountFactoryContract()
       return {
-        contract: deployer,
-        contractName: 'IDeployer',
-        functionName: 'deploy',
-        params: [bytecode, this._accountDeploymentSalt],
-        paramTypes: [
-          { name: 'initCode', type: 'bytes' },
-          { name: 'salt', type: 'bytes32' }
-        ]
+        contract: accountFactory,
+        contractName: 'AccountFactory',
+        functionName: 'deployAccount',
+        params: [this._ownerAddress],
+        paramTypes: [ { name: 'owner', type: 'address' } ]
       }
     })
 
@@ -195,7 +184,6 @@ class Account {
   }
   
   async isDeployed () {
-    if (!this.address) { throw new Error('Account not loaded') }
     const code = await this._provider.getCode(this.address)
     return code !== '0x'
   }
@@ -205,7 +193,8 @@ class Account {
       functionCall: constructedFunctionCall, 
       numParams 
     } = this.constructLimitSwapFunctionCall(signedSwap, [to, data])
-    const { signedData, unsignedData } = splitCallData(encodeFunctionCall(constructedFunctionCall), numParams)
+    const callData = encodeFunctionCall(constructedFunctionCall)
+    const { signedData, unsignedData } = splitCallData(callData, numParams)
     return { signedData, unsignedData }
   }
 
@@ -242,13 +231,12 @@ class Account {
     let bitmapIndex = BN(0)
     let bit = BN(1)
     if (await this.isDeployed()) {
-      const account = this.accountContract()
       let curBitmap, curBitmapBinStr
       let curBitmapIndex = -1
       let nextBitIndex = -1
       while(nextBitIndex < 0) {
         curBitmapIndex++
-        curBitmap = await account.storageLoad(bitmapPointer(curBitmapIndex))
+        curBitmap = await this.storageLoad(bitmapPointer(curBitmapIndex))
         curBitmapBinStr = bnToBinaryString(curBitmap)
         for (let i = 0; i < curBitmapBinStr.length; i++) {
           if (curBitmapBinStr.charAt(i) == '0') {
@@ -265,8 +253,7 @@ class Account {
 
   async loadBitmap (bitmapIndex) {
     if (await this.isDeployed()) {
-      const account = this.accountContract()
-      const bmp = await account.storageLoad(bitmapPointer(bitmapIndex))
+      const bmp = await this.storageLoad(bitmapPointer(bitmapIndex))
       // using bignumber.js here for the base-2 support
       return BN(bmp)
     } else {
@@ -275,13 +262,11 @@ class Account {
   }
 
   async bitUsed (bitmapIndex, bit) {
-    const account = this.accountContract()
-
     if (!await this.isDeployed()) {
       return false
     }
 
-    const bitmap = await account.storageLoad(bitmapPointer(bitmapIndex))
+    const bitmap = await this.storageLoad(bitmapPointer(bitmapIndex))
     const bmpBinStr = bnToBinaryString(bitmap)
     const bitBinStr = bnToBinaryString(bit)
 
@@ -297,6 +282,15 @@ class Account {
       }
     }
     return false
+  }
+
+  async storageLoad (pos) {
+    if (!await this.isDeployed()) {
+      return '0x'
+    } else {
+      const val = await this._provider.getStorageAt(this.address, pos)
+      return val
+    }
   }
 
   async _sendAccountTransaction (functionName, params = []) {
@@ -320,7 +314,7 @@ class Account {
     if (await this.isDeployed()) {
       // returns direct tx to account
       return {
-        contract: this.accountContract(),
+        contract: this.proxyAccountContract(),
         contractName: 'Account',
         functionName,
         paramTypes: _paramTypesMap[functionName],
@@ -330,16 +324,15 @@ class Account {
       if (isDirect) {
         throw new Error(`Function ${functionName} cannot be called before Account deploy`)
       }
-      // returns batched deployAndExecute tx
+      // returns batched deployAndCall tx
 
       return {
-        contract: this.deployAndExecuteContract(),
-        contractName: 'DeployAndExecute',
-        functionName: 'deployAndExecute',
-        paramTypes: _paramTypesMap['deployAndExecute'],
+        contract: this.deployAndCallContract(),
+        contractName: 'DeployAndCall',
+        functionName: 'deployAndCall',
+        paramTypes: _paramTypesMap['deployAndCall'],
         params: [
-          this._getAccountBytecode(),
-          this._accountDeploymentSalt,
+          this._ownerAddress,
           encodeFunctionCall({
             functionName,
             paramTypes: _paramTypesMap[functionName],
@@ -350,12 +343,16 @@ class Account {
     }
   }
 
-  accountContract() {
+  proxyAccountContract() {
     return this._ethersContract('Account', this.address)
   }
 
-  deployAndExecuteContract () {
-    return this._ethersContract('DeployAndExecute', this._deployAndExecuteAddress)
+  accountFactoryContract() {
+    return this._ethersContract('AccountFactory', ACCOUNT_FACTORY)
+  }
+
+  deployAndCallContract () {
+    return this._ethersContract('DeployAndCall', DEPLOY_AND_CALL)
   }
 
   _ethersContract(contractName, contractAddress) {
@@ -364,46 +361,8 @@ class Account {
     )
   }
 
-  async isProxyOwner (address) {
-    if (!await this.isDeployed()) {
-      if (!this._initOwnerAddress) {
-        throw new Error(`Error: Account.isProxyOwner(): Account not loaded`)
-      }
-      return address.toLowerCase() == this._initOwnerAddress.toLowerCase()
-    } else {
-      const account = this.accountContract()
-      const proxyOwnerAddress = await account.proxyOwner()
-      let isProxyOwner = false
-      if (proxyOwnerAddress === address) {
-        isProxyOwner = true
-      }
-      return isProxyOwner
-    }
-  }
-
-  async implementation () {
-    if (!await this.isDeployed()) return ZERO_ADDRESS
-    const account = this.accountContract()
-    const implementation = await account.implementation()
-    return implementation.toLowerCase()
-  }
-
-  _getDeployer () {
-    if (!this._deployer) {
-      if (!this._deployerAddress) {
-        throw new Error('Account: deployerAddress not found')
-      }
-      this._deployer = this._ethersContract('IDeployer', this._deployerAddress)
-    }
-    return this._deployer
-  }
-
-  _getAccountBytecode () {
-    const bytecode = computeAccountBytecode(
-      this._implementationAddress, this._ownerAddress
-    )
-
-    return bytecode
+  isProxyOwner (address) {
+    return toChecksumAddress(address) == toChecksumAddress(this._ownerAddress)
   }
 }
 
