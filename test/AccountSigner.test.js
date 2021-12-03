@@ -1,10 +1,10 @@
 const { ethers } = require('hardhat')
 const chai = require('chai')
 const { randomHex } = require('web3-utils')
-const { constants, BN: ethersBN } = require('@brinkninja/utils')
+const { BN: ethersBN } = require('@brinkninja/utils')
 const { toBN: web3BN } = require('web3-utils')
 const { solidity } = require('ethereum-waffle')
-const { MAX_UINT256 } = constants
+const BN = ethers.BigNumber.from
 chai.use(solidity)
 const { expect } = chai
 
@@ -97,76 +97,103 @@ describe('AccountSigner', function () {
 
   describe('Limit Swap Signing', function () {
     beforeEach(async function () {
-      const LimitSwapVerifier = await ethers.getContractFactory("LimitSwapVerifierMock");
-      this.accountWithEmits = LimitSwapVerifier.attach(this.account.address)
+      this.fundAccount = async () => {
+        await this.defaultSigner.sendTransaction({
+          to: this.account.address,
+          value: ethers.utils.parseEther('1.0')
+        })
+      }
+  
+      this.fulfillTokenOutData = (await this.testFulfillSwap.populateTransaction.fulfillTokenOutSwap(
+        this.token.address, '10', this.account.address
+      )).data
+  
+      this.fulfillToken2OutData = (await this.testFulfillSwap.populateTransaction.fulfillTokenOutSwap(
+        this.token2.address, '10', this.account.address
+      )).data
+  
+      this.fulfillEthOutData = (await this.testFulfillSwap.populateTransaction.fulfillEthOutSwap(
+        '10', this.account.address
+      )).data
     })
 
     it('ethToToken swap (without account deployment)', async function () {
-      await this.account.deploy()
-      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
+      await this.fundAccount()
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
         '0', '1', this.token.address, '10', '10'
       )
-      await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
-        .to.emit(this.accountWithEmits, 'EthToToken')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
+      const acctBal0 = await this.token.balanceOf(this.account.address)
+      await this.account.sendLimitSwap(
+        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
+      )
+      const acctBal1 = await this.token.balanceOf(this.account.address)
+      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
     })
 
     it('ethToToken swap (with account deployment)', async function () {
-      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
+      await this.fundAccount()
+      await this.account.deploy()
       const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
         '0', '1', this.token.address, '10', '10'
       )
-
-      await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
-        .to.emit(this.accountWithEmits, 'EthToToken')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
+      const acctBal0 = await this.token.balanceOf(this.account.address)
+      await this.account.sendLimitSwap(
+        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
+      )
+      const acctBal1 = await this.token.balanceOf(this.account.address)
+      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
     })
 
     it('tokenToEth swap (without account deployment)', async function () {
-      await this.account.deploy()
-      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
-      const signedEthToTokenSwap = await this.accountSigner.signTokenToEthSwap(
+      const signedTokenToEthSwap = await this.accountSigner.signTokenToEthSwap(
         '0', '1', this.token.address, '10', '10'
       )
-
-      await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
-        .to.emit(this.accountWithEmits, 'TokenToEth')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
+      const acctBal0 = await ethers.provider.getBalance(this.account.address)
+      await this.account.sendLimitSwap(
+        signedTokenToEthSwap, this.testFulfillSwap.address, this.fulfillEthOutData
+      )
+      const acctBal1 = await ethers.provider.getBalance(this.account.address)
+      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
     })
 
     it('tokenToEth swap (with account deployment)', async function () {
-      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
-      const signedEthToTokenSwap = await this.accountSigner.signTokenToEthSwap(
+      await this.account.deploy()
+      const signedTokenToEthSwap = await this.accountSigner.signTokenToEthSwap(
         '0', '1', this.token.address, '10', '10'
       )
-
-      await expect(this.account.sendLimitSwap(signedEthToTokenSwap, randomAddress, '0x0123'))
-        .to.emit(this.accountWithEmits, 'TokenToEth')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
+      const acctBal0 = await ethers.provider.getBalance(this.account.address)
+      await this.account.sendLimitSwap(
+        signedTokenToEthSwap, this.testFulfillSwap.address, this.fulfillEthOutData
+      )
+      const acctBal1 = await ethers.provider.getBalance(this.account.address)
+      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
     })
 
     it('tokenToToken swap (without account deployment)', async function () {
-      await this.account.deploy()
-      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
+      await this.fundAccount()
       const signedTokenToTokenSwap = await this.accountSigner.signTokenToTokenSwap(
-        '0', '1', this.token.address, this.token.address, '10', '10', MAX_UINT256
+        '0', '1', this.token.address, this.token2.address, '5', '10'
       )
-
-      await expect(this.account.sendLimitSwap(signedTokenToTokenSwap, randomAddress, '0x0123'))
-        .to.emit(this.accountWithEmits, 'TokenToToken')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
+      const acctBal0 = await this.token2.balanceOf(this.account.address)
+      await this.account.sendLimitSwap(
+        signedTokenToTokenSwap, this.testFulfillSwap.address, this.fulfillToken2OutData
+      )
+      const acctBal1 = await this.token2.balanceOf(this.account.address)
+      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
     })
 
     it('tokenToToken swap (with account deployment)', async function () {
-      const randomAddress = '0x13be228b8fc66ef382f0615f385b50710313a188'
+      await this.fundAccount()
+      await this.account.deploy()
       const signedTokenToTokenSwap = await this.accountSigner.signTokenToTokenSwap(
-        '0', '1', this.token.address, this.token.address, '10', '10', MAX_UINT256
+        '0', '1', this.token.address, this.token2.address, '5', '10'
       )
-
-      await expect(this.account.sendLimitSwap(signedTokenToTokenSwap, randomAddress, '0x0123'))
-        .to.emit(this.accountWithEmits, 'TokenToToken')
-        .withArgs('0', '1', ethers.utils.getAddress(this.token.address), ethers.utils.getAddress(this.token.address), '10', '10', MAX_UINT256, ethers.utils.getAddress(randomAddress), '0x0123')
+      const acctBal0 = await this.token2.balanceOf(this.account.address)
+      await this.account.sendLimitSwap(
+        signedTokenToTokenSwap, this.testFulfillSwap.address, this.fulfillToken2OutData
+      )
+      const acctBal1 = await this.token2.balanceOf(this.account.address)
+      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
     })
 
     describe('when given BN values', function () {

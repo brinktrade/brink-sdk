@@ -2,26 +2,10 @@
 # yarn lockfile v1
 
 
-"@brinkninja/core@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@brinkninja/core/-/core-0.4.0.tgz#8ae41c8563d4cc4b858dd8507cbdd6f905af865f"
-  integrity sha512-gWLM8MhQMlDS8hSGUl3Qq92S8cTNtjhcn04bL8B2HmTF8cez39TMc55OssNu8rGkGBNvKiDA9Y4BWwGz8Cpl8Q==
-  dependencies:
-    "@openzeppelin/contracts" "3.4.1-solc-0.7-2"
-    require-directory "^2.1.1"
-
-"@brinkninja/core@^1.0.0-beta.0":
-  version "1.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@brinkninja/core/-/core-1.0.0-beta.0.tgz#1e72b3bcc1532083f972a0b5e0d711e2e6eed8d6"
-  integrity sha512-yIGPSi3z37FBws/XdXLMFp9JZbSnglsEteMlx/ftNyAr3pZigdHzJ++J+2PVMPvywD4PHEy6S+pfVe5grD22HQ==
-  dependencies:
-    "@openzeppelin/contracts" "3.4.1-solc-0.7-2"
-    require-directory "^2.1.1"
-
-"@brinkninja/environment@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@brinkninja/environment/-/environment-0.7.1.tgz#d9b56e77b8364944f01e85f36f3be39a550461f8"
-  integrity sha512-lp4dMwNj0U5y/KKJ0WLIf7KDvC8BUUElsnEker6tx/kbWliO/hrRNgsKLr/k6bpEfZKuIMNEtqkfabK8F6Xirw==
+"@brinkninja/core@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@brinkninja/core/-/core-1.0.0-rc.5.tgz#71d2b23d2f764725567660ce340b610533405dc1"
+  integrity sha512-G2y3PG3E3HrWCFRKbQfyQ65GIr45G8X+ChRSem8CniZoiAKzxkMYpVsY6z9Y9c86eRXKmjyk4OiD3yRrNDT1sA==
 
 "@brinkninja/utils@^0.3.1":
   version "0.3.1"
@@ -36,12 +20,10 @@
     web3-eth-abi "^1.2.7"
     web3-utils "^1.3.6"
 
-"@brinkninja/verifiers@^1.0.0-beta.0":
-  version "1.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@brinkninja/verifiers/-/verifiers-1.0.0-beta.0.tgz#55ab9e0c76486f1ebbdc76d603607adba9496030"
-  integrity sha512-bzzrE7cXrtsQsijysePFZQSUjIJm0Dnmglsnh6hFeM4vHEZ3a3IW0rggBvd2bPRgO6HiYl77+hwd4Z8z1C74Zw==
-  dependencies:
-    "@brinkninja/core" "^0.4.0"
+"@brinkninja/verifiers@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@brinkninja/verifiers/-/verifiers-1.0.0-rc.5.tgz#e8ccf6ab9c89501f80c1e12348578fe28afefd94"
+  integrity sha512-d7mq6L8wH7RzziONTp7zJYhdjAWPwAhWkVdkfKazSPwEsjePLCDtn+hLo8K8MkyT7ipHUDwc/zs4Luo7kTVpLg==
 
 "@ensdomains/ens@^0.4.4":
   version "0.4.5"
@@ -623,10 +605,10 @@
     "@ethersproject/properties" "^5.4.0"
     "@ethersproject/strings" "^5.4.0"
 
-"@openzeppelin/contracts@3.4.1-solc-0.7-2":
-  version "3.4.1-solc-0.7-2"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-3.4.1-solc-0.7-2.tgz#371c67ebffe50f551c3146a9eec5fe6ffe862e92"
-  integrity sha512-tAG9LWg8+M2CMu7hIsqHPaTyG4uDzjr6mhvH96LvOpLZZj6tgzTluBt+LsCf1/QaYrlis6pITvpIaIhE+iZB+Q==
+"@openzeppelin/contracts@4.3.3":
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.3.3.tgz#ff6ee919fc2a1abaf72b22814bfb72ed129ec137"
+  integrity sha512-tDBopO1c98Yk7Cv/PZlHqrvtVjlgK5R4J6jxLwoO7qxK4xqOiZG+zSkIvGFpPZ0ikc3QOED3plgdqjgNTnBc7g==
 
 "@resolver-engine/core@^0.3.3":
   version "0.3.3"

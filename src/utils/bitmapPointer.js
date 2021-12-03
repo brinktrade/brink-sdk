@@ -1,8 +1,7 @@
+const { ethers } = require('ethers')
 const { soliditySha3 } = require('web3-utils')
+const BN = ethers.BigNumber.from
 
-const bitmapPointer = bitmapIndex => soliditySha3(
-  { t: 'string', v: 'bmp' },
-  { t: 'uint256', v: bitmapIndex.toString() }
-)
+const bitmapPointer = bitmapIndex => BN(soliditySha3('bmp')).add(BN(bitmapIndex.toString()))
 
 module.exports = bitmapPointer

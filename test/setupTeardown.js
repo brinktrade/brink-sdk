@@ -1,99 +1,27 @@
 const { ethers } = require('hardhat')
-const { randomHex } = require('web3-utils')
-const { chainId } = require('@brinkninja/environment/config/network.config.local1.json')
 const tokens = require('@brinkninja/environment/config/tokens.local1.json')
+const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
+const { CALL_EXECUTOR } = require('@brinkninja/verifiers/constants')
 const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
 const { MAX_UINT256 } = constants
-const Deployer = require('./helpers/Deployer')
 const brinkSDK = require('../index')
+const randomSigner = require('./helpers/randomSigner')
 
 beforeEach(async function () {
-  const environment = {}
-  const deployments = []
-
-  // Singleton Factory
-  const SingletonFactory = await ethers.getContractFactory('SingletonFactory')
-  this.singletonFactory = await SingletonFactory.deploy()
-  const singletonFactoryItem = {
-    name: 'singletonFactory',
-    contract: 'SingletonFactory',
-    address: this.singletonFactory.address
-  }
-
-  // Create deployer
-  this.deployer = new Deployer(this.singletonFactory)
-
-  // Account contract (uses MockAccount for test state overriding fns)
-  this.accountContract = await this.deployer.deploy(
-    'MockAccount', ['uint256'], [chainId]
-  )
-  const accountContractItem = {
-    name: 'account',
-    contract: 'Account',
-    address: this.accountContract.address
-  }
-
-  // Deploy and execute
-  this.deployAndExecute = await this.deployer.deploy(
-    'DeployAndExecute', 
-    ['address', 'address'], 
-    [this.singletonFactory.address, this.accountContract.address]
-  )
-  const deployAndExecuteItem = {
-    name: 'deployAndExecute',
-    contract: 'DeployAndExecute',
-    address: this.deployAndExecute.address
-  }
-
-  // Transfer Verifier
-  const TransferVerifier = await ethers.getContractFactory('TransferVerifier');
-  this.transferVerifier = await TransferVerifier.deploy()
-  const transferVerifierItem = {
-    name: 'transferVerifier',
-    contract: 'TransferVerifier',
-    address: this.transferVerifier.address
-  }
-
-  // Limit Swap Verifier
-  const LimitSwapVerifier = await ethers.getContractFactory('LimitSwapVerifierMock');
-  this.limitSwapVerifier = await LimitSwapVerifier.deploy()
-  const limitSwapVerifierItem = {
-    name: 'limitSwapVerifier',
-    contract: 'LimitSwapVerifier',
-    address: this.limitSwapVerifier.address
-  }
-
-  // Cancel Verifier
-  const CancelVerifier = await ethers.getContractFactory('CancelVerifier');
-  this.cancelVerifier = await CancelVerifier.deploy()
-  const cancelVerifierItem = {
-    name: 'cancelVerifier',
-    contract: 'CancelVerifier',
-    address: this.cancelVerifier.address
-  }
-
-  deployments.push(
-    singletonFactoryItem,
-    accountContractItem,
-    deployAndExecuteItem,
-    transferVerifierItem,
-    limitSwapVerifierItem,
-    cancelVerifierItem
-  )
-
-  environment.chainId = chainId
-  environment.deployments = deployments
-  environment.accountDeploymentSalt = randomHex(32)
-  environment.accountVersion = '1'
-  this.accountSalt = environment.accountDeploymentSalt
-  this.chainId = chainId
+  this.accountContract = await deploySaltedContract('Account')
+  this.accountFactory = await deploySaltedContract('AccountFactory')
+  this.deployAndCall = await deploySaltedContract('DeployAndCall')
+  this.callExecutor = await deploySaltedContract('CallExecutor')
+  this.limitSwapVerifier = await deploySaltedContract('LimitSwapVerifier', ['address'], [CALL_EXECUTOR])
+  this.transferVerifier = await deploySaltedContract('TransferVerifier')
+  this.cancelVerifier = await deploySaltedContract('CancelVerifier')
 
   const signers = await ethers.getSigners()
   this.defaultSigner = signers[0]
-  this.ethersAccountSigner = signers[1]
 
-  const brink = brinkSDK(environment)
+  const brink = brinkSDK()
 
+  this.ethersAccountSigner = await randomSigner()
   this.ownerAddress = this.ethersAccountSigner.address
 
   // account uses ethers signer 0 (not the account owner, it's acting as an executor)
@@ -108,18 +36,38 @@ beforeEach(async function () {
     signer: this.ethersAccountSigner
   })
 
-  const MockAccount = await ethers.getContractFactory('MockAccount')
-  this.proxyAccountContract = await MockAccount.attach(this.account.address)
+  const Account = await ethers.getContractFactory('Account')
+  this.proxyAccountContract = await Account.attach(this.account.address)
+
+  const MockAccountBits = await ethers.getContractFactory('MockAccountBits')
+  this.mockAccountBits = await MockAccountBits.deploy()
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
-  this.accountSigner = brink.accountSigner(this.ethersAccountSigner)
+  this.accountSigner = brink.accountSigner(this.ethersAccountSigner, 'hardhat')
 
-  this.token = await this.deployer.deploy(
+  this.token = await deploySaltedContract(
     'TestERC20',
     ['string', 'string', 'uint8'],
-    [tokens[0].name, tokens[0].symbol, tokens[0].decimals]
+    ['TestToken', 'TKN', 18]
   )
-  await this.token.mint(this.account.address, BN(10).pow(9).mul(BN(10).pow(tokens[0].decimals)))
+  const tknDefaultBal = BN(10).pow(9).mul(BN(10).pow(18))
+  await this.token.mint(this.account.address, tknDefaultBal)
+
+  this.token2 = await deploySaltedContract(
+    'TestERC20',
+    ['string', 'string', 'uint8'],
+    ['TestToken_2', 'TKN2', 18]
+  )
+  await this.token2.mint(this.account.address, tknDefaultBal)
+
+  // TestFulfillSwap is like a mock AMM, fill it with token and ETH to fulfill swaps
+  this.testFulfillSwap = await deploySaltedContract('TestFulfillSwap')
+  await this.token.mint(this.testFulfillSwap.address, tknDefaultBal)
+  await this.token2.mint(this.testFulfillSwap.address, tknDefaultBal)
+  await this.defaultSigner.sendTransaction({
+    to: this.testFulfillSwap.address,
+    value: ethers.BigNumber.from('10000000000000000000000000')
+  })
 
   this.encodeEthTransfer = encodeEthTransfer
   this.encodeTokenTransfer = encodeTokenTransfer
