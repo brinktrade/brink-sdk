@@ -74,15 +74,6 @@ class Account {
       this[fnName] = (async function () {
         const { contract, functionName, params } = await fn.apply(this, arguments)
         let txOptions = arguments[fn.length] || {}
-
-        if (!txOptions.gasLimit && functionName == 'deployAccount') {
-          // AccountFactory.deployAccount should use 0x010545 (66885) gas. estimateGas call returns 0x010545,
-          // tx succeeds, but create2 does not execute. Increasing the gasLimit slightly fixes this. Oddly, the actual
-          // gas used is still 66885. My guess is this is a bug in the way gas is estimated for create2 by hardhat or
-          // ethers.js
-          txOptions.gasLimit = 70000
-        }
-
         const tx = await contract[functionName].apply(contract, [...params, txOptions])
         return tx
       }).bind(this)

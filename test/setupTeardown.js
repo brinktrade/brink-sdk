@@ -1,5 +1,4 @@
 const { ethers } = require('hardhat')
-const tokens = require('@brinkninja/environment/config/tokens.local1.json')
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
 const { CALL_EXECUTOR } = require('@brinkninja/verifiers/constants')
 const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
