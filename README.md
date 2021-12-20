@@ -8,37 +8,25 @@ This module can be used to interact with Brink proxy accounts, either as the acc
 npm install @brinkninja/sdk
 ```
 
-## Setup
-
-```
-const brinkSDK = require('@brinkninja/sdk')
-
-// Instantiate with environment config: `local`, `dev`, `prod` (see [brink-environment](https://github.com/brinktrade/brink-environment) and an instance of [ethers.js](https://github.com/ethers-io/ethers.js/)
-const brink = brinkSDK({
-  environment: 'dev',
-  ethers
-})
-
-// Get an Account instance for any account owner, to read account state and execute meta transactions for this account
-const account = brink.account(ownerAddress)
-
-// Get an AccountSigner instance to sign messages as the owner of an account. Takes an ethers.js [Signer](https://docs.ethers.io/v5/api/signer/#Signer)
-const accountSigner = brink.accountSigner(ethers)
-```
-
 ## Account
+
+### Setup
+
+```
+const brink = require('@brinkninja/sdk')
+
+/**
+ * ownerAddress: address of the account owner
+ * provider: an ethers.js provider
+ * signer: an ethers.js signer. Transactions to the account will be signed by this signer. Does not have to be the
+ * account owner
+ **
+const account = brink.account(ownerAddress, { provider, signer })
+```
 
 ### Read-only Methods
 
 These methods are available to read from account contract state
-
-#### implementation()
-
-Returns the implementation address of the account proxy contract. Should be a deployed instance of [Account.sol](https://github.com/brinktrade/brink-core/blob/2b2fda4bd5b3f91e31e8d736a60155755c2376f6/contracts/Account/Account.sol)
-
-```
-const implAddress = await account.implementation()
-```
 
 #### isDeployed()
 
@@ -47,6 +35,10 @@ Returns true if the account has been deployed
 ```
 const deployed = await account.isDeployed()
 ```
+
+#### bitUsed(bitmapIndex, bit)
+
+Returns true if the given `bitmapIndex` and `bit` have been used for a previou limit swap or cancel transaction
 
 ### Transaction Methods
 
@@ -122,18 +114,6 @@ Example:
 const tx = await account.metaDelegateCall(to, data, signature)
 ```
 
-#### metaPartialSignedDelegateCall(to, data, signature, unsignedData)
-
-Calls [metaPartialSignedDelegateCall](https://github.com/brinktrade/brink-core/blob/2b2fda4bd5b3f91e31e8d736a60155755c2376f6/contracts/Account/Account.sol#L87) on the account contract.
-
-This can only be called with a valid message signed by the owner of the account
-
-Example:
-
-```
-const tx = await account.metaPartialSignedDelegateCall(to, data, signature, unsignedData)
-```
-
 ## AccountSigner
 
 Handles signing of account messages. These authorize actions that can be taken on the account by executors.
@@ -150,6 +130,19 @@ Messages are returned in this format:
   functionName: '<function on Account.sol that is authorized by this message>',
   signedParams: <array of signed parameters>
 }
+```
+
+### Setup
+
+```
+const brink = require('@brinkninja/sdk')
+
+/**
+ * signer: an ethers.js signer. Signed messages returned are valid only for the Brink account owned by this signer
+ * network: name of a supported Brink network (i.e. `goerli`, `mainnet`). Signed messages returned are valid only for
+ * this network
+ **
+const accountSigner = brink.accountSigner(signer, network)
 ```
 
 ### accountAddress()
@@ -180,18 +173,18 @@ Verifier function: [TransferVerifier.tokenTransfer()](https://github.com/brinktr
 
 ### signEthToTokenSwap(bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock)
 
-Returns a signed `metaPartialSignedDelegateCall` message that allows execution of an ETH to ERC20 token swap
+Returns a signed `metaDelegateCall` message that allows execution of an ETH to ERC20 token swap
 
 Verifier function: [LimitSwapVerifier.ethToToken()](https://github.com/brinktrade/brink-verifiers/blob/4e2b607e7eefb3dc00dbc725bacedaeb28f647ed/contracts/Verifiers/LimitSwapVerifier.sol#L54)
 
 ### signTokenToEthSwap(bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock)
 
-Returns a signed `metaPartialSignedDelegateCall` message that allows execution of an ERC20 token to ETH swap
+Returns a signed `metaDelegateCall` message that allows execution of an ERC20 token to ETH swap
 
 Verifier function: [LimitSwapVerifier.tokenToEth()](https://github.com/brinktrade/brink-verifiers/blob/4e2b607e7eefb3dc00dbc725bacedaeb28f647ed/contracts/Verifiers/LimitSwapVerifier.sol#L82)
 
 ### signTokenToTokenSwap(bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock)
 
-Returns a signed `metaPartialSignedDelegateCall` message that allows execution of an ERC20 token to ERC20 token swap
+Returns a signed `metaDelegateCall` message that allows execution of an ERC20 token to ERC20 token swap
 
 Verifier function: [LimitSwapVerifier.tokenToToken()](https://github.com/brinktrade/brink-verifiers/blob/4e2b607e7eefb3dc00dbc725bacedaeb28f647ed/contracts/Verifiers/LimitSwapVerifier.sol#L27)
