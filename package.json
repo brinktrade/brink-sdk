@@ -2,8 +2,8 @@
   "name": "@brinkninja/sdk",
   "version": "1.0.0-rc.1",
   "devDependencies": {
-    "@brinkninja/verifiers": "1.0.0-rc.5",
-    "@brinkninja/core": "1.0.0-rc.5",
+    "@brinkninja/core": "^1.0.0",
+    "@brinkninja/verifiers": "^1.0.0",
     "@openzeppelin/contracts": "4.3.3",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",

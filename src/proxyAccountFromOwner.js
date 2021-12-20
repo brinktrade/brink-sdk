@@ -4,7 +4,7 @@ const proxyBytecode = require('./proxyBytecode')
 
 function proxyAccountFromOwner (proxyOwnerAddress) {
   const { address: proxyAccountAddress } = saltedDeployAddress(
-    ACCOUNT_FACTORY, proxyBytecode(proxyOwnerAddress), [], []
+    ACCOUNT_FACTORY, '0x', proxyBytecode(proxyOwnerAddress), [], []
   )
   return proxyAccountAddress
 }
