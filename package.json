@@ -1,6 +1,6 @@
 {
   "name": "@brinkninja/sdk",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "devDependencies": {
     "@brinkninja/core": "^1.0.0",
     "@brinkninja/verifiers": "^1.0.0",
