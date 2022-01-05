@@ -2,8 +2,6 @@
   "name": "@brinkninja/sdk",
   "version": "1.0.0",
   "devDependencies": {
-    "@brinkninja/core": "^1.0.0",
-    "@brinkninja/verifiers": "^1.0.0",
     "@openzeppelin/contracts": "4.3.3",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
@@ -11,6 +9,8 @@
     "hardhat": "^2.1.2"
   },
   "dependencies": {
+    "@brinkninja/core": "^1.0.0",
+    "@brinkninja/verifiers": "^1.0.0",
     "@brinkninja/utils": "^0.3.1",
     "bignumber.js": "^9.0.1",
     "eth-lib": "^0.1.29",
