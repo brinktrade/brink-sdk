@@ -12,6 +12,8 @@ chai.use(chaiAsPromised)
 chai.use(solidity)
 const { expect } = chai
 
+const mockGasPrice = BN(123).mul(BN(10).pow(BN(9)))
+
 describe('Account', function () {
 
   beforeEach(async function () {
@@ -58,6 +60,17 @@ describe('Account', function () {
       expect(to).not.to.be.undefined
       expect(from).not.to.be.undefined
     })
+
+    it('should use gasPrice override when provided', async function () {
+      await this.fundAccount()
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        '0', '1', this.token.address, '10', '10'
+      )
+      const res = await this.account.populateTransaction.sendLimitSwap(
+        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasPrice: mockGasPrice }
+      )
+      expect(res.gasPrice).to.equal(mockGasPrice)
+    })
   })
 
   describe('estimateGas', function () {
@@ -72,6 +85,18 @@ describe('Account', function () {
       )
 
       expect(res.gas).to.be.gt(0)
+    })
+
+    it('should use gasLimit override when provided', async function () {
+      await this.fundAccount()
+      
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        '0', '1', this.token.address, '10', '10'
+      )
+      
+      await expect(this.account.estimateGas.sendLimitSwap(
+        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasLimit: 20000 }
+      )).to.be.rejectedWith('insufficient funds for intrinsic transaction cost')
     })
   })
 
@@ -88,6 +113,17 @@ describe('Account', function () {
       
       expect(res.returnValues).not.to.be.undefined
     })
+
+    it('should use gasLimit override when provided', async function () {
+      await this.fundAccount()
+
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        '0', '1', this.token.address, '10', '10'
+      )
+      await expect(this.account.callStatic.sendLimitSwap(
+        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasLimit: 20000 }
+      )).to.be.rejectedWith('insufficient funds for intrinsic transaction cost')
+    })
   })
 
   describe('sendLimitSwap', function () {
@@ -103,12 +139,23 @@ describe('Account', function () {
       const acctBal1 = await this.token.balanceOf(this.account.address)
       expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
     })
+
+    it('should use gasPrice override when provided', async function () {
+      await this.fundAccount()
+      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+        '0', '1', this.token.address, '10', '10'
+      )
+      const res = await this.account.sendLimitSwap(
+        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasPrice: mockGasPrice }
+      )
+      expect(res.gasPrice).to.equal(mockGasPrice)
+    })
   })
 
   describe('deploy', function () {
     describe('when given valid params', function () {
       beforeEach(async function () {
-          await this.account.deploy()
+        await this.account.deploy()
       })
 
       it('should deploy the account', async function () {
@@ -127,6 +174,11 @@ describe('Account', function () {
         await expect(this.account.deploy()).to.be.rejectedWith('Account contract already deployed')
       })
     })
+
+    it('should use gasPrice override when provided', async function () {
+      const res = await this.account.deploy({ gasPrice: mockGasPrice })
+      expect(res.gasPrice).to.equal(mockGasPrice)
+    })
   })
 
   describe('externalCall', function () {
@@ -140,6 +192,13 @@ describe('Account', function () {
       const tx = await this.account_ownerSigner.externalCall(transferAmount.toString(), this.recipientAddress, '0x')
       expect(tx).to.not.be.undefined
       expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('0.01'))
+    })
+
+    it('should use gasPrice override when provided', async function () {
+      await this.fundAccount()
+      const transferAmount = await ethers.utils.parseEther('0.01')
+      const tx = await this.account_ownerSigner.externalCall(transferAmount.toString(), this.recipientAddress, '0x', { gasPrice: mockGasPrice })
+      expect(tx.gasPrice).to.equal(mockGasPrice)
     })
   })
 
@@ -155,6 +214,14 @@ describe('Account', function () {
       const tx = await this.account_ownerSigner.delegateCall(this.transferVerifier.address, transferEthData)
       expect(tx).to.not.be.undefined
       expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('0.01'))
+    })
+
+    it('should use gasPrice override when provided', async function () {
+      await this.fundAccount()
+      const transferAmount = await ethers.utils.parseEther('0.01')
+      const transferEthData = await this.encodeEthTransfer('0', '1', this.recipientAddress, transferAmount.toString())
+      const tx = await this.account_ownerSigner.delegateCall(this.transferVerifier.address, transferEthData, { gasPrice: mockGasPrice })
+      expect(tx.gasPrice).to.equal(mockGasPrice)
     })
   })
 
@@ -191,6 +258,21 @@ describe('Account', function () {
       )
       const acctBal1 = await this.token.balanceOf(this.account.address)
       expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
+    })
+
+    it('should use gasPrice override when provided', async function () {
+      await this.fundAccount()
+      this.transferAmt = BN('10')
+
+      const signedEthTransferCall = await this.accountSigner.signEthTransfer(
+        '0', '1', this.recipientAddress, this.transferAmt, MAX_UINT256
+      )
+      const to = signedEthTransferCall.signedParams[0].value
+      const data = signedEthTransferCall.signedParams[1].value
+      const signature = signedEthTransferCall.signature
+      
+      const tx = await this.account.metaDelegateCall(to, data, signature, '0x', { gasPrice: mockGasPrice })
+      expect(tx.gasPrice).to.equal(mockGasPrice)
     })
   })
 

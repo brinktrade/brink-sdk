@@ -80,13 +80,15 @@ class Account {
 
       this.estimateGas[fnName] = (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
-        const gas = await contract.estimateGas[functionName].apply(contract, params)
+        let txOptions = arguments[fn.length] || {}
+        const gas = await contract.estimateGas[functionName].apply(contract, [...params, txOptions])
         return { contractName, functionName, paramTypes, params, gas }
       }).bind(this)
 
       this.populateTransaction[fnName] = (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
-        const txData = await contract.populateTransaction[functionName].apply(contract, params)
+        let txOptions = arguments[fn.length] || {}
+        const txData = await contract.populateTransaction[functionName].apply(contract, [...params, txOptions])
         return {
           contractName, functionName, paramTypes, params,
           ...txData
@@ -95,7 +97,8 @@ class Account {
 
       this.callStatic[fnName] = (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
-        const returnValues = await contract.callStatic[functionName].apply(contract, params)
+        let txOptions = arguments[fn.length] || {}
+        const returnValues = await contract.callStatic[functionName].apply(contract, [...params, txOptions])
         return { contractName, functionName, paramTypes, params, returnValues }
       }).bind(this)
     }
