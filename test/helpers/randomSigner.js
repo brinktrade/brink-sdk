@@ -7,7 +7,7 @@ async function randomSigner () {
   // fund the randomly created wallet signer with some eth
   await defaultSigner.sendTransaction({
     to: signer.address,
-    value: ethers.BigNumber.from('10000000000000000000000000')
+    value: ethers.BigNumber.from('100000000000000000000')
   })
 
   return signer

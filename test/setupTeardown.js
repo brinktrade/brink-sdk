@@ -5,6 +5,7 @@ const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
 const { MAX_UINT256 } = constants
 const brink = require('../index')
 const randomSigner = require('./helpers/randomSigner')
+const mockLedgerSignerBadV = require('./helpers/mockLedgerSignerBadV')
 
 beforeEach(async function () {
   this.accountContract = await deploySaltedContract('Account')
@@ -19,6 +20,7 @@ beforeEach(async function () {
   this.defaultSigner = signers[0]
 
   this.ethersAccountSigner = await randomSigner()
+  this.ethersAccountBadVSigner = await mockLedgerSignerBadV()
   this.ownerAddress = this.ethersAccountSigner.address
 
   // account uses ethers signer 0 (not the account owner, it's acting as an executor)
@@ -41,6 +43,9 @@ beforeEach(async function () {
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
   this.accountSigner = brink.accountSigner(this.ethersAccountSigner, 'hardhat')
+
+  // accountSigner that signs "ledger style" with bad 'v' values 00 and 01
+  this.accountSignerBadV = brink.accountSigner(this.ethersAccountBadVSigner, 'hardhat')
 
   this.token = await deploySaltedContract(
     'TestERC20',
