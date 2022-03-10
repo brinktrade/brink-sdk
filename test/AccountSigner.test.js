@@ -4,6 +4,8 @@ const { randomHex } = require('web3-utils')
 const { BN: ethersBN } = require('@brinkninja/utils')
 const { toBN: web3BN } = require('web3-utils')
 const { solidity } = require('ethereum-waffle')
+const sigToValidECDSA = require('../src/utils/sigToValidECDSA')
+
 const BN = ethers.BigNumber.from
 chai.use(solidity)
 const { expect } = chai
@@ -215,6 +217,20 @@ describe('AccountSigner', function () {
       it('signTokenToTokenSwap should correctly encode web3 BN', async function () {
         await tokenToTokenSignWithBnTest.call(this, web3BN)
       })
+    })
+  })
+
+  describe('Wrong \'v\' value in signature (Ledger)', function() {
+    it('when signer signs with invalid ECDSA \'v\' value', async function () {
+      // sign with the "bad v" signer that mocks what ledger does
+      const signedEthTransfer = await this.accountSignerBadV.signEthTransfer(
+        '0', '1', randomHex(20), ethers.utils.parseEther('1.0').toString()
+      )
+
+      const { signature } = signedEthTransfer
+      const v = signature.slice(2+64+64, 2+64+64+2)
+        
+      expect(v == '1b' || v == '1c').to.be.true
     })
   })
 })

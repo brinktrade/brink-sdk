@@ -6,6 +6,7 @@ const {
   TRANSFER_VERIFIER,
   CANCEL_VERIFIER
 } = require('@brinkninja/verifiers/constants')
+const sigToValidECDSA = require('./utils/sigToValidECDSA')
 const proxyAccountFromOwner = require('./proxyAccountFromOwner')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const {
@@ -178,7 +179,7 @@ class AccountSigner {
       }
     }
 
-    const { typedData, typedDataHash, signature } = await signEIP712({
+    const { typedData, typedDataHash, signature: sigFromSigner } = await signEIP712({
       signer: this._signer,
       contractAddress: await this.accountAddress(),
       contractName: 'BrinkAccount',
@@ -190,6 +191,7 @@ class AccountSigner {
     })
 
     const signerAddress = await this._signer.getAddress()
+    const { signature } = sigToValidECDSA(sigFromSigner)
 
     return {
       message: typedDataHash,
