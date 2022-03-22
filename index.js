@@ -28,5 +28,6 @@ module.exports = {
   account,
   accountSigner,
   proxyAccountFromOwner: require('./src/proxyAccountFromOwner'),
-  recoverSigner: require('./src/recoverSigner')
+  recoverSigner: require('./src/recoverSigner'),
+  verifySignedMessage: require('./src/verifySignedMessage')
 }
