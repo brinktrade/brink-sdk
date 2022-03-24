@@ -2,6 +2,7 @@ const recoverSigner = require('./recoverSigner')
 const typedDataEIP712 = require('./typedDataEIP712')
 const proxyAccountFromOwner = require('./proxyAccountFromOwner')
 const { toChecksumAddress, isAddress } = require('web3-utils')
+const encodeFunctionCall = require('./encodeFunctionCall')
 
 const metaDelegateCallParamTypes = [
   { name: 'to', type: 'address' },
@@ -9,7 +10,7 @@ const metaDelegateCallParamTypes = [
 ]
 
 const verifySignedMessage = (signedMessage) => {
-  const { accountAddress, signature, message, signer, EIP712TypedData, functionName } = signedMessage
+  const { accountAddress, signature, message, signer, EIP712TypedData, functionName, signedParams } = signedMessage
 
   if (!accountAddress) {
     throw new Error('Account Address not provided in signedMessage')
@@ -31,6 +32,23 @@ const verifySignedMessage = (signedMessage) => {
     throw new Error(`No functionName specified in signedMessage`)
   }
 
+  if (functionName !== 'metaDelegateCall') {
+    throw new Error(`Unsupported functionName ${functionName}, only 'metaDelegateCall' supported`)
+  }
+
+  if (!signedParams || signedParams.length === 0 || !signedParams[1]) {
+    throw new Error('signedParams not provided in signedMessage')
+  }
+
+  if (!EIP712TypedData) {
+    throw new Error('EIP712TypedData not provided in signedMessage')
+  }
+
+  const callData = signedParams[1].callData
+  if (!callData) {
+    throw new Error('CallData not provided in signedMessage Params')
+  }
+
   const recoveredSigner = recoverSigner({ signature, typedDataHash: message})
   if (recoveredSigner !== signer) {
     throw new Error(`Provided Signer ${signer} does not match Signer ${recoveredSigner} in Signed Message`)
@@ -39,11 +57,6 @@ const verifySignedMessage = (signedMessage) => {
   const computedAccountAddress = accountFromOwner(signer)
   if (toChecksumAddress(computedAccountAddress) !== toChecksumAddress(accountAddress)) {
     throw new Error(`Account Address ${accountAddress} does not match Computed Address ${computedAccountAddress}`)
-  }
-
-  const signedParams = signedMessage.signedParams
-  if (!signedParams) {
-    throw new Error('signedParams not provided in signedMessage')
   }
 
   const paramValues = signedParams.map(p => p.value)
@@ -58,6 +71,62 @@ const verifySignedMessage = (signedMessage) => {
 
   if (typedDataHash !== message) {
     throw new Error(`Provided signed message hash ${message} does not match recovered hash ${typedDataHash}`)
+  }
+
+  const eip712To = EIP712TypedData.value.to
+  const eip712Data = EIP712TypedData.value.data
+  let toValueExists = false
+  let dataValueExists = false
+  for (let i=0; i<paramValues.length; i++) {
+    if (paramValues[i] === eip712To) {
+      toValueExists = true
+    }
+    if (paramValues[i] === eip712Data) {
+      dataValueExists = true
+    }
+  }
+
+  if (!toValueExists || !dataValueExists) {
+    throw new Error(`Signed message params do not match EIP712TypedData params`)
+  }
+
+
+  const callDataFunctionName = callData.functionName
+  if (!callDataFunctionName) {
+    throw new Error('Function name not provided in calldata')
+  }
+  const callDataParams = callData.params
+  if (!callDataParams) {
+    throw new Error('Params not provided in calldata')
+  }
+
+  const callDataParamTypes = callDataParams.map(p => p.type)
+  const callDataParamNames = callDataParams.map(p => p.name)
+
+  if (!callDataParamTypes) {
+    throw new Error('Param Types not provided in calldata')
+  }
+
+  if (!callDataParamNames) {
+    throw new Error('Param Names not provided in calldata')
+  }
+
+  let callDataParamNameTypes = []
+  for (let i=0; i< callDataParamTypes.length; i++) {
+    const callDataParamNameType = {name: callDataParamNames[i], type: callDataParamTypes[i]}
+    callDataParamNameTypes.push(callDataParamNameType)
+  }
+  const callDataParamValues = callDataParams.map(p => p.value)
+  callDataParamValues.pop()
+  callDataParamValues.pop()
+
+  if (!callDataParamValues) {
+    throw new Error('Param values not provided in calldata')
+  }
+
+  const encodedFunctionCall = encodeFunctionCall({ functionName: callDataFunctionName, paramTypes: callDataParamNameTypes, params: callDataParamValues })
+  if (encodedFunctionCall !== signedMessage.signedParams[1].value) {
+    throw new Error('Encoded bytes value does not match encoded call data params')
   }
 }
 

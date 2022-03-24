@@ -5,32 +5,32 @@ const chai = require('chai')
 const { expect } = chai
 
 describe('VerifySignedMessage', function () {
-  it.only('Verifies a correctly signed tokenToToken message', async function () {
+  it('Verifies a correctly signed tokenToToken message', async function () {
     const signedMessage = await this.accountSigner.signTokenToTokenSwap(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('1000000000'), BN('1000000'))
     brink.verifySignedMessage(signedMessage)
   })
 
-  it.only('Verifies a correctly signed ethToToken message', async function () {
+  it('Verifies a correctly signed ethToToken message', async function () {
     const signedMessage = await this.accountSigner.signEthToTokenSwap(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('10983232188140'), BN('2817743061947399'))
     brink.verifySignedMessage(signedMessage)
   })
 
-  it.only('Verifies a correctly signed tokenToEth message', async function () {
+  it('Verifies a correctly signed tokenToEth message', async function () {
     const signedMessage = await this.accountSigner.signTokenToEthSwap(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('1000000'), BN('10000000'))
     brink.verifySignedMessage(signedMessage)
   })
 
-  it.only('Should return an error when missing param in signed tokenToEth message', async function () {
+  it('Should return an error when missing param in signed tokenToEth message', async function () {
     const signedMessage = await this.accountSigner.signTokenToEthSwap(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('1000000'), BN('10000000'))
     signedMessage.signedParams = []
     try {
       brink.verifySignedMessage(signedMessage)
     } catch (err) {
-      expect(err.message).to.equal(`typedDataEIP712: different number of paramTypes and params`)
+      expect(err.message).to.equal(`signedParams not provided in signedMessage`)
     }
   })
 
-  it.only('Should return an error when typed data hash does not equal recovered hash', async function () {
+  it('Should return an error when typed data hash does not equal recovered hash', async function () {
     const signedMessage = {
       message: '0xd4d05ba90766cfae9de8348a026a188b7378fe818cf2f94bb51a9b1c93140529',
       EIP712TypedData: {
@@ -96,7 +96,7 @@ describe('VerifySignedMessage', function () {
     }
   })
 
-  it.only('Should return an error when signer mismatch', async function () {
+  it('Should return an error when signer mismatch', async function () {
     const message = {
       message: '0xd4d05ba90766cfae9de8348a026a188b7378fe818cf2f94bb51a9b1c93140529',
       EIP712TypedData: {
@@ -162,7 +162,7 @@ describe('VerifySignedMessage', function () {
     }
   })
 
-  it.only('Expects computed address mismatch', async function () {
+  it('Expects computed address mismatch', async function () {
     const message = {
       message: '0xd4d05ba90766cfae9de8348a026a188b7378fe818cf2f94bb51a9b1c93140529',
       EIP712TypedData: {
