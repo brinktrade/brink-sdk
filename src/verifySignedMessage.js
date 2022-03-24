@@ -33,7 +33,7 @@ const verifySignedMessage = (signedMessage) => {
   }
 
   if (functionName !== 'metaDelegateCall') {
-    throw new Error(`Unsupported functionName ${functionName}, only 'metaDelegateCall' supported`)
+    throw new Error(`Unsupported functionName \'${functionName}\', only \'metaDelegateCall\' supported`)
   }
 
   if (!signedParams || signedParams.length === 0 || !signedParams[1]) {
