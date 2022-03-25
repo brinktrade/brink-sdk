@@ -50,7 +50,7 @@ const verifySignedMessage = (signedMessage) => {
   }
 
   const recoveredSigner = recoverSigner({ signature, typedDataHash: message})
-  if (recoveredSigner !== signer) {
+  if (toChecksumAddress(recoveredSigner) !== toChecksumAddress(signer)) {
     throw new Error(`Provided Signer ${signer} does not match Signer ${recoveredSigner} in Signed Message`)
   }
 
@@ -78,8 +78,10 @@ const verifySignedMessage = (signedMessage) => {
   let toValueExists = false
   let dataValueExists = false
   for (let i=0; i<paramValues.length; i++) {
-    if (paramValues[i] === eip712To) {
-      toValueExists = true
+    if (isAddress(paramValues[i])) {
+      if (toChecksumAddress(paramValues[i]) === toChecksumAddress(eip712To)) {
+        toValueExists = true
+      }
     }
     if (paramValues[i] === eip712Data) {
       dataValueExists = true
@@ -117,14 +119,18 @@ const verifySignedMessage = (signedMessage) => {
     callDataParamNameTypes.push(callDataParamNameType)
   }
   const callDataParamValues = callDataParams.map(p => p.value)
-  callDataParamValues.pop()
-  callDataParamValues.pop()
+  let callDataParamValuesNoUndefined = []
+  for (let i=0; i<callDataParamValues.length; i++) {
+    if (callDataParamValues[i]) {
+      callDataParamValuesNoUndefined.push(callDataParamValues[i])
+    }
+  }
 
   if (!callDataParamValues) {
     throw new Error('Param values not provided in calldata')
   }
 
-  const encodedFunctionCall = encodeFunctionCall({ functionName: callDataFunctionName, paramTypes: callDataParamNameTypes, params: callDataParamValues })
+  const encodedFunctionCall = encodeFunctionCall({ functionName: callDataFunctionName, paramTypes: callDataParamNameTypes, params: callDataParamValuesNoUndefined })
   if (encodedFunctionCall !== signedMessage.signedParams[1].value) {
     throw new Error('Encoded bytes value does not match encoded call data params')
   }
