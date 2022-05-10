@@ -1,5 +1,4 @@
 _ = require('lodash')
-const verifySignedMessage = require('./verifySignedMessage')
 
 function parseSignedMessage (signedMessage) {
   const { message, signature, signer, accountAddress, functionName, signedParams } = signedMessage
