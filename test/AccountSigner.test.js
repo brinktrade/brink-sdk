@@ -27,7 +27,7 @@ describe('AccountSigner', function () {
       this.recipientAddress = randomHex(20)
     })
 
-    it('transferEth', async function () {
+    it('ethTransfer', async function () {
       this.transferAmt = ethers.utils.parseEther('1.0')
       await this.defaultSigner.sendTransaction({
         to: this.account.address,
@@ -38,18 +38,18 @@ describe('AccountSigner', function () {
         '0', '1', this.recipientAddress, this.transferAmt.toString(), MAX_UINT256
       )
       
-      const tx = await this.account.transferEth(signedEthTransfer)
+      const tx = await this.account.ethTransfer(signedEthTransfer)
       expect(tx).to.not.be.undefined
       expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('1.0'))
       expect(await this.account.bitUsed('0', '1')).to.be.true
     })
 
-    it('transferToken', async function () {
+    it('tokenTransfer', async function () {
       const signedTokenTransfer = await this.accountSigner.signTokenTransfer(
         '0', '1', this.token.address, this.recipientAddress, '1000', MAX_UINT256
       )
       
-      const tx = await this.account.transferToken(signedTokenTransfer)
+      const tx = await this.account.tokenTransfer(signedTokenTransfer)
       expect(tx).to.not.be.undefined
       expect(await this.token.balanceOf(this.recipientAddress)).to.equal('1000')
       expect(await this.account.bitUsed('0', '1')).to.be.true
@@ -84,7 +84,7 @@ describe('AccountSigner', function () {
         '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
       const acctBal0 = await this.token.balanceOf(this.account.address)
-      await this.account.sendLimitSwap(
+      await this.account.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
       const acctBal1 = await this.token.balanceOf(this.account.address)
@@ -96,7 +96,7 @@ describe('AccountSigner', function () {
         '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
       const acctBal0 = await ethers.provider.getBalance(this.account.address)
-      await this.account.sendLimitSwap(
+      await this.account.ethToToken(
         signedTokenToEthSwap, this.testFulfillSwap.address, this.fulfillEthOutData
       )
       const acctBal1 = await ethers.provider.getBalance(this.account.address)
@@ -109,7 +109,7 @@ describe('AccountSigner', function () {
         '0', '1', this.token.address, this.token2.address, '5', '10', MAX_UINT256
       )
       const acctBal0 = await this.token2.balanceOf(this.account.address)
-      await this.account.sendLimitSwap(
+      await this.account.ethToToken(
         signedTokenToTokenSwap, this.testFulfillSwap.address, this.fulfillToken2OutData
       )
       const acctBal1 = await this.token2.balanceOf(this.account.address)

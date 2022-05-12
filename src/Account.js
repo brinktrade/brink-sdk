@@ -5,7 +5,10 @@ const BigNumber = require('bignumber.js')
 const { DEPLOY_AND_CALL, ACCOUNT_FACTORY } = require('@brinkninja/core/constants')
 const proxyAccountFromOwner = require('./proxyAccountFromOwner')
 const encodeFunctionCall = require('./encodeFunctionCall')
+const verifySignedMessage = require('./verifySignedMessage')
 const bitmapPointer = require('./utils/bitmapPointer')
+const { VERIFIERS } = require('@brinkninja/config').mainnet
+
 const BN = ethers.BigNumber.from
 
 const _directCalls = [
@@ -70,24 +73,26 @@ class Account {
     this.callStatic = {}
 
     // wraps ethers contract functions and exposes them on the Account object
-    const _setupEthersWrappedTx = (fnName, fn) => {
+    const _setupEthersWrappedTx = (fnName, fn, numParams) => {
+      let txOptsIndex = numParams
+
       this[fnName] = (async function () {
         const { contract, functionName, params } = await fn.apply(this, arguments)
-        let txOptions = arguments[fn.length] || {}
+        let txOptions = arguments[txOptsIndex] || {}
         const tx = await contract[functionName].apply(contract, [...params, txOptions])
         return tx
       }).bind(this)
 
       this.estimateGas[fnName] = (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
-        let txOptions = arguments[fn.length] || {}
+        let txOptions = arguments[txOptsIndex] || {}
         const gas = await contract.estimateGas[functionName].apply(contract, [...params, txOptions])
         return { contractName, functionName, paramTypes, params, gas }
       }).bind(this)
 
       this.populateTransaction[fnName] = (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
-        let txOptions = arguments[fn.length] || {}
+        let txOptions = arguments[txOptsIndex] || {}
         const txData = await contract.populateTransaction[functionName].apply(contract, [...params, txOptions])
         return {
           contractName, functionName, paramTypes, params,
@@ -97,31 +102,30 @@ class Account {
 
       this.callStatic[fnName] = (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
-        let txOptions = arguments[fn.length] || {}
+        let txOptions = arguments[txOptsIndex] || {}
         const returnValues = await contract.callStatic[functionName].apply(contract, [...params, txOptions])
         return { contractName, functionName, paramTypes, params, returnValues }
       }).bind(this)
     }
 
-    _setupEthersWrappedTx('sendLimitSwap', async (signedLimitSwapMessage, to, data) => {
-      const { signedData, unsignedData } = this.getLimitSwapData(signedLimitSwapMessage, to, data)
-      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
-        'metaDelegateCall',
-        [signedLimitSwapMessage.signedParams[0].value, signedData, signedLimitSwapMessage.signature, unsignedData]
-      )
-      return { contract, contractName, functionName, params, paramTypes }
-    })
+    _setupEthersWrappedTx('metaDelegateCall', async (signedMessage, unsignedParams = []) => {
+      return this._metaDelegateCall(signedMessage, unsignedParams)
+    }, 2)
 
-    _setupEthersWrappedTx('cancel', async (signedCancelMessage) => {
-      return this._metaDelegateHelper(signedCancelMessage)
-    })
+    // sets up ethers functions for all verifiers in config
+    VERIFIERS.forEach(({ functionName, contractAddress, paramTypes }) => {
+      const unsignedParams = _.filter(paramTypes, t => !t.signed)
+      const $this = this
+      _setupEthersWrappedTx(functionName, async function () {
+        const signedMessage = arguments[0]
 
-    _setupEthersWrappedTx('transferEth', async (signedTransferEthMessage) => {
-      return this._metaDelegateHelper(signedTransferEthMessage)
-    })
+        if (signedMessage.signedParams[0].value.toLowerCase() !== contractAddress.toLowerCase()) {
+          throw new Error(`Wrong verifier address for ${functionName}, expected "${contractAddress}"`)
+        }
 
-    _setupEthersWrappedTx('transferToken', async (signedTransferTokenMessage) => {
-      return this._metaDelegateHelper(signedTransferTokenMessage)
+        const unsignedParamVals = _.slice(arguments, 1, unsignedParams.length + 1)
+        return $this._metaDelegateCall(signedMessage, unsignedParamVals)
+      }, 1 + unsignedParams.length)
     })
 
     _setupEthersWrappedTx('deploy', async () => {
@@ -136,43 +140,30 @@ class Account {
         params: [this._ownerAddress],
         paramTypes: [ { name: 'owner', type: 'address' } ]
       }
-    })
+    }, 0)
 
     _setupEthersWrappedTx('externalCall', async (value, to, data) => {
       const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
         'externalCall', [value, to, data]
       )
       return { contract, contractName, functionName, params, paramTypes }
-    })
+    }, 3)
 
     _setupEthersWrappedTx('delegateCall', async (to, data) => {
       const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
         'delegateCall', [to, data]
       )
       return { contract, contractName, functionName, params, paramTypes }
-    })
-
-    _setupEthersWrappedTx('metaDelegateCall', async (to, data, signature) => {
-      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
-        'metaDelegateCall', [to, data, signature]
-      )
-      return { contract, contractName, functionName, params, paramTypes }
-    })
-
-    _setupEthersWrappedTx('metaDelegateCall', async (to, data, signature, unsignedData) => {
-      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
-        'metaDelegateCall', [to, data, signature, unsignedData]
-      )
-      return { contract, contractName, functionName, params, paramTypes }
-    })
+    }, 2)
   }
 
-  async _metaDelegateHelper (signedMessage) {
-    const toAddress = signedMessage.signedParams[0].value
-    const signedData = signedMessage.signedParams[1].value
+  async _metaDelegateCall (signedMessage, unsignedParams) {
+    verifySignedMessage(signedMessage)
+    const { signedData, unsignedData } = this.getMetaDelegateCallData(signedMessage, unsignedParams)
+    const verifierAddress = signedMessage.signedParams[0].value
     const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
       'metaDelegateCall',
-      [toAddress, signedData, signedMessage.signature, '0x']
+      [verifierAddress, signedData, signedMessage.signature, unsignedData]
     )
     return { contract, contractName, functionName, params, paramTypes }
   }
@@ -182,17 +173,7 @@ class Account {
     return code !== '0x'
   }
 
-  getLimitSwapData(signedSwap, to, data) {
-    const { 
-      functionCall: constructedFunctionCall, 
-      numParams 
-    } = this.constructLimitSwapFunctionCall(signedSwap, [to, data])
-    const callData = encodeFunctionCall(constructedFunctionCall)
-    const { signedData, unsignedData } = splitCallData(callData, numParams)
-    return { signedData, unsignedData }
-  }
-
-  constructLimitSwapFunctionCall(signedMessage, unsignedDataList) {
+  getMetaDelegateCallData(signedMessage, unsignedParams) {
     let functionCall = {}
     let callData = {}
     for (let i = 0; i < signedMessage.signedParams.length; i++) {
@@ -215,10 +196,13 @@ class Account {
       }
     }
     const numParams = functionCall.params.length
-    for (let k = 0; k < unsignedDataList.length; k++) {
-      functionCall.params.push(unsignedDataList[k])
+    for (let k = 0; k < unsignedParams.length; k++) {
+      functionCall.params.push(unsignedParams[k])
     }
-    return { functionCall, numParams }
+
+    const encodedFnCall = encodeFunctionCall(functionCall)
+    const { signedData, unsignedData } = splitCallData(encodedFnCall, numParams)
+    return { signedData, unsignedData }
   }
 
   async nextBit () {
