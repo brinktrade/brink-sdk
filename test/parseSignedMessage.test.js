@@ -9,21 +9,21 @@ const maxExpiryBN = BN('11579208923731619542357098500868790785326998466564056403
 
 describe('parseSignedMessage', function () {
   it('returns limitSwapEthToToken message data', async function () {
-    const signedMessage = await this.accountSigner.signEthToTokenSwap(
+    const signedMessage = await this.accountSigner.signEthToToken(
       BN(0), BN(1), this.token.address, BN(10), BN(11), maxExpiryBN
     )
     const msg = brink.parseSignedMessage(signedMessage)
     expectMessageDataMatchForEthToTokenSwap(signedMessage, msg)
   })
   it('returns limitSwapTokenToEth message data', async function () {
-    const signedMessage = await this.accountSigner.signTokenToEthSwap(
+    const signedMessage = await this.accountSigner.signTokenToEth(
       BN(0), BN(1), this.token.address, BN(10), BN(11), maxExpiryBN
     )
     const msg = brink.parseSignedMessage(signedMessage)
     expectMessageDataMatchForTokenToEthSwap(signedMessage, msg)
   })
   it('returns limitSwapTokenToToken message data', async function () {
-    const signedMessage = await this.accountSigner.signTokenToTokenSwap(
+    const signedMessage = await this.accountSigner.signTokenToToken(
       BN(0), BN(1), this.token.address, this.token2.address, BN(10), BN(11), maxExpiryBN
     )
     const msg = brink.parseSignedMessage(signedMessage)

@@ -1,4 +1,5 @@
 const { TypedDataUtils } = require('eth-sig-util')
+const capitalize = require('./utils/capitalize')
 
 const typedDataEIP712 = ({
   accountVersion,
@@ -68,11 +69,6 @@ function getTypedData({
     typedData.message[name] = paramValue.toString()
   }
   return typedData
-}
-
-const capitalize = (s) => {
-  if (typeof s !== 'string') return ''
-  return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
 module.exports = typedDataEIP712

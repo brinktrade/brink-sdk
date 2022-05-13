@@ -45,10 +45,10 @@ describe('Account', function () {
   describe('populateTransaction', function () {
     it('should wrap call to ethers populateTranscation', async function () {
       await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
-      const res = await this.account.populateTransaction.sendLimitSwap(
+      const res = await this.account.populateTransaction.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
       const { contractName, functionName, params, paramTypes, data, to, from } = res
@@ -63,10 +63,10 @@ describe('Account', function () {
 
     it('should use gasPrice override when provided', async function () {
       await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
-      const res = await this.account.populateTransaction.sendLimitSwap(
+      const res = await this.account.populateTransaction.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasPrice: mockGasPrice }
       )
       expect(res.gasPrice).to.equal(mockGasPrice)
@@ -77,10 +77,10 @@ describe('Account', function () {
     it('should wrap call to ethers estimateGas', async function () {
       await this.fundAccount()
       
-      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
-      const res = await this.account.estimateGas.sendLimitSwap(
+      const res = await this.account.estimateGas.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
 
@@ -90,11 +90,11 @@ describe('Account', function () {
     it('should use gasLimit override when provided', async function () {
       await this.fundAccount()
       
-      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
       
-      await expect(this.account.estimateGas.sendLimitSwap(
+      await expect(this.account.estimateGas.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasLimit: 20000 }
       )).to.be.rejectedWith('insufficient funds for intrinsic transaction cost')
     })
@@ -104,10 +104,10 @@ describe('Account', function () {
     it('should wrap call to ethers callStatic', async function () {
       await this.fundAccount()
 
-      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
-      const res = await this.account.callStatic.sendLimitSwap(
+      const res = await this.account.callStatic.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
       
@@ -117,23 +117,37 @@ describe('Account', function () {
     it('should use gasLimit override when provided', async function () {
       await this.fundAccount()
 
-      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
-      await expect(this.account.callStatic.sendLimitSwap(
+      await expect(this.account.callStatic.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasLimit: 20000 }
       )).to.be.rejectedWith('insufficient funds for intrinsic transaction cost')
     })
   })
 
-  describe('sendLimitSwap', function () {
-    it('should send a limit swap tx', async function () {
+  describe('ethToToken function', function () {
+    it('should send an ETH to ERC20 swap tx', async function () {
       await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10'
+      await this.deployAccount
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
       const acctBal0 = await this.token.balanceOf(this.account.address)
-      await this.account.sendLimitSwap(
+      await this.account.ethToToken(
+        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
+      )
+      const acctBal1 = await this.token.balanceOf(this.account.address)
+      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
+    })
+
+    it('should send an ETH to ERC20 swap (without account deployment', async function () {
+      await this.fundAccount()
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
+      )
+      const acctBal0 = await this.token.balanceOf(this.account.address)
+      await this.account.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
       const acctBal1 = await this.token.balanceOf(this.account.address)
@@ -142,10 +156,10 @@ describe('Account', function () {
 
     it('should use gasPrice override when provided', async function () {
       await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
-        '0', '1', this.token.address, '10', '10'
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+        '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
-      const res = await this.account.sendLimitSwap(
+      const res = await this.account.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasPrice: mockGasPrice }
       )
       expect(res.gasPrice).to.equal(mockGasPrice)
@@ -233,11 +247,8 @@ describe('Account', function () {
       const signedEthTransferCall = await this.accountSigner.signEthTransfer(
         '0', '1', this.recipientAddress, this.transferAmt, MAX_UINT256
       )
-      const to = signedEthTransferCall.signedParams[0].value
-      const data = signedEthTransferCall.signedParams[1].value
-      const signature = signedEthTransferCall.signature
       
-      const tx = await this.account.metaDelegateCall(to, data, signature, '0x')
+      const tx = await this.account.metaDelegateCall(signedEthTransferCall)
       expect(tx).to.not.be.undefined
       expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(this.transferAmt)
     })
@@ -245,16 +256,13 @@ describe('Account', function () {
     it('should send swap via metaDelegateCall', async function () {
       await this.fundAccount()
       await this.account.deploy()
-      const signedEthToTokenSwap = await this.accountSigner.signEthToTokenSwap(
+      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
         '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-      const { signedData, unsignedData } = this.account.getLimitSwapData(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
 
       const acctBal0 = await this.token.balanceOf(this.account.address)
       await this.account.metaDelegateCall(
-        signedEthToTokenSwap.signedParams[0].value, signedData, signedEthToTokenSwap.signature, unsignedData
+        signedEthToTokenSwap, [this.testFulfillSwap.address, this.fulfillTokenOutData]
       )
       const acctBal1 = await this.token.balanceOf(this.account.address)
       expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
@@ -267,11 +275,8 @@ describe('Account', function () {
       const signedEthTransferCall = await this.accountSigner.signEthTransfer(
         '0', '1', this.recipientAddress, this.transferAmt, MAX_UINT256
       )
-      const to = signedEthTransferCall.signedParams[0].value
-      const data = signedEthTransferCall.signedParams[1].value
-      const signature = signedEthTransferCall.signature
       
-      const tx = await this.account.metaDelegateCall(to, data, signature, '0x', { gasPrice: mockGasPrice })
+      const tx = await this.account.metaDelegateCall(signedEthTransferCall, [], { gasPrice: mockGasPrice })
       expect(tx.gasPrice).to.equal(mockGasPrice)
     })
   })

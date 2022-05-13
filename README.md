@@ -52,22 +52,6 @@ const txData = await account.populateTransaction.sendLimitSwap(swapSignedMsg, to
 
 All of these transactions (except for `deploy()`) will include the desired action after account deployment, if the account has not been deployed yet, using [DeployAndExecute.sol](https://github.com/brinktrade/brink-core/blob/2b2fda4bd5b3f91e31e8d736a60155755c2376f6/contracts/Batched/DeployAndExecute.sol). If the account is already deployed, the action will be executed directly on the account contract.
 
-#### sendLimitSwap(limitSwapSignedMessage, to, data)
-
-This method can be used by executors to execute limit swaps for an account. Requires a valid signed message from the account owner. Uses [LimitSwapVerifier.sol](https://github.com/brinktrade/brink-verifiers/blob/4e2b607e7eefb3dc00dbc725bacedaeb28f647ed/contracts/Verifiers/LimitSwapVerifier.sol) for state verification.
-
-Params:
-
-`limitSwapSignedMessage`: a valid signed limit swap message (see AccountSigner methods `signEthToTokenSwap()`, `signTokenToTokenSwap()`, and `signTokenToEthSwap()`)
-`to`: Address of the contract that will provide liquidity for the fullfilment of the swap
-`data`: Call data that will be executed on the contract at `toAddress` in order to fullfil the swap
-
-Example:
-
-```
-const tx = await account.sendLimitSwap(swapSignedMsg, toAddress, callData)
-```
-
 #### deploy()
 
 Deploys the account contract. Throws an error if the contract is already deployed
@@ -102,7 +86,7 @@ Example:
 const tx = await account.delegateCall(to, data)
 ```
 
-#### metaDelegateCall(to, data, signature)
+#### metaDelegateCall(signedMessage, unsignedDataArray)
 
 Calls [metaDelegateCall](https://github.com/brinktrade/brink-core/blob/2b2fda4bd5b3f91e31e8d736a60155755c2376f6/contracts/Account/Account.sol#L65) on the account contract.
 
@@ -111,7 +95,33 @@ This can only be called with a valid message signed by the owner of the account
 Example:
 
 ```
-const tx = await account.metaDelegateCall(to, data, signature)
+const tx = await account.metaDelegateCall(signedMessage, [unsignedTo, unsignedData])
+```
+
+#### Verifier metaDelegateCall methods
+
+All contract methods in https://github.com/brinktrade/brink-verifiers/tree/177ee40291d92f3b0da371ea1939e11964b0de18/contracts/Verifiers contracts can be executed through `metaDelegateCall` using the SDK.
+
+For example, a `LimitSwapVerifier.ethToToken()` verifier signed message can be executed by calling `account.ethToToken()`:
+
+```
+  await account.ethToToken(ethToTokenSignedMessage, unsignedTo, unsignedData)
+```
+
+Each verifier function takes a signed message object from AccountSigner as the first param, followed by any unsigned params required by the verifier function.
+
+Supported functions are:
+
+```
+  account.tokenTransfer()
+  account.ethTransfer()
+  account.ethToToken()
+  account.tokenToEth()
+  account.tokenToToken()
+  account.tokenToNft()
+  account.nftToToken()
+  account.nftToNft()
+  account.cancel()
 ```
 
 ## AccountSigner
@@ -171,20 +181,26 @@ Returns a signed `metaDelegatedCall` message that allows execution of an ERC20 t
 
 Verifier function: [TransferVerifier.tokenTransfer()](https://github.com/brinktrade/brink-verifiers/blob/4e2b607e7eefb3dc00dbc725bacedaeb28f647ed/contracts/Verifiers/TransferVerifier.sol#L36)
 
-### signEthToTokenSwap(bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock)
+### signEthToToken(bitmapIndex, bit, tokenAddress, ethAmount, tokenAmount, expiryBlock)
 
 Returns a signed `metaDelegateCall` message that allows execution of an ETH to ERC20 token swap
 
 Verifier function: [LimitSwapVerifier.ethToToken()](https://github.com/brinktrade/brink-verifiers/blob/4e2b607e7eefb3dc00dbc725bacedaeb28f647ed/contracts/Verifiers/LimitSwapVerifier.sol#L54)
 
-### signTokenToEthSwap(bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock)
+### signTokenToEth(bitmapIndex, bit, tokenAddress, tokenAmount, ethAmount, expiryBlock)
 
 Returns a signed `metaDelegateCall` message that allows execution of an ERC20 token to ETH swap
 
 Verifier function: [LimitSwapVerifier.tokenToEth()](https://github.com/brinktrade/brink-verifiers/blob/4e2b607e7eefb3dc00dbc725bacedaeb28f647ed/contracts/Verifiers/LimitSwapVerifier.sol#L82)
 
-### signTokenToTokenSwap(bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock)
+### signTokenToToken(bitmapIndex, bit, tokenInAddress, tokenOutAddress, tokenInAmount, tokenOutAmount, expiryBlock)
 
 Returns a signed `metaDelegateCall` message that allows execution of an ERC20 token to ERC20 token swap
 
 Verifier function: [LimitSwapVerifier.tokenToToken()](https://github.com/brinktrade/brink-verifiers/blob/4e2b607e7eefb3dc00dbc725bacedaeb28f647ed/contracts/Verifiers/LimitSwapVerifier.sol#L27)
+
+### signTokenToNft(bitmapIndex, bit, tokenIn, nftOut, tokenInAmount, expiryBlock)
+
+Returns a signed `metaDelegateCall` message that allows execution of an ERC20 or ETH token to ERC721 swap
+
+Verifier function: [NftLimitSwapVerifier.nftToToken()](https://github.com/brinktrade/brink-verifiers/blob/177ee40291d92f3b0da371ea1939e11964b0de18/contracts/Verifiers/NftLimitSwapVerifier.sol#L28)

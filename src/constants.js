@@ -19,10 +19,7 @@ module.exports = {
     TOKEN: 'TOKEN'
   },
 
-  tokenTypes: {
-    ETH: 'ETH',
-    TOKEN: 'TOKEN',
-  },
+  tokenTypes: ['ERC20', 'ERC721', 'ERC1155'],
   
   metaDelegateCallSignedParamTypes: [
     { name: 'to', type: 'address' },

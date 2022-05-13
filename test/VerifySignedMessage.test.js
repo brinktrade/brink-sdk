@@ -1,27 +1,28 @@
 const brink = require('../index')
 const { ethers } = require('hardhat')
 const BN = ethers.BigNumber.from
+const { MAX_UINT256 } = require('@brinkninja/utils').constants
 const chai = require('chai')
 const { expect } = chai
 
 describe('VerifySignedMessage', function () {
   it('Verifies a correctly signed tokenToToken message', async function () {
-    const signedMessage = await this.accountSigner.signTokenToTokenSwap(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('1000000000'), BN('1000000'))
+    const signedMessage = await this.accountSigner.signTokenToToken(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('1000000000'), BN('1000000'), MAX_UINT256)
     brink.verifySignedMessage(signedMessage)
   })
 
   it('Verifies a correctly signed ethToToken message', async function () {
-    const signedMessage = await this.accountSigner.signEthToTokenSwap(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('10983232188140'), BN('2817743061947399'))
+    const signedMessage = await this.accountSigner.signEthToToken(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('10983232188140'), BN('2817743061947399'), MAX_UINT256)
     brink.verifySignedMessage(signedMessage)
   })
 
   it('Verifies a correctly signed tokenToEth message', async function () {
-    const signedMessage = await this.accountSigner.signTokenToEthSwap(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('1000000'), BN('10000000'))
+    const signedMessage = await this.accountSigner.signTokenToEth(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('1000000'), BN('10000000'), MAX_UINT256)
     brink.verifySignedMessage(signedMessage)
   })
 
   it('Should return an error when missing param in signed tokenToEth message', async function () {
-    const signedMessage = await this.accountSigner.signTokenToEthSwap(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('1000000'), BN('10000000'))
+    const signedMessage = await this.accountSigner.signTokenToEth(BN(0), BN(1), '0x4d224452801aced8b2f0aebe155379bb5d594381', BN('1000000'), BN('10000000'), MAX_UINT256)
     signedMessage.signedParams = []
     try {
       brink.verifySignedMessage(signedMessage)
