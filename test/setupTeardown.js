@@ -13,6 +13,7 @@ beforeEach(async function () {
   this.deployAndCall = await deploySaltedContract('DeployAndCall')
   this.callExecutor = await deploySaltedContract('CallExecutor')
   this.limitSwapVerifier = await deploySaltedContract('LimitSwapVerifier', ['address'], [CALL_EXECUTOR])
+  this.nftLimitSwapVerifier = await deploySaltedContract('NftLimitSwapVerifier')
   this.transferVerifier = await deploySaltedContract('TransferVerifier')
   this.cancelVerifier = await deploySaltedContract('CancelVerifier')
 
@@ -62,6 +63,12 @@ beforeEach(async function () {
   )
   await this.token2.mint(this.account.address, tknDefaultBal)
 
+  this.nft1 = await deploySaltedContract(
+    'TestERC721',
+    ['string', 'string'],
+    ['CryptoSkunks', 'SKUNKS']
+  )
+
   // TestFulfillSwap is like a mock AMM, fill it with token and ETH to fulfill swaps
   this.testFulfillSwap = await deploySaltedContract('TestFulfillSwap')
   await this.token.mint(this.testFulfillSwap.address, tknDefaultBal)
@@ -70,6 +77,8 @@ beforeEach(async function () {
     to: this.testFulfillSwap.address,
     value: ethers.BigNumber.from('10000000000000000000000000')
   })
+  this.cryptoSkunkID = _.isUndefined(this.cryptoSkunkID) ? 1 : this.cryptoSkunkID + 1
+  await this.nft1.mint(this.testFulfillSwap.address, this.cryptoSkunkID)
 
   this.encodeEthTransfer = encodeEthTransfer
   this.encodeTokenTransfer = encodeTokenTransfer

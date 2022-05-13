@@ -138,6 +138,27 @@ describe('AccountSigner', function () {
     })
   })
 
+  describe('NFT Limit Swap Signing', function () {
+    beforeEach(async function () {
+      this.fulfillNftOutData = (await this.testFulfillSwap.populateTransaction.fulfillNftOutSwap(
+        this.nft1.address, this.cryptoSkunkID, this.account.address
+      )).data
+    })
+
+    it('tokenToNft swap', async function () {
+      await this.account.deploy()
+      const signedTokenToNftSwap = await this.accountSigner.signTokenToNft(
+        '0', '1', this.token.address, this.nft1.address, '10', MAX_UINT256
+      )
+      const acctBal0 = await this.nft1.balanceOf(this.account.address)
+      await this.account.tokenToNft(
+        signedTokenToNftSwap, this.testFulfillSwap.address, this.fulfillNftOutData
+      )
+      const acctBal1 = await this.nft1.balanceOf(this.account.address)
+      expect(acctBal1.sub(acctBal0)).to.equal(BN('1'))
+    })
+  })
+
   describe('Wrong \'v\' value in signature (Ledger)', function() {
     it('when signer signs with invalid ECDSA \'v\' value', async function () {
       // sign with the "bad v" signer that mocks what ledger does

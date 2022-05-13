@@ -118,11 +118,9 @@ class Account {
       const $this = this
       _setupEthersWrappedTx(functionName, async function () {
         const signedMessage = arguments[0]
-
         if (signedMessage.signedParams[0].value.toLowerCase() !== contractAddress.toLowerCase()) {
           throw new Error(`Wrong verifier address for ${functionName}, expected "${contractAddress}"`)
         }
-
         const unsignedParamVals = _.slice(arguments, 1, unsignedParams.length + 1)
         return $this._metaDelegateCall(signedMessage, unsignedParamVals)
       }, 1 + unsignedParams.length)
