@@ -1,4 +1,5 @@
 _ = require('lodash')
+const { VERIFIERS } = require('@brinkninja/config').mainnet
 
 function parseSignedMessage (signedMessage) {
   const { message, signature, signer, accountAddress, functionName, signedParams } = signedMessage
@@ -51,6 +52,18 @@ function parseSignedMessage (signedMessage) {
         tokenOut: paramByName('tokenOut'),
         tokenOutAmount: paramByName('tokenOutAmount')
       }
+    break
+    default:
+      // parse based on VERIFIER def param names
+      const verifierDef = _.find(VERIFIERS, { functionName: msg.verifierFunctionName })
+      if (!verifierDef) {
+        throw new Error(`${msg.verifierFunctionName} is not a supported verifier function`)
+      }
+      verifierDef.paramTypes.forEach(pt => {
+        if (pt.signed) {
+          msg[pt.name] = paramByName(pt.name)
+        }
+      })
     break
   }
 

@@ -29,6 +29,13 @@ describe('parseSignedMessage', function () {
     const msg = brink.parseSignedMessage(signedMessage)
     expectMessageDataMatchForTokenToTokenSwap(signedMessage, msg)
   })
+  it('returns tokenToNft swap message data', async function () {
+    const signedMessage = await this.accountSigner.signTokenToNft(
+      BN(0), BN(1), this.token.address, this.nft1.address, BN(10), maxExpiryBN
+    )
+    const msg = brink.parseSignedMessage(signedMessage)
+    expectMessageDataMatchForTokenToNftSwap(signedMessage, msg)
+  })
   it('returns cancel message data', async function () {
     const signedMessage = await this.accountSigner.signCancel(
       BN(0), BN(1)
@@ -64,6 +71,15 @@ function expectMessageDataMatchForTokenToTokenSwap (signedMessage, msg) {
     tokenInAmount: 'tokenInAmount',
     tokenOut: 'tokenOut',
     tokenOutAmount: 'tokenOutAmount',
+    expiryBlock: 'expiryBlock'
+  })
+}
+
+function expectMessageDataMatchForTokenToNftSwap (signedMessage, msg) {
+  expectMessageDataMatch(signedMessage, msg, {
+    tokenIn: 'tokenIn',
+    nftOut: 'nftOut',
+    tokenInAmount: 'tokenInAmount',
     expiryBlock: 'expiryBlock'
   })
 }
