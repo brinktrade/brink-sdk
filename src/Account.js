@@ -7,6 +7,7 @@ const proxyAccountFromOwner = require('./proxyAccountFromOwner')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const verifySignedMessage = require('./verifySignedMessage')
 const bitmapPointer = require('./utils/bitmapPointer')
+const addSegmentedObj = require('./utils/addSegmentedObj')
 const { VERIFIERS } = require('@brinkninja/config').mainnet
 
 const BN = ethers.BigNumber.from
@@ -73,24 +74,26 @@ class Account {
     this.callStatic = {}
 
     // wraps ethers contract functions and exposes them on the Account object
-    const _setupEthersWrappedTx = (fnName, fn, numParams) => {
+    const _setupEthersWrappedTx = (fnNameSegments, fn, numParams) => {
       let txOptsIndex = numParams
 
-      this[fnName] = (async function () {
+      const segments = !_.isArray(fnNameSegments) ? [fnNameSegments] : fnNameSegments
+
+      addSegmentedObj(this, segments, (async function () {
         const { contract, functionName, params } = await fn.apply(this, arguments)
         let txOptions = arguments[txOptsIndex] || {}
         const tx = await contract[functionName].apply(contract, [...params, txOptions])
         return tx
-      }).bind(this)
+      }).bind(this))
 
-      this.estimateGas[fnName] = (async function () {
+      addSegmentedObj(this.estimateGas, segments, (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
         let txOptions = arguments[txOptsIndex] || {}
         const gas = await contract.estimateGas[functionName].apply(contract, [...params, txOptions])
         return { contractName, functionName, paramTypes, params, gas }
-      }).bind(this)
+      }).bind(this))
 
-      this.populateTransaction[fnName] = (async function () {
+      addSegmentedObj(this.populateTransaction, segments, (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
         let txOptions = arguments[txOptsIndex] || {}
         const txData = await contract.populateTransaction[functionName].apply(contract, [...params, txOptions])
@@ -98,14 +101,14 @@ class Account {
           contractName, functionName, paramTypes, params,
           ...txData
         }
-      }).bind(this)
+      }).bind(this))
 
-      this.callStatic[fnName] = (async function () {
+      addSegmentedObj(this.callStatic, segments, (async function () {
         const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
         let txOptions = arguments[txOptsIndex] || {}
         const returnValues = await contract.callStatic[functionName].apply(contract, [...params, txOptions])
         return { contractName, functionName, paramTypes, params, returnValues }
-      }).bind(this)
+      }).bind(this))
     }
 
     _setupEthersWrappedTx('metaDelegateCall', async (signedMessage, unsignedParams = []) => {
@@ -113,10 +116,10 @@ class Account {
     }, 2)
 
     // sets up ethers functions for all verifiers in config
-    VERIFIERS.forEach(({ functionName, contractAddress, paramTypes }) => {
+    VERIFIERS.forEach(({ contractName, functionName, contractAddress, paramTypes }) => {
       const unsignedParams = _.filter(paramTypes, t => !t.signed)
       const $this = this
-      _setupEthersWrappedTx(functionName, async function () {
+      _setupEthersWrappedTx([contractName, functionName], async function () {
         const signedMessage = arguments[0]
         if (signedMessage.signedParams[0].value.toLowerCase() !== contractAddress.toLowerCase()) {
           throw new Error(`Wrong verifier address for ${functionName}, expected "${contractAddress}"`)

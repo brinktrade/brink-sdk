@@ -14,8 +14,8 @@ describe('AccountSigner', function () {
   describe('Cancel Signing', function() {
     it('Cancel', async function () {
       expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.false
-      const signedCancel = await this.accountSigner.signCancel('0', '1')
-      await this.account_ownerSigner.cancel(signedCancel)
+      const signedCancel = await this.accountSigner.CancelVerifier.signCancel('0', '1')
+      await this.account_ownerSigner.CancelVerifier.cancel(signedCancel)
       expect(await this.account_ownerSigner.bitUsed('0', '1')).to.be.true
       const { bitmapIndex, bit } = await this.account_ownerSigner.nextBit()
       expect(await this.account_ownerSigner.bitUsed(bitmapIndex, bit)).to.be.false
@@ -34,22 +34,22 @@ describe('AccountSigner', function () {
         value: this.transferAmt
       })
 
-      const signedEthTransfer = await this.accountSigner.signEthTransfer(
+      const signedEthTransfer = await this.accountSigner.TransferVerifier.signEthTransfer(
         '0', '1', this.recipientAddress, this.transferAmt.toString(), MAX_UINT256
       )
       
-      const tx = await this.account.ethTransfer(signedEthTransfer)
+      const tx = await this.account.TransferVerifier.ethTransfer(signedEthTransfer)
       expect(tx).to.not.be.undefined
       expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('1.0'))
       expect(await this.account.bitUsed('0', '1')).to.be.true
     })
 
     it('tokenTransfer', async function () {
-      const signedTokenTransfer = await this.accountSigner.signTokenTransfer(
+      const signedTokenTransfer = await this.accountSigner.TransferVerifier.signTokenTransfer(
         '0', '1', this.token.address, this.recipientAddress, '1000', MAX_UINT256
       )
       
-      const tx = await this.account.tokenTransfer(signedTokenTransfer)
+      const tx = await this.account.TransferVerifier.tokenTransfer(signedTokenTransfer)
       expect(tx).to.not.be.undefined
       expect(await this.token.balanceOf(this.recipientAddress)).to.equal('1000')
       expect(await this.account.bitUsed('0', '1')).to.be.true
@@ -80,11 +80,11 @@ describe('AccountSigner', function () {
 
     it('ethToToken swap', async function () {
       await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.signEthToToken(
+      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
         '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
       const acctBal0 = await this.token.balanceOf(this.account.address)
-      await this.account.ethToToken(
+      await this.account.LimitSwapVerifier.ethToToken(
         signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
       const acctBal1 = await this.token.balanceOf(this.account.address)
@@ -92,11 +92,11 @@ describe('AccountSigner', function () {
     })
 
     it('tokenToEth swap', async function () {
-      const signedTokenToEthSwap = await this.accountSigner.signTokenToEth(
+      const signedTokenToEthSwap = await this.accountSigner.LimitSwapVerifier.signTokenToEth(
         '0', '1', this.token.address, '10', '10', MAX_UINT256
       )
       const acctBal0 = await ethers.provider.getBalance(this.account.address)
-      await this.account.ethToToken(
+      await this.account.LimitSwapVerifier.ethToToken(
         signedTokenToEthSwap, this.testFulfillSwap.address, this.fulfillEthOutData
       )
       const acctBal1 = await ethers.provider.getBalance(this.account.address)
@@ -105,11 +105,11 @@ describe('AccountSigner', function () {
 
     it('tokenToToken swap', async function () {
       await this.fundAccount()
-      const signedTokenToTokenSwap = await this.accountSigner.signTokenToToken(
+      const signedTokenToTokenSwap = await this.accountSigner.LimitSwapVerifier.signTokenToToken(
         '0', '1', this.token.address, this.token2.address, '5', '10', MAX_UINT256
       )
       const acctBal0 = await this.token2.balanceOf(this.account.address)
-      await this.account.ethToToken(
+      await this.account.LimitSwapVerifier.ethToToken(
         signedTokenToTokenSwap, this.testFulfillSwap.address, this.fulfillToken2OutData
       )
       const acctBal1 = await this.token2.balanceOf(this.account.address)
@@ -147,11 +147,11 @@ describe('AccountSigner', function () {
 
     it('tokenToNft swap', async function () {
       await this.account.deploy()
-      const signedTokenToNftSwap = await this.accountSigner.signTokenToNft(
+      const signedTokenToNftSwap = await this.accountSigner.NftLimitSwapVerifier.signTokenToNft(
         '0', '1', this.token.address, this.nft1.address, '10', MAX_UINT256
       )
       const acctBal0 = await this.nft1.balanceOf(this.account.address)
-      await this.account.tokenToNft(
+      await this.account.NftLimitSwapVerifier.tokenToNft(
         signedTokenToNftSwap, this.testFulfillSwap.address, this.fulfillNftOutData
       )
       const acctBal1 = await this.nft1.balanceOf(this.account.address)
@@ -162,7 +162,7 @@ describe('AccountSigner', function () {
   describe('Wrong \'v\' value in signature (Ledger)', function() {
     it('when signer signs with invalid ECDSA \'v\' value', async function () {
       // sign with the "bad v" signer that mocks what ledger does
-      const signedEthTransfer = await this.accountSignerBadV.signEthTransfer(
+      const signedEthTransfer = await this.accountSignerBadV.TransferVerifier.signEthTransfer(
         '0', '1', randomHex(20), ethers.utils.parseEther('1.0').toString(), MAX_UINT256
       )
 
@@ -175,7 +175,7 @@ describe('AccountSigner', function () {
 })
 
 async function ethToTokenSignWithBnTest(_BN) {
-  const signedSwap = await this.accountSigner.signEthToToken(
+  const signedSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
     _BN(0), _BN(1), this.token.address, _BN(10), _BN(10), _BN('115792089237316195423570985008687907853269984665640564039457584007913129639935')
   )
   const { params } = signedSwap.signedParams[1].callData
@@ -187,7 +187,7 @@ async function ethToTokenSignWithBnTest(_BN) {
 }
 
 async function tokenToEthSignWithBnTest(_BN) {
-  const signedSwap = await this.accountSigner.signTokenToEth(
+  const signedSwap = await this.accountSigner.LimitSwapVerifier.signTokenToEth(
     _BN(0), _BN(1), this.token.address, _BN(10), _BN(10), _BN('115792089237316195423570985008687907853269984665640564039457584007913129639935')
   )
   const { params } = signedSwap.signedParams[1].callData
@@ -198,7 +198,7 @@ async function tokenToEthSignWithBnTest(_BN) {
   expect(params[5].value).to.equal('115792089237316195423570985008687907853269984665640564039457584007913129639935')
 }
 async function tokenToTokenSignWithBnTest(_BN) {
-  const signedSwap = await this.accountSigner.signTokenToToken(
+  const signedSwap = await this.accountSigner.LimitSwapVerifier.signTokenToToken(
     _BN(0), _BN(1), this.token.address, this.token.address, _BN(10), _BN(10), _BN('115792089237316195423570985008687907853269984665640564039457584007913129639935')
   )
   const { params } = signedSwap.signedParams[1].callData
