@@ -159,6 +159,31 @@ describe('AccountSigner', function () {
     })
   })
 
+  describe('NFT Approval Swap Signing', function () {
+    beforeEach(async function () {
+      this.fulfillNftOutData = (await this.testFulfillSwap.populateTransaction.fulfillNftOutSwap(
+        this.nft1.address, this.cryptoSkunkID, this.accountSigner.signerAddress()
+      )).data
+    })
+
+    it('tokenToNft swap', async function () {
+      await this.account.deploy()
+      const signedTokenToNftSwap = await this.accountSigner.NftApprovalSwapVerifier.signTokenToNft(
+        '0', '1', this.token.address, this.nft1.address, '10', MAX_UINT256
+      )
+      await this.token.connect(this.ethersAccountSigner).approve(this.account.address, '10')
+      const acctBal0 = await this.nft1.balanceOf(this.accountSigner.signerAddress())
+      const recipientBal0 = await this.token.balanceOf(this.testFulfillSwap.address)
+      await this.account.NftApprovalSwapVerifier.tokenToNft(
+        signedTokenToNftSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillNftOutData
+      )
+      const acctBal1 = await this.nft1.balanceOf(this.accountSigner.signerAddress())
+      expect(acctBal1.sub(acctBal0)).to.equal(BN('1'))
+      const recipientBal1 = await this.token.balanceOf(this.testFulfillSwap.address)
+      expect(recipientBal1.sub(recipientBal0)).to.equal(BN('10'))
+    })
+  })
+
   describe('Wrong \'v\' value in signature (Ledger)', function() {
     it('when signer signs with invalid ECDSA \'v\' value', async function () {
       // sign with the "bad v" signer that mocks what ledger does
