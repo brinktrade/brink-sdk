@@ -4,6 +4,7 @@ const sigToValidECDSA = require('./utils/sigToValidECDSA')
 const capitalize = require('./utils/capitalize')
 const verifyParamInput = require('./utils/verifyParamInput')
 const isBigNumber = require('./utils/isBigNumber')
+const addSegmentedObj = require('./utils/addSegmentedObj')
 const proxyAccountFromOwner = require('./proxyAccountFromOwner')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const {
@@ -19,11 +20,13 @@ class AccountSigner {
     this._chainId = chainId
     this._accountVersion = '1'
 
-    VERIFIERS.forEach(({ functionName, contractAddress, paramTypes }) => {
-
+    VERIFIERS.forEach(({ contractName, functionName, contractAddress, paramTypes }) => {
       // create a signer function for each Verifier
       const fnName = `sign${capitalize(functionName)}`
-      this[fnName] = async function () {
+
+      const segments = [contractName, fnName]
+
+      addSegmentedObj(this, segments, (async function () {
         let paramValuesMap
         if (_.isObject(arguments[0]) && !isBigNumber(arguments[0])) {
           paramValuesMap = arguments[0]
@@ -54,7 +57,7 @@ class AccountSigner {
         // sign the call to the verifier
         const signedCall = await this.signMetaDelegateCall(contractAddress, call)
         return signedCall
-      }
+      }).bind(this))
 
     })
   }

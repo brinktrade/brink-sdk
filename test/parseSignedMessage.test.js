@@ -9,35 +9,35 @@ const maxExpiryBN = BN('11579208923731619542357098500868790785326998466564056403
 
 describe('parseSignedMessage', function () {
   it('returns limitSwapEthToToken message data', async function () {
-    const signedMessage = await this.accountSigner.signEthToToken(
+    const signedMessage = await this.accountSigner.LimitSwapVerifier.signEthToToken(
       BN(0), BN(1), this.token.address, BN(10), BN(11), maxExpiryBN
     )
     const msg = brink.parseSignedMessage(signedMessage)
     expectMessageDataMatchForEthToTokenSwap(signedMessage, msg)
   })
   it('returns limitSwapTokenToEth message data', async function () {
-    const signedMessage = await this.accountSigner.signTokenToEth(
+    const signedMessage = await this.accountSigner.LimitSwapVerifier.signTokenToEth(
       BN(0), BN(1), this.token.address, BN(10), BN(11), maxExpiryBN
     )
     const msg = brink.parseSignedMessage(signedMessage)
     expectMessageDataMatchForTokenToEthSwap(signedMessage, msg)
   })
   it('returns limitSwapTokenToToken message data', async function () {
-    const signedMessage = await this.accountSigner.signTokenToToken(
+    const signedMessage = await this.accountSigner.LimitSwapVerifier.signTokenToToken(
       BN(0), BN(1), this.token.address, this.token2.address, BN(10), BN(11), maxExpiryBN
     )
     const msg = brink.parseSignedMessage(signedMessage)
     expectMessageDataMatchForTokenToTokenSwap(signedMessage, msg)
   })
   it('returns tokenToNft swap message data', async function () {
-    const signedMessage = await this.accountSigner.signTokenToNft(
+    const signedMessage = await this.accountSigner.NftLimitSwapVerifier.signTokenToNft(
       BN(0), BN(1), this.token.address, this.nft1.address, BN(10), maxExpiryBN
     )
     const msg = brink.parseSignedMessage(signedMessage)
     expectMessageDataMatchForTokenToNftSwap(signedMessage, msg)
   })
   it('returns cancel message data', async function () {
-    const signedMessage = await this.accountSigner.signCancel(
+    const signedMessage = await this.accountSigner.CancelVerifier.signCancel(
       BN(0), BN(1)
     )
     const msg = brink.parseSignedMessage(signedMessage)

@@ -14,6 +14,7 @@ beforeEach(async function () {
   this.callExecutor = await deploySaltedContract('CallExecutor')
   this.limitSwapVerifier = await deploySaltedContract('LimitSwapVerifier', ['address'], [CALL_EXECUTOR])
   this.nftLimitSwapVerifier = await deploySaltedContract('NftLimitSwapVerifier')
+  this.nftApprovalSwapVerifier = await deploySaltedContract('NftApprovalSwapVerifier')
   this.transferVerifier = await deploySaltedContract('TransferVerifier')
   this.cancelVerifier = await deploySaltedContract('CancelVerifier')
 
@@ -55,6 +56,7 @@ beforeEach(async function () {
   )
   const tknDefaultBal = BN(10).pow(9).mul(BN(10).pow(18))
   await this.token.mint(this.account.address, tknDefaultBal)
+  await this.token.mint(this.ethersAccountSigner.address, tknDefaultBal)
 
   this.token2 = await deploySaltedContract(
     'TestERC20',
@@ -62,6 +64,7 @@ beforeEach(async function () {
     ['TestToken_2', 'TKN2', 18]
   )
   await this.token2.mint(this.account.address, tknDefaultBal)
+  await this.token2.mint(this.ethersAccountSigner.address, tknDefaultBal)
 
   this.nft1 = await deploySaltedContract(
     'TestERC721',
