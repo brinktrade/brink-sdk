@@ -55,9 +55,9 @@ function parseSignedMessage (signedMessage) {
     break
     default:
       // parse based on VERIFIER def param names
-      const verifierDef = _.find(VERIFIERS, { functionName: msg.verifierFunctionName })
+      const verifierDef = _.find(VERIFIERS, { contractAddress: msg.verifier, functionName: msg.verifierFunctionName })
       if (!verifierDef) {
-        throw new Error(`${msg.verifierFunctionName} is not a supported verifier function`)
+        throw new Error(`Either ${msg.verifier} is not a supported verifier address or ${msg.verifierFunctionName} is not a supported function`)
       }
       verifierDef.paramTypes.forEach(pt => {
         if (pt.signed) {
