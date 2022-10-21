@@ -30,5 +30,7 @@ module.exports = {
   proxyAccountFromOwner: require('./src/proxyAccountFromOwner'),
   recoverSigner: require('./src/recoverSigner'),
   verifySignedMessage: require('./src/verifySignedMessage'),
-  parseSignedMessage: require('./src/parseSignedMessage')
+  parseSignedMessage: require('./src/parseSignedMessage'),
+  encodeFunctionCall: require('./src/encodeFunctionCall'),
+  verifyParamInput: require('./src/utils/verifyParamInput')
 }
