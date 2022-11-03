@@ -1,4 +1,4 @@
-// chains function segments together, i.e. Account.LimitSwapVerifier.tokenToEth()
+// chains function segments together, i.e. Account.ApprovalSwapsV1.tokenToToken()
 function addSegmentedObj (obj1, segments, obj2) {
   if (segments.length == 1) {
     obj1[segments[0]] = obj2

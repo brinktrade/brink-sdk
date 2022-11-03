@@ -23,26 +23,6 @@ function parseSignedMessage (signedMessage) {
   }
 
   switch (msg.verifierFunctionName) {
-    case 'ethToToken':
-      msg = {
-        ...msg,
-        expiryBlock: paramByName('expiryBlock'),
-        tokenIn: 'ETH',
-        tokenInAmount: paramByName('ethAmount'),
-        tokenOut: paramByName('token'),
-        tokenOutAmount: paramByName('tokenAmount')
-      }
-    break
-    case 'tokenToEth':
-      msg = {
-        ...msg,
-        expiryBlock: paramByName('expiryBlock'),
-        tokenIn: paramByName('token'),
-        tokenInAmount: paramByName('tokenAmount'),
-        tokenOut: 'ETH',
-        tokenOutAmount: paramByName('ethAmount')
-      }
-    break
     case 'tokenToToken':
       msg = {
         ...msg,

@@ -1,6 +1,5 @@
 const { ethers } = require('hardhat')
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
-const { CALL_EXECUTOR } = require('@brinkninja/verifiers/constants')
 const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
 const { MAX_UINT256 } = constants
 const brink = require('../index')
@@ -11,12 +10,10 @@ beforeEach(async function () {
   this.accountContract = await deploySaltedContract('Account')
   this.accountFactory = await deploySaltedContract('AccountFactory')
   this.deployAndCall = await deploySaltedContract('DeployAndCall')
-  this.callExecutor = await deploySaltedContract('CallExecutor')
-  this.limitSwapVerifier = await deploySaltedContract('LimitSwapVerifier', ['address'], [CALL_EXECUTOR])
-  this.nftLimitSwapVerifier = await deploySaltedContract('NftLimitSwapVerifier')
-  this.nftApprovalSwapVerifier = await deploySaltedContract('NftApprovalSwapVerifier')
   this.transferVerifier = await deploySaltedContract('TransferVerifier')
   this.cancelVerifier = await deploySaltedContract('CancelVerifier')
+  this.callExecutorV2 = await deploySaltedContract('CallExecutorV2')
+  this.approvalSwapsV1 = await deploySaltedContract('ApprovalSwapsV1')
 
   const signers = await ethers.getSigners()
   this.defaultSigner = signers[0]
