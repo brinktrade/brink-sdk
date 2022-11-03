@@ -61,7 +61,8 @@ class Account {
   constructor ({
     ownerAddress,
     provider,
-    signer
+    signer,
+    verifiers = []
   }) {
     this._ownerAddress = ownerAddress
     this._provider = provider
@@ -116,7 +117,8 @@ class Account {
     }, 2)
 
     // sets up ethers functions for all verifiers in config
-    VERIFIERS.forEach(({ contractName, functionName, contractAddress, paramTypes }) => {
+    const verifierDefs = [...VERIFIERS, ...verifiers]
+    verifierDefs.forEach(({ contractName, functionName, contractAddress, paramTypes }) => {
       const unsignedParams = _.filter(paramTypes, t => !t.signed)
       const $this = this
       _setupEthersWrappedTx([contractName, functionName], async function () {

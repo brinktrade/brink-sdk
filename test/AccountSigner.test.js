@@ -4,7 +4,8 @@ const { randomHex } = require('web3-utils')
 const { BN: ethersBN } = require('@brinkninja/utils')
 const { toBN: web3BN } = require('web3-utils')
 const { solidity } = require('ethereum-waffle')
-const { MAX_UINT256 } = require('@brinkninja/utils').constants
+const { MAX_UINT256, ZERO_ADDRESS } = require('@brinkninja/utils').constants
+const brink = require('../index')
 
 const BN = ethers.BigNumber.from
 chai.use(solidity)
@@ -56,106 +57,50 @@ describe('AccountSigner', function () {
     })
   })
 
-  describe('Limit Swap Signing', function () {
-    beforeEach(async function () {
-      this.fundAccount = async () => {
-        await this.defaultSigner.sendTransaction({
-          to: this.account.address,
-          value: ethers.utils.parseEther('1.0')
-        })
-      }
-  
+  describe('Approval Swap Signing', function () {
+    beforeEach(async function () {  
       this.fulfillTokenOutData = (await this.testFulfillSwap.populateTransaction.fulfillTokenOutSwap(
-        this.token.address, '10', this.account.address
-      )).data
-  
-      this.fulfillToken2OutData = (await this.testFulfillSwap.populateTransaction.fulfillTokenOutSwap(
-        this.token2.address, '10', this.account.address
+        this.token2.address, '10', this.ownerAddress
       )).data
   
       this.fulfillEthOutData = (await this.testFulfillSwap.populateTransaction.fulfillEthOutSwap(
-        '10', this.account.address
+        '10', this.ownerAddress
       )).data
     })
 
-    it('ethToToken swap', async function () {
-      await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-      const acctBal0 = await this.token.balanceOf(this.account.address)
-      await this.account.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
-      )
-      const acctBal1 = await this.token.balanceOf(this.account.address)
-      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
-    })
-
-    it('tokenToEth swap', async function () {
-      const signedTokenToEthSwap = await this.accountSigner.LimitSwapVerifier.signTokenToEth(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-      const acctBal0 = await ethers.provider.getBalance(this.account.address)
-      await this.account.LimitSwapVerifier.ethToToken(
-        signedTokenToEthSwap, this.testFulfillSwap.address, this.fulfillEthOutData
-      )
-      const acctBal1 = await ethers.provider.getBalance(this.account.address)
-      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
-    })
-
     it('tokenToToken swap', async function () {
-      await this.fundAccount()
-      const signedTokenToTokenSwap = await this.accountSigner.LimitSwapVerifier.signTokenToToken(
-        '0', '1', this.token.address, this.token2.address, '5', '10', MAX_UINT256
+      await this.token.connect(this.ethersAccountSigner).approve(this.account.address, '10')
+      const signedTokenToTokenSwap = await this.accountSigner.ApprovalSwapsV1.signTokenToToken(
+        '0', '1', this.token.address, this.token2.address, '10', '10', MAX_UINT256
       )
-      const acctBal0 = await this.token2.balanceOf(this.account.address)
-      await this.account.LimitSwapVerifier.ethToToken(
-        signedTokenToTokenSwap, this.testFulfillSwap.address, this.fulfillToken2OutData
+      const ownerBal0 = await this.token2.balanceOf(this.ownerAddress)
+      await this.account.ApprovalSwapsV1.tokenToToken(
+        signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
-      const acctBal1 = await this.token2.balanceOf(this.account.address)
-      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
+      const ownerBal1 = await this.token2.balanceOf(this.ownerAddress)
+      expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
+    })
+
+    it('tokenToToken swap with ETH output', async function () {
+      await this.token.connect(this.ethersAccountSigner).approve(this.account.address, '10')
+      const signedTokenToTokenSwap = await this.accountSigner.ApprovalSwapsV1.signTokenToToken(
+        '0', '1', this.token.address, ZERO_ADDRESS, '10', '10', MAX_UINT256
+      )
+      const ownerBal0 = await ethers.provider.getBalance(this.ownerAddress)
+      await this.account.ApprovalSwapsV1.tokenToToken(
+        signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillEthOutData
+      )
+      const ownerBal1 = await ethers.provider.getBalance(this.ownerAddress)
+      expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
     })
 
     describe('when given BN values', function () {
       it('signEthToTokenSwap should correctly encode ethers.js BN', async function () {
-        await ethToTokenSignWithBnTest.call(this, ethersBN)
-      })
-      it('signEthToTokenSwap should correctly encode web3 BN', async function () {
-        await ethToTokenSignWithBnTest.call(this, web3BN)
-      })
-      it('signTokenToEthSwap should correctly encode ethers.js BN', async function () {
-        await tokenToEthSignWithBnTest.call(this, ethersBN)
-      })
-      it('signTokenToEthSwap should correctly encode web3 BN', async function () {
-        await tokenToEthSignWithBnTest.call(this, web3BN)
-      })
-      it('signTokenToTokenSwap should correctly encode ethers.js BN', async function () {
         await tokenToTokenSignWithBnTest.call(this, ethersBN)
       })
-      it('signTokenToTokenSwap should correctly encode web3 BN', async function () {
+      it('signEthToTokenSwap should correctly encode web3 BN', async function () {
         await tokenToTokenSignWithBnTest.call(this, web3BN)
       })
-    })
-  })
-
-  describe('NFT Limit Swap Signing', function () {
-    beforeEach(async function () {
-      this.fulfillNftOutData = (await this.testFulfillSwap.populateTransaction.fulfillNftOutSwap(
-        this.nft1.address, this.cryptoSkunkID, this.account.address
-      )).data
-    })
-
-    it('tokenToNft swap', async function () {
-      await this.account.deploy()
-      const signedTokenToNftSwap = await this.accountSigner.NftLimitSwapVerifier.signTokenToNft(
-        '0', '1', this.token.address, this.nft1.address, '10', MAX_UINT256
-      )
-      const acctBal0 = await this.nft1.balanceOf(this.account.address)
-      await this.account.NftLimitSwapVerifier.tokenToNft(
-        signedTokenToNftSwap, this.testFulfillSwap.address, this.fulfillNftOutData
-      )
-      const acctBal1 = await this.nft1.balanceOf(this.account.address)
-      expect(acctBal1.sub(acctBal0)).to.equal(BN('1'))
     })
   })
 
@@ -168,17 +113,17 @@ describe('AccountSigner', function () {
 
     it('tokenToNft swap', async function () {
       await this.account.deploy()
-      const signedTokenToNftSwap = await this.accountSigner.NftApprovalSwapVerifier.signTokenToNft(
+      const signedTokenToNftSwap = await this.accountSigner.ApprovalSwapsV1.signTokenToNft(
         '0', '1', this.token.address, this.nft1.address, '10', MAX_UINT256
       )
       await this.token.connect(this.ethersAccountSigner).approve(this.account.address, '10')
-      const acctBal0 = await this.nft1.balanceOf(this.accountSigner.signerAddress())
+      const ownerBal0 = await this.nft1.balanceOf(this.accountSigner.signerAddress())
       const recipientBal0 = await this.token.balanceOf(this.testFulfillSwap.address)
-      await this.account.NftApprovalSwapVerifier.tokenToNft(
+      await this.account.ApprovalSwapsV1.tokenToNft(
         signedTokenToNftSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillNftOutData
       )
-      const acctBal1 = await this.nft1.balanceOf(this.accountSigner.signerAddress())
-      expect(acctBal1.sub(acctBal0)).to.equal(BN('1'))
+      const ownerBal1 = await this.nft1.balanceOf(this.accountSigner.signerAddress())
+      expect(ownerBal1.sub(ownerBal0)).to.equal(BN('1'))
       const recipientBal1 = await this.token.balanceOf(this.testFulfillSwap.address)
       expect(recipientBal1.sub(recipientBal0)).to.equal(BN('10'))
     })
@@ -197,34 +142,43 @@ describe('AccountSigner', function () {
       expect(v == '1b' || v == '1c').to.be.true
     })
   })
+
+  describe('custom verifiers', function () {
+    it('should expose a verifier signing function', async function () {
+      const doThingVerifierDef = {
+        "functionName": "doThing",
+        "functionSignature": "doThing(uint256,uint256)",
+        "functionSignatureHash": "0x3c447f23",
+        "contractName": "FakeVerifier",
+        "contractAddress": "0xE100eF1C4339Dd4E4b54d5cBB6CcEfA96071E227",
+        "paramTypes": [
+          {
+            "name": "paramOne",
+            "type": "uint256",
+            "signed": true
+          },
+          {
+            "name": "paramTwo",
+            "type": "uint256",
+            "signed": false
+          }
+        ]
+      }
+      const { AccountSigner, verifySignedMessage } = brink({
+        network: 'hardhat',
+        verifiers: [doThingVerifierDef]
+      })
+      const signer = AccountSigner(this.ethersAccountSigner)
+      const signedMsg = await signer.FakeVerifier.signDoThing(123)
+      verifySignedMessage(signedMsg)
+      expect(signedMsg.signedParams[0].value).to.equal(doThingVerifierDef.contractAddress)
+    })
+  })
 })
 
-async function ethToTokenSignWithBnTest(_BN) {
-  const signedSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-    _BN(0), _BN(1), this.token.address, _BN(10), _BN(10), _BN('115792089237316195423570985008687907853269984665640564039457584007913129639935')
-  )
-  const { params } = signedSwap.signedParams[1].callData
-  expect(params[0].value).to.equal('0')
-  expect(params[1].value).to.equal('1')
-  expect(params[3].value).to.equal('10')
-  expect(params[4].value).to.equal('10')
-  expect(params[5].value).to.equal('115792089237316195423570985008687907853269984665640564039457584007913129639935')
-}
-
-async function tokenToEthSignWithBnTest(_BN) {
-  const signedSwap = await this.accountSigner.LimitSwapVerifier.signTokenToEth(
-    _BN(0), _BN(1), this.token.address, _BN(10), _BN(10), _BN('115792089237316195423570985008687907853269984665640564039457584007913129639935')
-  )
-  const { params } = signedSwap.signedParams[1].callData
-  expect(params[0].value).to.equal('0')
-  expect(params[1].value).to.equal('1')
-  expect(params[3].value).to.equal('10')
-  expect(params[4].value).to.equal('10')
-  expect(params[5].value).to.equal('115792089237316195423570985008687907853269984665640564039457584007913129639935')
-}
 async function tokenToTokenSignWithBnTest(_BN) {
-  const signedSwap = await this.accountSigner.LimitSwapVerifier.signTokenToToken(
-    _BN(0), _BN(1), this.token.address, this.token.address, _BN(10), _BN(10), _BN('115792089237316195423570985008687907853269984665640564039457584007913129639935')
+  const signedSwap = await this.accountSigner.ApprovalSwapsV1.signTokenToToken(
+    _BN(0), _BN(1), this.token.address, this.token2.address, _BN(10), _BN(10), _BN('115792089237316195423570985008687907853269984665640564039457584007913129639935')
   )
   const { params } = signedSwap.signedParams[1].callData
   expect(params[0].value).to.equal('0')

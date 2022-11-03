@@ -1,6 +1,5 @@
 const { ethers } = require('hardhat')
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
-const { CALL_EXECUTOR } = require('@brinkninja/verifiers/constants')
 const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
 const { MAX_UINT256 } = constants
 const brink = require('../index')
@@ -11,12 +10,10 @@ beforeEach(async function () {
   this.accountContract = await deploySaltedContract('Account')
   this.accountFactory = await deploySaltedContract('AccountFactory')
   this.deployAndCall = await deploySaltedContract('DeployAndCall')
-  this.callExecutor = await deploySaltedContract('CallExecutor')
-  this.limitSwapVerifier = await deploySaltedContract('LimitSwapVerifier', ['address'], [CALL_EXECUTOR])
-  this.nftLimitSwapVerifier = await deploySaltedContract('NftLimitSwapVerifier')
-  this.nftApprovalSwapVerifier = await deploySaltedContract('NftApprovalSwapVerifier')
   this.transferVerifier = await deploySaltedContract('TransferVerifier')
   this.cancelVerifier = await deploySaltedContract('CancelVerifier')
+  this.callExecutorV2 = await deploySaltedContract('CallExecutorV2')
+  this.approvalSwapsV1 = await deploySaltedContract('ApprovalSwapsV1')
 
   const signers = await ethers.getSigners()
   this.defaultSigner = signers[0]
@@ -25,29 +22,31 @@ beforeEach(async function () {
   this.ethersAccountBadVSigner = await mockLedgerSignerBadV()
   this.ownerAddress = this.ethersAccountSigner.address
 
+  const { AccountSigner, Account } = brink({ network: 'hardhat' })
+
   // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  this.account = brink.account(this.ownerAddress, {
+  this.account = Account(this.ownerAddress, {
     provider: ethers.provider,
     signer: this.defaultSigner
   })
 
   // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  this.account_ownerSigner = brink.account(this.ownerAddress, {
+  this.account_ownerSigner = Account(this.ownerAddress, {
     provider: ethers.provider,
     signer: this.ethersAccountSigner
   })
 
-  const Account = await ethers.getContractFactory('Account')
-  this.proxyAccountContract = await Account.attach(this.account.address)
+  const AccountImpl = await ethers.getContractFactory('Account')
+  this.proxyAccountContract = await AccountImpl.attach(this.account.address)
 
   const MockAccountBits = await ethers.getContractFactory('MockAccountBits')
   this.mockAccountBits = await MockAccountBits.deploy()
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
-  this.accountSigner = brink.accountSigner(this.ethersAccountSigner, 'hardhat')
+  this.accountSigner = AccountSigner(this.ethersAccountSigner)
 
   // accountSigner that signs "ledger style" with bad 'v' values 00 and 01
-  this.accountSignerBadV = brink.accountSigner(this.ethersAccountBadVSigner, 'hardhat')
+  this.accountSignerBadV = AccountSigner(this.ethersAccountBadVSigner)
 
   this.token = await deploySaltedContract(
     'TestERC20',

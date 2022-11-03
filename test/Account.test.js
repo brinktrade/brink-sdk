@@ -5,6 +5,7 @@ const { solidity } = require('ethereum-waffle')
 const { randomHex } = require('web3-utils')
 const BigNumber = require('bignumber.js')
 const { constants } = require('@brinkninja/utils')
+const brink = require('../index')
 const proxyAccountFromOwner = require('../src/proxyAccountFromOwner')
 const BN = ethers.BigNumber.from
 const { MAX_UINT256 } = constants
@@ -27,7 +28,7 @@ describe('Account', function () {
     }
 
     this.fulfillTokenOutData = (await this.testFulfillSwap.populateTransaction.fulfillTokenOutSwap(
-      this.token.address, '10', this.account.address
+      this.token2.address, '10', this.ownerAddress
     )).data
 
     // this patches in a mock storageLoad function, which will load storage from this.mockAccountBits
@@ -40,16 +41,19 @@ describe('Account', function () {
         return val
       }).bind(this.account)
     }
+
+    await this.token.connect(this.ethersAccountSigner).approve(this.account.address, '10')
+    this.signedTokenToTokenSwap = await this.accountSigner.ApprovalSwapsV1.signTokenToToken(
+      '0', '1', this.token.address, this.token2.address, '10', '10', MAX_UINT256
+    )
   })
 
   describe('populateTransaction', function () {
     it('should wrap call to ethers populateTranscation', async function () {
       await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-      const res = await this.account.populateTransaction.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
+      await this.account.deploy()
+      const res = await this.account.populateTransaction.ApprovalSwapsV1.tokenToToken(
+        this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
       const { contractName, functionName, params, paramTypes, data, to, from } = res
       expect(contractName).not.to.be.undefined
@@ -63,11 +67,8 @@ describe('Account', function () {
 
     it('should use gasPrice override when provided', async function () {
       await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-      const res = await this.account.populateTransaction.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasPrice: mockGasPrice }
+      const res = await this.account.populateTransaction.ApprovalSwapsV1.tokenToToken(
+        this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasPrice: mockGasPrice }
       )
       expect(res.gasPrice).to.equal(mockGasPrice)
     })
@@ -76,26 +77,16 @@ describe('Account', function () {
   describe('estimateGas', function () {
     it('should wrap call to ethers estimateGas', async function () {
       await this.fundAccount()
-      
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
+      const res = await this.account.estimateGas.ApprovalSwapsV1.tokenToToken(
+        this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
-      const res = await this.account.estimateGas.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
-      )
-
       expect(res.gas).to.be.gt(0)
     })
 
     it('should use gasLimit override when provided', async function () {
       await this.fundAccount()
-      
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-      
-      await expect(this.account.estimateGas.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasLimit: 20000 }
+      await expect(this.account.estimateGas.ApprovalSwapsV1.tokenToToken(
+        this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasLimit: 20000 }
       )).to.be.rejectedWith('insufficient funds for intrinsic transaction cost')
     })
   })
@@ -103,64 +94,48 @@ describe('Account', function () {
   describe('callStatic', function () {
     it('should wrap call to ethers callStatic', async function () {
       await this.fundAccount()
-
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-      const res = await this.account.callStatic.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
-      )
-      
+      const res = await this.account.callStatic.ApprovalSwapsV1.tokenToToken(
+        this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData
+      ) 
       expect(res.returnValues).not.to.be.undefined
     })
 
     it('should use gasLimit override when provided', async function () {
       await this.fundAccount()
-
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-      await expect(this.account.callStatic.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasLimit: 20000 }
+      await expect(this.account.callStatic.ApprovalSwapsV1.tokenToToken(
+        this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasLimit: 20000 }
       )).to.be.rejectedWith('insufficient funds for intrinsic transaction cost')
     })
   })
 
-  describe('LimitSwapVerifier.ethToToken function', function () {
+  describe('ApprovalSwapsV1.tokenToToken function', function () {
     it('should send an ETH to ERC20 swap tx', async function () {
       await this.fundAccount()
-      await this.deployAccount
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
+
+      const ownerBal0 = await this.token2.balanceOf(this.ownerAddress)
+
+      await this.account.ApprovalSwapsV1.tokenToToken(
+        this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
-      const acctBal0 = await this.token.balanceOf(this.account.address)
-      await this.account.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
-      )
-      const acctBal1 = await this.token.balanceOf(this.account.address)
-      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
+
+      const ownerBal1 = await this.token2.balanceOf(this.ownerAddress)
+      expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
     })
 
-    it('should send an ETH to ERC20 swap (without account deployment', async function () {
+    it('should send an ERC20 to ERC20 swap (without account deployment', async function () {
       await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
+      const ownerBal0 = await this.token2.balanceOf(this.ownerAddress)
+      await this.account.ApprovalSwapsV1.tokenToToken(
+        this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
-      const acctBal0 = await this.token.balanceOf(this.account.address)
-      await this.account.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData
-      )
-      const acctBal1 = await this.token.balanceOf(this.account.address)
-      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
+      const ownerBal1 = await this.token2.balanceOf(this.ownerAddress)
+      expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
     })
 
     it('should use gasPrice override when provided', async function () {
       await this.fundAccount()
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-      const res = await this.account.LimitSwapVerifier.ethToToken(
-        signedEthToTokenSwap, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasPrice: mockGasPrice }
+      const res = await this.account.ApprovalSwapsV1.tokenToToken(
+        this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData, { gasPrice: mockGasPrice }
       )
       expect(res.gasPrice).to.equal(mockGasPrice)
     })
@@ -256,16 +231,12 @@ describe('Account', function () {
     it('should send swap via metaDelegateCall', async function () {
       await this.fundAccount()
       await this.account.deploy()
-      const signedEthToTokenSwap = await this.accountSigner.LimitSwapVerifier.signEthToToken(
-        '0', '1', this.token.address, '10', '10', MAX_UINT256
-      )
-
-      const acctBal0 = await this.token.balanceOf(this.account.address)
+      const ownerBal0 = await this.token2.balanceOf(this.ownerAddress)
       await this.account.metaDelegateCall(
-        signedEthToTokenSwap, [this.testFulfillSwap.address, this.fulfillTokenOutData]
+        this.signedTokenToTokenSwap, [this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData]
       )
-      const acctBal1 = await this.token.balanceOf(this.account.address)
-      expect(acctBal1.sub(acctBal0)).to.equal(BN('10'))
+      const ownerBal1 = await this.token2.balanceOf(this.ownerAddress)
+      expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
     })
 
     it('should use gasPrice override when provided', async function () {
@@ -384,6 +355,42 @@ describe('Account', function () {
     it('when account is not deployed, should return false', async function () {
       const bit = BN(2).pow(BN(3))
       expect(await this.account.bitUsed(0, bit)).to.equal(false)
+    })
+  })
+
+  describe('custom verifiers', function () {
+    it('should expose a verifier execution function', async function () {
+      const doThingVerifierDef = {
+        "functionName": "doThing",
+        "functionSignature": "doThing(uint256,uint256)",
+        "functionSignatureHash": "0x3c447f23",
+        "contractName": "FakeVerifier",
+        "contractAddress": "0xE100eF1C4339Dd4E4b54d5cBB6CcEfA96071E227",
+        "paramTypes": [
+          {
+            "name": "paramOne",
+            "type": "uint256",
+            "signed": true
+          },
+          {
+            "name": "paramTwo",
+            "type": "uint256",
+            "signed": false
+          }
+        ]
+      }
+      const { AccountSigner, Account } = brink({
+        provider: ethers.provider,
+        signer: this.defaultSigner,
+        network: 'hardhat',
+        verifiers: [doThingVerifierDef]
+      })
+      const signer = AccountSigner(this.ethersAccountSigner)
+      const signedMsg = await signer.FakeVerifier.signDoThing(123)
+      const account = Account(this.ownerAddress)
+      await account.deploy()
+      const call = await account.populateTransaction.FakeVerifier.doThing(signedMsg, 234)
+      expect(call.params[0]).to.equal(doThingVerifierDef.contractAddress)
     })
   })
 })
