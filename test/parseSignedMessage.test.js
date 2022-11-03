@@ -29,6 +29,37 @@ describe('parseSignedMessage', function () {
     const msg = parseSignedMessage(signedMessage)
     expectMessageDataMatchForCancel(signedMessage, msg)
   })
+
+  it('parses a custom verifier signed message', async function () {
+    const doThingVerifierDef = {
+      "functionName": "doThing",
+      "functionSignature": "doThing(uint256,uint256)",
+      "functionSignatureHash": "0x3c447f23",
+      "contractName": "FakeVerifier",
+      "contractAddress": "0xE100eF1C4339Dd4E4b54d5cBB6CcEfA96071E227",
+      "paramTypes": [
+        {
+          "name": "paramOne",
+          "type": "uint256",
+          "signed": true
+        },
+        {
+          "name": "paramTwo",
+          "type": "uint256",
+          "signed": false
+        }
+      ]
+    }
+    const { AccountSigner, parseSignedMessage } = brink({
+      network: 'hardhat',
+      verifiers: [doThingVerifierDef]
+    })
+    const signer = AccountSigner(this.ethersAccountSigner)
+    const signedMsg = await signer.FakeVerifier.signDoThing(123)
+    const parsedDoThing = parseSignedMessage(signedMsg)
+    expect(parsedDoThing.verifierFunctionName).to.equal('doThing')
+    expect(parsedDoThing.paramOne).to.equal(123)
+  })
 })
 
 function expectMessageDataMatchForTokenToTokenSwap (signedMessage, msg) {
