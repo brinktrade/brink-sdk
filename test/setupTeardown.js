@@ -41,10 +41,10 @@ beforeEach(async function () {
   this.mockAccountBits = await MockAccountBits.deploy()
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
-  this.accountSigner = brink.accountSigner(this.ethersAccountSigner, 'hardhat')
+  this.accountSigner = brink.accountSigner(this.ethersAccountSigner, { network: 'hardhat' })
 
   // accountSigner that signs "ledger style" with bad 'v' values 00 and 01
-  this.accountSignerBadV = brink.accountSigner(this.ethersAccountBadVSigner, 'hardhat')
+  this.accountSignerBadV = brink.accountSigner(this.ethersAccountBadVSigner, { network: 'hardhat' })
 
   this.token = await deploySaltedContract(
     'TestERC20',

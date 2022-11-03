@@ -18,10 +18,10 @@ const brink = require('@brinkninja/sdk')
 /**
  * ownerAddress: address of the account owner
  * provider: an ethers.js provider
- * signer: an ethers.js signer. Transactions to the account will be signed by this signer. Does not have to be the
- * account owner
+ * signer: an ethers.js signer. Transactions to the account will be signed by this signer. Does not have to be the account owner
+ * verifiers: array of custom verifier definitions
  **
-const account = brink.account(ownerAddress, { provider, signer })
+const account = brink.account(ownerAddress, { provider, signer, verifiers })
 ```
 
 ### Read-only Methods
@@ -150,10 +150,10 @@ const brink = require('@brinkninja/sdk')
 
 /**
  * signer: an ethers.js signer. Signed messages returned are valid only for the Brink account owned by this signer
- * network: name of a supported Brink network (i.e. `goerli`, `mainnet`). Signed messages returned are valid only for
- * this network
+ * network: name of a supported Brink network (default `mainnet`). Signed messages returned are valid only for this network
+ * verifiers: array of custom verifier definitions
  **
-const accountSigner = brink.accountSigner(signer, network)
+const accountSigner = brink.accountSigner(signer, { network, verifiers })
 ```
 
 ### accountAddress()
@@ -194,3 +194,33 @@ Supported functions are:
 
 https://github.com/brinktrade/brink-verifiers
 https://github.com/brinktrade/brink-verifiers-v2
+
+### Custom Verifier Setup
+
+*** WARNING: SIGING MESSAGES WITH UNSECURE VERIFIER CONTRACTS COULD PUT YOUR FUNDS AT RISK ***
+
+To use custom verifiers, can provide account and accountSigner with an array of verifier definitions:
+
+```
+  const signerWithCustomVerifiers = brink.accountSigner(ethersSigner, {
+    network: 'hardhat',
+    verifiers: [{
+    "functionName": "myFunction",
+    "functionSignature": "myFunction(uint256,uint256)",
+    "functionSignatureHash": "0x3c447f23",
+    "contractName": "MyVerifier",
+    "contractAddress": "0xE100eF1C4339Dd4E4b54d5cBB6CcEfA96071E227",
+    "paramTypes": [
+      {
+        "name": "paramOne",
+        "type": "uint256",
+        "signed": true
+      },
+      {
+        "name": "paramTwo",
+        "type": "uint256",
+        "signed": false
+      }
+    ]
+  }]
+```

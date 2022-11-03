@@ -15,12 +15,13 @@ const { VERIFIERS } = require('@brinkninja/config').mainnet
 
 class AccountSigner {
 
-  constructor ({ signer, chainId }) {
+  constructor ({ signer, chainId, verifiers = [] }) {
     this._signer = signer
     this._chainId = chainId
     this._accountVersion = '1'
 
-    VERIFIERS.forEach(({ contractName, functionName, contractAddress, paramTypes }) => {
+    const verifierDefs = [...VERIFIERS, ...verifiers]
+    verifierDefs.forEach(({ contractName, functionName, contractAddress, paramTypes }) => {
       // create a signer function for each Verifier
       const fnName = `sign${capitalize(functionName)}`
 

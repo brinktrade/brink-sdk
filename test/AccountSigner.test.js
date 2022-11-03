@@ -5,6 +5,7 @@ const { BN: ethersBN } = require('@brinkninja/utils')
 const { toBN: web3BN } = require('web3-utils')
 const { solidity } = require('ethereum-waffle')
 const { MAX_UINT256, ZERO_ADDRESS } = require('@brinkninja/utils').constants
+const brink = require('../index')
 
 const BN = ethers.BigNumber.from
 chai.use(solidity)
@@ -139,6 +140,37 @@ describe('AccountSigner', function () {
       const v = signature.slice(2+64+64, 2+64+64+2)
         
       expect(v == '1b' || v == '1c').to.be.true
+    })
+  })
+
+  describe('custom verifiers', function () {
+    it('should expose a verifier signing function', async function () {
+      const doThingVerifierDef = {
+        "functionName": "doThing",
+        "functionSignature": "doThing(uint256,uint256)",
+        "functionSignatureHash": "0x3c447f23",
+        "contractName": "FakeVerifier",
+        "contractAddress": "0xE100eF1C4339Dd4E4b54d5cBB6CcEfA96071E227",
+        "paramTypes": [
+          {
+            "name": "paramOne",
+            "type": "uint256",
+            "signed": true
+          },
+          {
+            "name": "paramTwo",
+            "type": "uint256",
+            "signed": false
+          }
+        ]
+      }
+      const signer = brink.accountSigner(this.ethersAccountSigner, {
+        network: 'hardhat',
+        verifiers: [doThingVerifierDef]
+      })
+      const signedMsg = await signer.FakeVerifier.signDoThing(123)
+      brink.verifySignedMessage(signedMsg)
+      expect(signedMsg.signedParams[0].value).to.equal(doThingVerifierDef.contractAddress)
     })
   })
 })

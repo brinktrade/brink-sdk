@@ -3,7 +3,7 @@ const Account = require('./src/Account')
 const AccountSigner = require('./src/AccountSigner')
 const getChainId = require('./src/getChainId')
 
-const account = (ownerAddress, { provider, signer }) => {
+const account = (ownerAddress, { provider, signer, verifiers }) => {
   if (!provider) throw new Error(`no provider specified`)
 
   const accountTxSigner = signer || provider.getSigner()
@@ -12,15 +12,18 @@ const account = (ownerAddress, { provider, signer }) => {
   return new Account({
     ownerAddress,
     provider,
-    signer: accountTxSigner
+    signer: accountTxSigner,
+    verifiers
   })
 }
 
-const accountSigner = (accountOwnerSigner, network) => {
+const accountSigner = (accountOwnerSigner, opts = {}) => {
   if (!accountOwnerSigner) throw new Error(`no accountOwnerSigner specified`)
+  if (!opts.network) { opts.network = 'mainnet' }
   return new AccountSigner({
     signer: accountOwnerSigner,
-    chainId: getChainId(network)
+    chainId: getChainId(opts.network),
+    verifiers: opts.verifiers
   })
 }
 
