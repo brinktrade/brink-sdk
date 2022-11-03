@@ -164,12 +164,13 @@ describe('AccountSigner', function () {
           }
         ]
       }
-      const signer = brink.accountSigner(this.ethersAccountSigner, {
+      const { AccountSigner, verifySignedMessage } = brink({
         network: 'hardhat',
         verifiers: [doThingVerifierDef]
       })
+      const signer = AccountSigner(this.ethersAccountSigner)
       const signedMsg = await signer.FakeVerifier.signDoThing(123)
-      brink.verifySignedMessage(signedMsg)
+      verifySignedMessage(signedMsg)
       expect(signedMsg.signedParams[0].value).to.equal(doThingVerifierDef.contractAddress)
     })
   })

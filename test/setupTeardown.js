@@ -22,29 +22,31 @@ beforeEach(async function () {
   this.ethersAccountBadVSigner = await mockLedgerSignerBadV()
   this.ownerAddress = this.ethersAccountSigner.address
 
+  const { AccountSigner, Account } = brink({ network: 'hardhat' })
+
   // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  this.account = brink.account(this.ownerAddress, {
+  this.account = Account(this.ownerAddress, {
     provider: ethers.provider,
     signer: this.defaultSigner
   })
 
   // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  this.account_ownerSigner = brink.account(this.ownerAddress, {
+  this.account_ownerSigner = Account(this.ownerAddress, {
     provider: ethers.provider,
     signer: this.ethersAccountSigner
   })
 
-  const Account = await ethers.getContractFactory('Account')
-  this.proxyAccountContract = await Account.attach(this.account.address)
+  const AccountImpl = await ethers.getContractFactory('Account')
+  this.proxyAccountContract = await AccountImpl.attach(this.account.address)
 
   const MockAccountBits = await ethers.getContractFactory('MockAccountBits')
   this.mockAccountBits = await MockAccountBits.deploy()
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
-  this.accountSigner = brink.accountSigner(this.ethersAccountSigner, { network: 'hardhat' })
+  this.accountSigner = AccountSigner(this.ethersAccountSigner)
 
   // accountSigner that signs "ledger style" with bad 'v' values 00 and 01
-  this.accountSignerBadV = brink.accountSigner(this.ethersAccountBadVSigner, { network: 'hardhat' })
+  this.accountSignerBadV = AccountSigner(this.ethersAccountBadVSigner)
 
   this.token = await deploySaltedContract(
     'TestERC20',

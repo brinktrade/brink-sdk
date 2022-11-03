@@ -4,23 +4,24 @@ const BN = ethers.BigNumber.from
 const { MAX_UINT256 } = require('@brinkninja/utils').constants
 const chai = require('chai')
 const { expect } = chai
+const { verifySignedMessage } = brink()
 
 describe('VerifySignedMessage', function () {
   it('Verifies a correctly signed tokenToToken message', async function () {
     const signedMessage = await this.accountSigner.ApprovalSwapsV1.signTokenToToken(BN(0), BN(1), this.token.address, this.token2.address, BN('1000000000'), BN('1000000'), MAX_UINT256)
-    brink.verifySignedMessage(signedMessage)
+    verifySignedMessage(signedMessage)
   })
 
   it('Verifies a correctly signed tokenToNft message', async function () {
     const signedMessage = await this.accountSigner.ApprovalSwapsV1.signTokenToNft(BN(0), BN(1), this.token.address, this.token2.address, BN('2817743061947399'), MAX_UINT256)
-    brink.verifySignedMessage(signedMessage)
+    verifySignedMessage(signedMessage)
   })
 
   it('Should return an error when missing param in signed message', async function () {
     const signedMessage = await this.accountSigner.ApprovalSwapsV1.signTokenToToken(BN(0), BN(1), this.token.address, this.token2.address, BN('1000000000'), BN('1000000'), MAX_UINT256)
     signedMessage.signedParams = []
     try {
-      brink.verifySignedMessage(signedMessage)
+      verifySignedMessage(signedMessage)
     } catch (err) {
       expect(err.message).to.equal(`signedParams not provided in signedMessage`)
     }
@@ -85,7 +86,7 @@ describe('VerifySignedMessage', function () {
       ]
     }
     try {
-      brink.verifySignedMessage(signedMessage)
+      verifySignedMessage(signedMessage)
       expect(true).to.equal(false) // Should not get here
     } catch (err) {
       expect(err.message).to.equal(`Provided signed message hash 0xd4d05ba90766cfae9de8348a026a188b7378fe818cf2f94bb51a9b1c93140529 does not match recovered hash 0xc1459c1e370739b1d679049feba95dbce754585abb7a71a82b859ead948c96ac`)
@@ -151,7 +152,7 @@ describe('VerifySignedMessage', function () {
       ]
     }
     try {
-      brink.verifySignedMessage(message)
+      verifySignedMessage(message)
       expect(true).to.equal(false) // Should not get here
     } catch (err) {
       expect(err.message).to.equal(`Provided Signer 0xa354C24DCE0f33E73C2150B5fC39B2d676a39a8f does not match Signer 0xf354C24DCE0f33E73C2150B5fC39B2d676a39a8f in Signed Message`)
@@ -217,7 +218,7 @@ describe('VerifySignedMessage', function () {
       ]
     }
     try {
-      brink.verifySignedMessage(message)
+      verifySignedMessage(message)
       expect(true).to.equal(false) // Should not get here
     } catch (err) {
       expect(err.message).to.equal(`Account Address 0x744e9527429b01211b06B06885E6c5873f82156C does not match Computed Address 0x044e9527429b01211b06B06885E6c5873f82156C`)
@@ -282,7 +283,7 @@ describe('VerifySignedMessage', function () {
       ]
     }
     try {
-      brink.verifySignedMessage(message)
+      verifySignedMessage(message)
       expect(true).to.equal(false) // Should not get here
     } catch (err) {
       expect(err.message).to.equal(`Encoded bytes value does not match encoded call data params`)
@@ -347,7 +348,7 @@ describe('VerifySignedMessage', function () {
       ]
     }
     try {
-      brink.verifySignedMessage(message)
+      verifySignedMessage(message)
       expect(true).to.equal(false) // Should not get here
     } catch (err) {
       expect(err.message).to.equal(`Signed message params do not match EIP712TypedData params`)
@@ -412,7 +413,7 @@ describe('VerifySignedMessage', function () {
       ]
     }
     try {
-      brink.verifySignedMessage(message)
+      verifySignedMessage(message)
       expect(true).to.equal(false) // Should not get here
     } catch (err) {
       expect(err.message).to.equal(`Unsupported functionName \'delegateCall\', only \'metaDelegateCall\' supported`)

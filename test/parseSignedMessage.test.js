@@ -5,27 +5,28 @@ const BN = ethers.BigNumber.from
 const chai = require('chai')
 const { MAX_UINT256 } = require('@brinkninja/utils').constants
 const { expect } = chai
+const { parseSignedMessage } = brink()
 
 describe('parseSignedMessage', function () {
   it('returns tokenToToken message data', async function () {
     const signedMessage = await this.accountSigner.ApprovalSwapsV1.signTokenToToken(
       BN(0), BN(1), this.token.address, this.token2.address, BN(10), BN(11), MAX_UINT256
     )
-    const msg = brink.parseSignedMessage(signedMessage)
+    const msg = parseSignedMessage(signedMessage)
     expectMessageDataMatchForTokenToTokenSwap(signedMessage, msg)
   })
   it('returns tokenToNft swap message data ', async function () {
     const signedMessage = await this.accountSigner.ApprovalSwapsV1.signTokenToNft(
       BN(0), BN(1), this.token.address, this.nft1.address, BN(10), MAX_UINT256
     )
-    const msg = brink.parseSignedMessage(signedMessage)
+    const msg = parseSignedMessage(signedMessage)
     expectMessageDataMatchForTokenToNftSwap(signedMessage, msg)
   })
   it('returns cancel message data', async function () {
     const signedMessage = await this.accountSigner.CancelVerifier.signCancel(
       BN(0), BN(1)
     )
-    const msg = brink.parseSignedMessage(signedMessage)
+    const msg = parseSignedMessage(signedMessage)
     expectMessageDataMatchForCancel(signedMessage, msg)
   })
 })

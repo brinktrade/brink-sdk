@@ -379,16 +379,15 @@ describe('Account', function () {
           }
         ]
       }
-      const signer = brink.accountSigner(this.ethersAccountSigner, {
+      const { AccountSigner, Account } = brink({
+        provider: ethers.provider,
+        signer: this.defaultSigner,
         network: 'hardhat',
         verifiers: [doThingVerifierDef]
       })
+      const signer = AccountSigner(this.ethersAccountSigner)
       const signedMsg = await signer.FakeVerifier.signDoThing(123)
-      const account = brink.account(this.ownerAddress, {
-        provider: ethers.provider,
-        signer: this.defaultSigner,
-        verifiers: [doThingVerifierDef]
-      })
+      const account = Account(this.ownerAddress)
       await account.deploy()
       const call = await account.populateTransaction.FakeVerifier.doThing(signedMsg, 234)
       expect(call.params[0]).to.equal(doThingVerifierDef.contractAddress)
