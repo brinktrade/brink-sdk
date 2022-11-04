@@ -9,7 +9,7 @@
     "hardhat": "^2.1.2"
   },
   "dependencies": {
-    "@brinkninja/config": "^2.0.0",
+    "@brinkninja/config": "^2.1.0",
     "@brinkninja/core": "^1.0.0",
     "@brinkninja/verifiers": "^1.4.0",
     "@brinkninja/verifiers-v2": "^1.2.0",

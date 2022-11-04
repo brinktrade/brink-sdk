@@ -14,10 +14,10 @@
   dependencies:
     "@brinkninja/range-orders" "^0.2.0"
 
-"@brinkninja/config@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@brinkninja/config/-/config-2.0.0.tgz#d8b012f23d74f02c060dcb06924772508b58806e"
-  integrity sha512-FK7HnHFsCgkKkgs/IIg89uk79hAMNH8O9WdP0SCNU7+4zS567Ajcv/HfyNtWlBFpksL3nSEsI2U2lrlFNfwRCA==
+"@brinkninja/config@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@brinkninja/config/-/config-2.1.0.tgz#e873bb837dad2ad6ba5dd46a9df052ff301ed1cd"
+  integrity sha512-96qHTM4CYlqM5LzI1oH6J2NaOnCHUhgAkL0uf0ksER6fw1uriA8MN/OxQHjJkpvgWlSAZ4BNB2r8NVsW2E9sFA==
   dependencies:
     "@brinkninja/1inch-adapter" "^1.0.0"
     "@brinkninja/adapters" "^1.0.0"
