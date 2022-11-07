@@ -179,7 +179,7 @@ Supported functions are:
 
 | Contract | Address | Networks |
 | --- | --- | --- |
-| ApprovalSwapsV1.sol | 0x9A7B09e63FD17a36e5Ab187a5D7B75149fEBFa53 |[mainnet](https://etherscan.io/address/0x9A7B09e63FD17a36e5Ab187a5D7B75149fEBFa53#code), [goerli](https://goerli.etherscan.io/address/0x9A7B09e63FD17a36e5Ab187a5D7B75149fEBFa53#code)|
+| ApprovalSwapsV1.sol | 0x6ef84B098A812B8f4C81cD6d0B0A5a64d17C9B3e |[mainnet](https://etherscan.io/address/0x6ef84B098A812B8f4C81cD6d0B0A5a64d17C9B3e#code), [goerli](https://goerli.etherscan.io/address/0x6ef84B098A812B8f4C81cD6d0B0A5a64d17C9B3e#code)|
 | CancelVerifier.sol | 0xE0670a90E67eda0126D54843267b27Ca6343B2d8 |[mainnet](https://etherscan.io/address/0xE0670a90E67eda0126D54843267b27Ca6343B2d8#code), [goerli](https://goerli.etherscan.io/address/0xE0670a90E67eda0126D54843267b27Ca6343B2d8#code)|
 | TransferVerifier.sol | 0x6df5AE08Ec7aE5CC2E9e3b0850A61AD7C73bC9A9 |[mainnet](https://etherscan.io/address/0x6df5AE08Ec7aE5CC2E9e3b0850A61AD7C73bC9A9#code), [goerli](https://goerli.etherscan.io/address/0x6df5AE08Ec7aE5CC2E9e3b0850A61AD7C73bC9A9#code)|
 | NftTransferVerifier.sol | 0x946CBd55EA50619C599d69Ab230Dff8707987D00 |[mainnet](https://etherscan.io/address/0x946CBd55EA50619C599d69Ab230Dff8707987D00#code), [goerli](https://goerli.etherscan.io/address/0x946CBd55EA50619C599d69Ab230Dff8707987D00#code)|
