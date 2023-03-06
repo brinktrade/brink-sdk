@@ -8,6 +8,218 @@ This module can be used to interact with Brink proxy accounts, either as the acc
 npm install @brinkninja/sdk
 ```
 
+## Strategies
+
+### Creating Strategies
+
+Strategies can be built from lower-level primitives:
+```
+  const { Strategy, Order, UniV3TWAP, useBit, marketSwapExactInput } = brink
+
+  // configure a TWAP USDC-ETH oracle
+  const oracle_USDC_ETH = UniV3TWAP({
+    baseToken: USDC_address,
+    quoteToken: WETH_address,
+    time: 1000,
+    feePool: 500
+  })
+
+  // price ~1000 ETH/USDC
+  const p = 0.001;
+
+  // construct a "stop-loss" strategy
+  const strategy = Strategy.create(
+    Order.create(
+      useBit({                    // replay bit
+        bitmapIndex: 0,
+        bit: 1
+      }),
+      requireBlockNotMined({      // expiry
+        blockNumber: 16802111
+      }),
+      requireUint256LowerBound({  // price oracle check
+        oracle: oracle_USDC_ETH,
+        price: p
+      }),
+      marketSwapExactInput({      // market swap
+        oracle: oracle_USDC_ETH,
+        owner: ownerAddress,
+        tokenIn: USDC_address,
+        tokenOut: WETH_address,
+        tokenInAmount: 3000_000000, // 3k USDC
+        feePercent: 1_0000, // 1% fee
+        feeMin: 0
+      })
+    )
+  )
+```
+
+Higher level types are provided for specific recipes
+
+```
+  const { StopLoss, Oracles } = brink
+
+  const stopLoss = StopLoss.create({
+    bitmapIndex: 0,
+    bit: 1,
+    expiryBlock: 16802111,
+    oracle: oracle_USDC_ETH,
+    price: p,
+    owner: ownerAddress,
+    tokenIn: USDC_address,
+    tokenOut: WETH_address,
+    tokenInAmount: 3000_000000, // 3k USDC
+    feePercent: 1_0000, // 1% fee
+    feeMin: 0
+  })
+
+```
+
+### Strategy Objects
+
+#### Oracles
+
+```
+  UniV3TWAP({
+    baseToken,
+    quoteToken,
+    time,
+    feePool
+  })
+
+  ReservoirFloorPrice({
+    priceKind,
+    twapSeconds,
+    contractAddress,
+    timestamp
+  })
+```
+
+Oracles implement an IOracle interface
+```
+  IOracle {
+    contractAddress(); // returns the oracle contract address
+    params();          // returns bytes for oracle primitive params calls
+    value();           // reads and returns the value of the oracle on-chain
+  }
+```
+
+#### Strategy
+
+```
+  Strategy {
+    create(Order1, ... OrderN); // builds and returns a StrategyInstance
+  }
+
+  StrategyInstance {
+    orders();         // returns orders
+    beforeCalls();
+    afterCalls();
+    bytes();     // returns encoded strategy bytes for signing
+  }
+```
+
+#### Order
+
+Base order type
+```
+  Order {
+    create(Primitive1, ... PrimitiveN); // builds and returns an OrderInstance
+  }
+
+  OrderInstance {
+    primitives();   // returns primitives
+    bytes();        // returns encoded bytes for the order
+  }
+```
+
+We can also support more specific order types for convenience
+```
+  LimitSwap {}
+  MarketSwap {}
+  StopLossMarketSwap {}
+  StopLossLimitSwap {}
+  ...
+```
+
+#### Primitives
+
+These are mapped from Primitives01.sol
+
+```
+  requireBitNotUsed()
+  requireBitUsed()
+  useBit()
+  requireBlockMined()
+  requireBlockNotMined()
+  requireUint256LowerBound()
+  requireUint256UpperBound()
+  transfer()
+  marketSwapExactInput()
+  marketSwapExactOutput()
+  limitSwap()
+  ...
+```
+
+All return a base primitive instance
+
+```
+  PrimitiveInstance {
+    params(); // returns params
+    bytes();  // returns encoded bytes for the primitive calldata
+  }
+```
+
+#### Recipes
+
+Recipes implement IRecipe interface
+
+```
+  IRecipe {
+    create(<params>);             // create the recipe
+    params();                     // return the recipe's params
+    strategy<StrategyInstance>;   // the wrapped strategy
+  }
+```
+
+Recipe types
+```
+  StopLoss {
+    params: {
+      bitmapIndex,
+      bit,
+      expiryBlock,
+      oracle,
+      price,
+      owner,
+      tokenIn,
+      tokenOut,
+      tokenInAmount,
+      feePercent,
+      feeMin
+    }
+  }
+
+  Bracket {
+    params: {
+      bitmapIndex,
+      bit,
+      expiryBlock,
+      oracle,
+      stopLossPrice,
+      takeProfitPrice,
+      owner,
+      tokenIn,
+      tokenOut,
+      tokenInAmount,
+      feePercent,
+      feeMin
+    }
+  }
+
+  ...
+```
+
 ## Account
 
 ### Setup
