@@ -5,7 +5,7 @@ const { BN: ethersBN } = require('@brinkninja/utils')
 const { toBN: web3BN } = require('web3-utils')
 const { solidity } = require('ethereum-waffle')
 const { MAX_UINT256, ZERO_ADDRESS } = require('@brinkninja/utils').constants
-const brink = require('../index')
+const brink = require('../src/index')
 
 const BN = ethers.BigNumber.from
 chai.use(solidity)

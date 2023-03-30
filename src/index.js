@@ -1,8 +1,8 @@
 const _ = require('lodash')
-const Account = require('./src/Account')
-const AccountSigner = require('./src/AccountSigner')
-const getChainId = require('./src/getChainId')
-const ParseSignedMessage = require('./src/parseSignedMessage')
+const Account = require('./Account')
+const AccountSigner = require('./AccountSigner')
+const getChainId = require('./getChainId')
+const ParseSignedMessage = require('./parseSignedMessage')
 
 const setupBrink = (opts = {}) => {
   const account = (ownerAddress, accountOpts = {}) => {
@@ -41,12 +41,12 @@ const setupBrink = (opts = {}) => {
   return {
     Account: account,
     AccountSigner: accountSigner,
-    proxyAccountFromOwner: require('./src/proxyAccountFromOwner'),
-    recoverSigner: require('./src/recoverSigner'),
-    verifySignedMessage: require('./src/verifySignedMessage'),
+    proxyAccountFromOwner: require('./proxyAccountFromOwner'),
+    recoverSigner: require('./recoverSigner'),
+    verifySignedMessage: require('./verifySignedMessage'),
     parseSignedMessage: ParseSignedMessage({ verifiers: opts.verifiers }),
-    encodeFunctionCall: require('./src/encodeFunctionCall'),
-    verifyParamInput: require('./src/utils/verifyParamInput')
+    encodeFunctionCall: require('./encodeFunctionCall'),
+    verifyParamInput: require('./utils/verifyParamInput')
   }
 }
 

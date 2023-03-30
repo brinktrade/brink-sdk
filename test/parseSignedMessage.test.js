@@ -1,5 +1,5 @@
 _ = require('lodash')
-const brink = require('../index')
+const brink = require('../src/index')
 const { ethers } = require('hardhat')
 const BN = ethers.BigNumber.from
 const chai = require('chai')
