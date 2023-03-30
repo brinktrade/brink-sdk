@@ -1,4 +1,4 @@
-_ = require('lodash')
+const _ = require('lodash')
 const brink = require('../src/index')
 const { ethers } = require('hardhat')
 const BN = ethers.BigNumber.from

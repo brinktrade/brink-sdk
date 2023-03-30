@@ -1,6 +1,6 @@
-require('@nomiclabs/hardhat-ethers')
+import '@nomiclabs/hardhat-ethers'
 
-module.exports = {
+const config = {
   networks: {
     hardhat: {
       accounts: {
@@ -34,3 +34,5 @@ module.exports = {
     artifacts: "./test/artifacts"
   }
 }
+
+export default config

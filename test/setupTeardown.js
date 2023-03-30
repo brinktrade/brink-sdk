@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const { ethers } = require('hardhat')
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
 const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
@@ -22,7 +23,7 @@ beforeEach(async function () {
   this.ethersAccountBadVSigner = await mockLedgerSignerBadV()
   this.ownerAddress = this.ethersAccountSigner.address
 
-  const { AccountSigner, Account } = brink({ network: 'hardhat' })
+  const { AccountSigner, Account, Strategies } = brink({ network: 'hardhat' })
 
   // account uses ethers signer 0 (not the account owner, it's acting as an executor)
   this.account = Account(this.ownerAddress, {
@@ -35,6 +36,12 @@ beforeEach(async function () {
     provider: ethers.provider,
     signer: this.ethersAccountSigner
   })
+
+  // TMP hardcode these addresses
+  this.strategies = Strategies(
+    "0x0a8A4c2aF510Afe2A40D230696cAcA6967f75BbF",
+    "0xD35d062aC72C7afE566b1002819d129b6DfF3d34"
+  )
 
   const AccountImpl = await ethers.getContractFactory('Account')
   this.proxyAccountContract = await AccountImpl.attach(this.account.address)

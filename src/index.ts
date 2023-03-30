@@ -1,11 +1,13 @@
-const _ = require('lodash')
-const Account = require('./Account')
-const AccountSigner = require('./AccountSigner')
-const getChainId = require('./getChainId')
-const ParseSignedMessage = require('./parseSignedMessage')
+import _ from 'lodash'
+import Account from './Account'
+import AccountSigner from './AccountSigner'
+import Strategies from './Strategies'
+import getChainId from './getChainId'
+import ParseSignedMessage from './parseSignedMessage'
 
-const setupBrink = (opts = {}) => {
-  const account = (ownerAddress, accountOpts = {}) => {
+const setupBrink = (opts: any = {}) => {
+
+  const account = (ownerAddress: string, accountOpts: any = {}) => {
     const { provider, signer, verifiers } = accountOpts
     const prov = provider || opts.provider
     if (!prov) throw new Error(`no provider specified`)
@@ -23,7 +25,7 @@ const setupBrink = (opts = {}) => {
     })
   }
 
-  const accountSigner = (accountOwnerSigner, signerOpts = {}) => {
+  const accountSigner = (accountOwnerSigner: any, signerOpts: any = {}) => {
     if (!accountOwnerSigner) throw new Error(`no accountOwnerSigner specified`)
 
     let network = signerOpts.network || opts.network
@@ -38,9 +40,20 @@ const setupBrink = (opts = {}) => {
     })
   }
 
+  const strategies = (
+    strategyTargetAddress: string,
+    primitivesAddress: string
+  ) => {
+    return new Strategies(
+      strategyTargetAddress,
+      primitivesAddress
+    )
+  }
+
   return {
     Account: account,
     AccountSigner: accountSigner,
+    Strategies: strategies,
     proxyAccountFromOwner: require('./proxyAccountFromOwner'),
     recoverSigner: require('./recoverSigner'),
     verifySignedMessage: require('./verifySignedMessage'),
