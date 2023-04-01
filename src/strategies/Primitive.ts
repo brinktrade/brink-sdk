@@ -1,4 +1,4 @@
-import { PrimitiveData, PrimitiveFunctionName, ContractCallParams, UseBitParams } from './types'
+import { PrimitiveData, PrimitiveFunctionName, ContractCallParams } from './StrategyTypes'
 import evm from './StrategiesEVM'
 
 class Primitive {
@@ -15,9 +15,7 @@ class Primitive {
   }
 
   async toJSON (): Promise<PrimitiveData> {
-    console.log('call evm: ', this.functionName)
     const data = await evm.callPrimitive(this.functionName, ...this.params)
-    console.log('got data: ', data)
     return {
       data: data,
       functionName: this.functionName,

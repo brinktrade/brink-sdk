@@ -13,35 +13,41 @@ describe('Strategies', function () {
             {
               functionName: 'useBit',
               params: [1, 2**5]
+            },
+            {
+              functionName: 'marketSwapExactInput',
+              params: [
+                '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
+                '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8',
+                '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+                [
+                  0,
+                  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+                  '0x0000000000000000000000000000000000000000000000000000000000000000',
+                  0,
+                  false
+                ],
+                [
+                  0,
+                  '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+                  '0x0000000000000000000000000000000000000000000000000000000000000000',
+                  0,
+                  false
+                ],
+                1450000000,
+                10000,
+                0
+              ]
             }
           ]
         }
       ]
     })
 
-    console.log('STRATEGY1: ')
-    console.log(JSON.stringify(await strategy1.toJSON(), null, 2))
-
-    // const strategy2 = new Strategy()
-    // strategy2.orders[0] = new Order({
-    //   primitives: [
-    //     {
-    //       functionName: 'useBit',
-    //       params: [1, 2**5]
-    //     }
-    //   ]
-    // })
-    // console.log('STRATEGY2: ')
-    // console.log(JSON.stringify(strategy2.toJSON(), null, 2))
-
-    // const strategy3 = new Strategy()
-    // strategy3.orders[0] = new Order()
-    // strategy3.orders[0].primitives[0] = new Primitive({
-    //   functionName: 'useBit',
-    //   params: [1, 2**5]
-    // })
-    // console.log('STRATEGY3: ')
-    // console.log(JSON.stringify(strategy3.toJSON(), null, 2))
+    console.log()
+    console.log('strategy: ', JSON.stringify(await strategy1.toJSON(), null, 2))
+    console.log('strategy.orders[0]: ', JSON.stringify(await strategy1.orders[0].toJSON(), null, 2))
+    console.log('strategy.orders[0].primitives[0]: ', JSON.stringify(await strategy1.orders[0].primitives[0].toJSON(), null, 2))
   })
 })
 

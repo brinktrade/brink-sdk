@@ -1,6 +1,5 @@
-import { StrategyData } from './types'
+import { StrategyData } from './StrategyTypes'
 import Order from './Order'
-import evm from './StrategiesEVM'
 
 class Strategy {
   orders: Order[] = []

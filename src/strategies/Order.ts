@@ -1,6 +1,6 @@
-import { OrderData } from './types'
+import { OrderData } from './StrategyTypes'
 import Primitive from './Primitive'
-import evm from './StrategiesEVM'
+import createPrimitive from './Primitives/createPrimitive'
 
 class Order {
 
@@ -13,7 +13,9 @@ class Order {
   }
 
   fromJSON (orderData: OrderData) {
-    this.primitives = orderData.primitives.map(primitiveData => new Primitive(primitiveData))
+    this.primitives = orderData.primitives.map(primitiveData => {
+      return createPrimitive(primitiveData.functionName, primitiveData.params)
+    })
   }
 
   async toJSON (): Promise<OrderData> {

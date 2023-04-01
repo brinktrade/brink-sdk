@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { Chain, Hardfork, Common } from '@ethereumjs/common'
+import { Chain, Common } from '@ethereumjs/common'
 import { Address } from '@ethereumjs/util'
 import { Transaction } from '@ethereumjs/tx'
 import { EVMResult } from '@ethereumjs/evm'
@@ -9,8 +9,7 @@ import OrderBuilder01 from '../contracts/OrderBuilder01.json'
 import OrdersBuilder01 from '../contracts/OrdersBuilder01.json'
 import PrimitiveBuilder01 from '../contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from '../contracts/UnsignedDataBuilder01.json'
-
-import { ContractCallParams, PrimitiveFunctionName } from './types'
+import { ContractCallParams, PrimitiveFunctionName } from './StrategyTypes'
 
 // use this randomly generated private key to sign transactions the the VM running in SDK
 const caller = Address.fromString('0x21753FDE2F04Ad242cf3DE684129BE7B11817F09')
@@ -60,23 +59,6 @@ export class StrategiesEVM {
     }
   }
 
-  async useBit (bitmapIndex:number, bit:number) {
-    // verify things
-
-    await this.callPrimitive('useBit', bitmapIndex, bit)
-  }
-
-  // async marketSwapExactInput(
-  //   twapAdapter,
-  //   twapAdapterParams,
-  //   proxy0_signerAddress,
-  //   USDC_Token,
-  //   WETH_Token,
-  //   usdcInAmount,
-  //   feePercent,
-  //   feeMin
-  // )
-
   async deployContract (contractJSON: any, ...contractDeployParams: any[]): Promise<ethers.Contract> {
     await this._initVM()
 
@@ -114,6 +96,7 @@ export class StrategiesEVM {
 
   async callContractFn (contract: ethers.Contract, fnName: string, ...args: ContractCallParams): Promise<string> {
     await this._initVM()
+
     const tx = await contract.populateTransaction[fnName](...args)
 
     const result = await this._vm.evm.runCall({
