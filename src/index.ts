@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import Account from './Account'
 import AccountSigner from './AccountSigner'
-import Strategies from './Strategies'
 import getChainId from './getChainId'
 import ParseSignedMessage from './parseSignedMessage'
 
@@ -40,20 +39,9 @@ const setupBrink = (opts: any = {}) => {
     })
   }
 
-  const strategies = (
-    strategyTargetAddress: string,
-    primitivesAddress: string
-  ) => {
-    return new Strategies(
-      strategyTargetAddress,
-      primitivesAddress
-    )
-  }
-
   return {
     Account: account,
     AccountSigner: accountSigner,
-    Strategies: strategies,
     proxyAccountFromOwner: require('./proxyAccountFromOwner'),
     recoverSigner: require('./recoverSigner'),
     verifySignedMessage: require('./verifySignedMessage'),
