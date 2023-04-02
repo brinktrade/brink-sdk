@@ -1,6 +1,8 @@
+import { Bytes } from '../utils/SolidityTypes'
 import { OrderData } from './StrategyTypes'
 import Primitive from './Primitive'
 import createPrimitive from './Primitives/createPrimitive'
+import evm from './StrategiesEVM'
 
 class Order {
 
@@ -19,10 +21,15 @@ class Order {
   }
 
   async toJSON (): Promise<OrderData> {
+    const primitives = await Promise.all(
+      this.primitives.map(async primitive => await primitive.toJSON())
+    )
+    const data = await evm.orderData(...primitives.map(primitive => {
+      return [primitive.data, primitive.requiresUnsignedCall] as [Bytes, boolean]
+    }))
     return {
-      primitives: await Promise.all(
-        this.primitives.map(async primitive => await primitive.toJSON())
-      )
+      data,
+      primitives
     }
   }
 

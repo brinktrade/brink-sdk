@@ -1,6 +1,11 @@
 import { PrimitiveData, PrimitiveFunctionName, ContractCallParams } from './StrategyTypes'
 import evm from './StrategiesEVM'
 
+const primitiveRequiresUnsignedMap: { [key in PrimitiveFunctionName]: boolean } = {
+  useBit: false,
+  marketSwapExactInput: true
+}
+
 class Primitive {
   functionName!: PrimitiveFunctionName
   params!: ContractCallParams
@@ -19,7 +24,8 @@ class Primitive {
     return {
       data: data,
       functionName: this.functionName,
-      params: this.params
+      params: this.params,
+      requiresUnsignedCall: primitiveRequiresUnsignedMap[this.functionName]
     }
   }
 

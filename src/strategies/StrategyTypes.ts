@@ -26,20 +26,21 @@ export type PrimitiveFunctionName =
 export type PrimitiveData = {
   functionName: PrimitiveFunctionName,
   params: ContractCallParams,
-  data?: string
+  data?: Bytes,
+  requiresUnsignedCall?: boolean
 }
 
 export type OrderData = {
   primitives: PrimitiveData[],
-  data?: string
+  data?: Bytes
 }
 
 export type StrategyData = {
   orders: OrderData[],
   beforeCalls?: any[],
   afterCalls?: any[],
-  data?: string
-  hash?: string
-  account?: string
-  signature?: string
+  data?: Bytes
+  hash?: Bytes
+  account?: Address
+  signature?: Bytes
 }

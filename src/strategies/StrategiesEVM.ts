@@ -9,6 +9,7 @@ import OrderBuilder01 from '../contracts/OrderBuilder01.json'
 import OrdersBuilder01 from '../contracts/OrdersBuilder01.json'
 import PrimitiveBuilder01 from '../contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from '../contracts/UnsignedDataBuilder01.json'
+import { Bytes } from '../utils/SolidityTypes'
 import { ContractCallParams, PrimitiveFunctionName } from './StrategyTypes'
 
 // use this randomly generated private key to sign transactions the the VM running in SDK
@@ -27,11 +28,11 @@ export class StrategiesEVM {
   _vmInitializing: boolean = false
 
   _nonce: number = 0
-  _strategyBuilder!: ethers.Contract
-  _orderBuilder!: ethers.Contract
-  _ordersBuilder!: ethers.Contract
-  _primitiveBuilder!: ethers.Contract
-  _unsignedDataBuilder!: ethers.Contract
+  StrategyBuilder!: ethers.Contract
+  OrderBuilder!: ethers.Contract
+  OrdersBuilder!: ethers.Contract
+  PrimitiveBuilder!: ethers.Contract
+  UnsignedDataBuilder!: ethers.Contract
 
   constructor (
     strategyTargetAddress: string,
@@ -49,11 +50,11 @@ export class StrategiesEVM {
       this._vmInitializing = true
       this._vm = await VM.create({ common: this._common })
       
-      this._strategyBuilder = await this.deployContract(StrategyBuilder01, this._strategyTargetAddress, this._primitivesAddress)
-      this._orderBuilder = await this.deployContract(OrderBuilder01)
-      this._ordersBuilder = await this.deployContract(OrdersBuilder01)
-      this._primitiveBuilder = await this.deployContract(PrimitiveBuilder01)
-      this._unsignedDataBuilder = await this.deployContract(UnsignedDataBuilder01)
+      this.StrategyBuilder = await this.deployContract(StrategyBuilder01, this._strategyTargetAddress, this._primitivesAddress)
+      this.OrderBuilder = await this.deployContract(OrderBuilder01)
+      this.OrdersBuilder = await this.deployContract(OrdersBuilder01)
+      this.PrimitiveBuilder = await this.deployContract(PrimitiveBuilder01)
+      this.UnsignedDataBuilder = await this.deployContract(UnsignedDataBuilder01)
       
       this._vmInitializing = false
     }
@@ -89,12 +90,21 @@ export class StrategiesEVM {
     return factory.attach(result.createdAddress.toString())
   }
 
-  async callPrimitive (functionName: PrimitiveFunctionName, ...args: ContractCallParams): Promise<string> {
-    const res = await this.callContractFn(this._primitiveBuilder, functionName as unknown as string, ...args)
-    return res
+  async callPrimitive (functionName: PrimitiveFunctionName, ...args: ContractCallParams): Promise<Bytes> {
+    const primitiveData = await this.callContractFn(this.PrimitiveBuilder, functionName as unknown as string, ...args)
+    return `0x${primitiveData}`
   }
 
-  async callContractFn (contract: ethers.Contract, fnName: string, ...args: ContractCallParams): Promise<string> {
+  async orderData (...args: [Bytes, boolean][]): Promise<Bytes> {
+    const orderData = await this.callContractFn(
+      this.OrderBuilder,
+      `order(${Array(args.length).fill('(bytes,bool)').join(',')})`,
+      ...args
+    )
+    return `0x${orderData}`
+  }
+
+  async callContractFn (contract: ethers.Contract, fnName: string, ...args: ContractCallParams): Promise<any> {
     await this._initVM()
 
     const tx = await contract.populateTransaction[fnName](...args)

@@ -46,8 +46,8 @@ describe('Strategies', function () {
 
     console.log()
     console.log('strategy: ', JSON.stringify(await strategy1.toJSON(), null, 2))
-    console.log('strategy.orders[0]: ', JSON.stringify(await strategy1.orders[0].toJSON(), null, 2))
-    console.log('strategy.orders[0].primitives[0]: ', JSON.stringify(await strategy1.orders[0].primitives[0].toJSON(), null, 2))
+    // console.log('strategy.orders[0]: ', JSON.stringify(await strategy1.orders[0].toJSON(), null, 2))
+    // console.log('strategy.orders[0].primitives[0]: ', JSON.stringify(await strategy1.orders[0].primitives[0].toJSON(), null, 2))
   })
 })
 
