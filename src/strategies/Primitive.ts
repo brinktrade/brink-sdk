@@ -20,7 +20,7 @@ class Primitive {
   }
 
   async toJSON (): Promise<PrimitiveData> {
-    const data = await evm.callPrimitive(this.functionName, ...this.params)
+    const data = await evm.primitiveData(this.functionName, ...this.params)
     return {
       data: data,
       functionName: this.functionName,

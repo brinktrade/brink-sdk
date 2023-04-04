@@ -1,18 +1,17 @@
 import Primitive from '../Primitive'
-import { Address, Bytes, Uint } from '../../utils/SolidityTypes'
 import { Token } from '../StrategyTypes'
 import { validateAddress, validateBytes, validateUint } from '../../utils/SolidityValidation'
 
 export default class MarketSwapExactInput extends Primitive {
   constructor (
-    priceOracle: Address,
-    priceOracleParams: Bytes,
-    owner: Address,
+    priceOracle: string,
+    priceOracleParams: string,
+    owner: string,
     tokenIn: Token,
     tokenOut: Token,
-    tokenInAmount: Uint,
-    feePercent: Uint,
-    feeMin: Uint
+    tokenInAmount: BigInt,
+    feePercent: BigInt,
+    feeMin: BigInt
   ) {
     validateAddress(priceOracle)
     validateBytes(priceOracleParams)

@@ -1,8 +1,13 @@
-import { Address, Bytes32, Bytes, Uint } from '../utils/SolidityTypes'
-
 export type ContractCallParams = (
-  boolean | Address | Bytes32 | Bytes | Token | Uint | BigInt | ContractCallParams
+  boolean | string | BigInt | SignatureTypeEnum | Token | PrimitiveStruct | CallStruct | ContractCallParams
 )[]
+
+export enum SignatureTypeEnum {
+  EIP712 = 0,
+  EIP1271 = 1
+}
+
+export type SignatureType = 'EIP712' | 'EIP1271'
 
 export enum TokenStandard {
   ERC20 = 0,
@@ -13,9 +18,9 @@ export enum TokenStandard {
 
 export type Token = {
   standard: TokenStandard,
-  addr: Address,
-  idsMerkleRoot: Bytes32,
-  id: Uint,
+  addr: string,
+  idsMerkleRoot: string,
+  id: BigInt,
   disallowFlagged: boolean
 }
 
@@ -26,21 +31,33 @@ export type PrimitiveFunctionName =
 export type PrimitiveData = {
   functionName: PrimitiveFunctionName,
   params: ContractCallParams,
-  data?: Bytes,
+  data?: string,
   requiresUnsignedCall?: boolean
 }
 
 export type OrderData = {
   primitives: PrimitiveData[],
-  data?: Bytes
+  data?: string
 }
 
 export type StrategyData = {
   orders: OrderData[],
   beforeCalls?: any[],
   afterCalls?: any[],
-  data?: Bytes
-  hash?: Bytes
-  account?: Address
-  signature?: Bytes
+  data?: string
+  hash?: string
+  account?: string
+  chainId?: BigInt,
+  signatureType?: SignatureType,
+  signature?: string
+}
+
+export type PrimitiveStruct = {
+  data: string,
+  requiresUnsignedCall: boolean
+}
+
+export type CallStruct = {
+  targetContract: string,
+  data: string
 }

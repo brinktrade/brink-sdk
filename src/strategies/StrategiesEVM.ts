@@ -9,8 +9,20 @@ import OrderBuilder01 from '../contracts/OrderBuilder01.json'
 import OrdersBuilder01 from '../contracts/OrdersBuilder01.json'
 import PrimitiveBuilder01 from '../contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from '../contracts/UnsignedDataBuilder01.json'
-import { Bytes } from '../utils/SolidityTypes'
-import { ContractCallParams, PrimitiveFunctionName } from './StrategyTypes'
+import {
+  ContractCallParams,
+  PrimitiveFunctionName,
+  PrimitiveStruct,
+  CallStruct,
+  SignatureType,
+  SignatureTypeEnum,
+  OrderData
+} from './StrategyTypes'
+
+export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
+  EIP712: SignatureTypeEnum.EIP712,
+  EIP1271: SignatureTypeEnum.EIP1271
+}
 
 // use this randomly generated private key to sign transactions the the VM running in SDK
 const caller = Address.fromString('0x21753FDE2F04Ad242cf3DE684129BE7B11817F09')
@@ -90,16 +102,60 @@ export class StrategiesEVM {
     return factory.attach(result.createdAddress.toString())
   }
 
-  async callPrimitive (functionName: PrimitiveFunctionName, ...args: ContractCallParams): Promise<Bytes> {
+  async primitiveData (functionName: PrimitiveFunctionName, ...args: ContractCallParams): Promise<string> {
     const primitiveData = await this.callContractFn(this.PrimitiveBuilder, functionName as unknown as string, ...args)
     return `0x${primitiveData}`
   }
 
-  async orderData (...args: [Bytes, boolean][]): Promise<Bytes> {
+  async strategyData (
+    orders: OrderData[] = [],
+    beforeCalls: CallStruct[] = [],
+    afterCalls: CallStruct[] = []
+  ): Promise<string> {
+    // ether.js seems to treat struct arrays vs nested struct arrays differently. Here it expects the
+    // orders param to be in the form of [[[{ data: <string>, requiresUnsignedCall: <bool>}]]]
+    // the primitive struct here is an object with named params for the struct
+    const orderStructsArray: PrimitiveStruct[][][] = orders.map(
+      o => ([
+        o.primitives.map(p => ({
+          data: p.data as string,
+          requiresUnsignedCall: p.requiresUnsignedCall as boolean
+        }))
+      ])
+    )
+    const strategyData: string = await this.callContractFn(
+      this.StrategyBuilder,
+      `strategyData(((bytes,bool)[])[],(address,bytes)[],(address,bytes)[])`,
+      orderStructsArray,
+      beforeCalls,
+      afterCalls
+    )
+    return `0x${strategyData}`
+  }
+
+  async strategyMessageHash (
+    signatureType: SignatureType,
+    data: string,
+    account: string,
+    chainId: BigInt
+  ): Promise<string> {
+    const messageHash: string = await this.callContractFn(
+      this.StrategyBuilder,
+      `getMessageHash`,
+      signatureTypeMap[signatureType],
+      data,
+      account,
+      chainId
+    )
+    return `0x${messageHash}`
+  }
+
+  async orderData (...primitiveStructs: PrimitiveStruct[]): Promise<string> {
+    // here ethers.js expects the struct to be an array, no named params
     const orderData = await this.callContractFn(
       this.OrderBuilder,
-      `order(${Array(args.length).fill('(bytes,bool)').join(',')})`,
-      ...args
+      `order(${Array(primitiveStructs.length).fill('(bytes,bool)').join(',')})`,
+      ...primitiveStructs.map(primitiveStruct => [primitiveStruct.data, primitiveStruct.requiresUnsignedCall])
     )
     return `0x${orderData}`
   }

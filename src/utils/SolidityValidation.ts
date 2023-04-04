@@ -1,13 +1,11 @@
-import { Address, Bytes, Uint } from './SolidityTypes';
-
-export function validateBytes(input: Bytes): void {
+export function validateBytes(input: string): void {
   const validHexPattern = /^0x([0-9a-fA-F][0-9a-fA-F])*$/;
   if (!validHexPattern.test(input)) {
     throw new Error(`Invalid Solidity bytes string: ${input}`);
   }
 }
 
-export function validateUint(input: Uint | BigInt, size: number = 256): void {
+export function validateUint(input: BigInt, size: number = 256): void {
   if (size <= 0 || size > 256 || !Number.isInteger(size)) {
     throw new Error(`Invalid uint size: ${size}`);
   }
@@ -19,7 +17,7 @@ export function validateUint(input: Uint | BigInt, size: number = 256): void {
   }
 }
 
-export function validateAddress(address: Address): void {
+export function validateAddress(address: string): void {
   const validAddressPattern = /^0x[0-9a-fA-F]{40}$/;
   if (!validAddressPattern.test(address)) {
     throw new Error(`Invalid Solidity address ${address}`);
