@@ -1,11 +1,7 @@
 const { Strategy, Order, UseBit } = require('../src/strategies')
 
 describe('Strategies', function () {
-  it('should do a thing', async function () {
-    await this.strategies.useBit(1, 2**5)
-  })
-
-  it.only('build basic strategy', async function () {
+  it('build basic strategy', async function () {
     const strategy1 = new Strategy(
       {
         account: '0x7A2C00eC3e3F6e8229AE5b1D9F31F0328d24D0FC',

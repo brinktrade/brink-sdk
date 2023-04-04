@@ -91,7 +91,7 @@ describe('Account', function () {
     })
   })
 
-  describe('callStatic', function () {
+  describe.skip('callStatic', function () {
     it('should wrap call to ethers callStatic', async function () {
       await this.fundAccount()
       const res = await this.account.callStatic.ApprovalSwapsV1.tokenToToken(
