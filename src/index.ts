@@ -32,11 +32,11 @@ const setupBrink = (opts: any = {}) => {
 
     const vers = signerOpts.verifiers || opts.verifiers
 
-    return new AccountSigner({
-      signer: accountOwnerSigner,
-      chainId: getChainId(network),
-      verifiers: vers
-    })
+    return new AccountSigner(
+      accountOwnerSigner,
+      getChainId(network),
+      vers
+    )
   }
 
   return {

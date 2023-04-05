@@ -17,10 +17,10 @@ export enum TokenStandard {
 }
 
 export type Token = {
-  standard: TokenStandard,
-  addr: string,
-  idsMerkleRoot: string,
-  id: BigInt,
+  standard: TokenStandard
+  addr: string
+  idsMerkleRoot: string
+  id: BigInt
   disallowFlagged: boolean
 }
 
@@ -29,35 +29,40 @@ export type PrimitiveFunctionName =
   'marketSwapExactInput'
 
 export type PrimitiveData = {
-  functionName: PrimitiveFunctionName,
-  params: ContractCallParams,
-  data?: string,
+  functionName: PrimitiveFunctionName
+  params: ContractCallParams
+  data?: string
   requiresUnsignedCall?: boolean
 }
 
 export type OrderData = {
-  primitives: PrimitiveData[],
+  primitives: PrimitiveData[]
   data?: string
 }
 
 export type StrategyData = {
-  orders: OrderData[],
-  beforeCalls?: any[],
-  afterCalls?: any[],
+  orders: OrderData[]
+  beforeCalls: any[]
+  afterCalls: any[]
   data?: string
-  hash?: string
-  account?: string
-  chainId?: BigInt,
-  signatureType?: SignatureType,
-  signature?: string
+}
+
+export type SignedStrategyData = {
+  hash: string
+  account: string
+  signer: string
+  chainId: BigInt
+  signatureType: SignatureType
+  signature: string
+  strategy: StrategyData
 }
 
 export type PrimitiveStruct = {
-  data: string,
+  data: string
   requiresUnsignedCall: boolean
 }
 
 export type CallStruct = {
-  targetContract: string,
+  targetContract: string
   data: string
 }

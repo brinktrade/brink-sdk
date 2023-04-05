@@ -177,9 +177,10 @@ describe('AccountSigner', function () {
   })
 
   describe('strategy signing', function () {
-    it.skip('should sign a strategy', async function () {
+    it('should sign a strategy', async function () {
       const strategyData = await buildStrategy()
-      console.log('DAT:', strategyData)
+      const signedStrategy = await this.accountSigner.signStrategyEIP712(strategyData)
+      console.log(JSON.stringify(signedStrategy, null, 2))
     })
   })
 })
@@ -199,9 +200,6 @@ async function tokenToTokenSignWithBnTest(_BN) {
 async function buildStrategy () {
   const strategy1 = new Strategy(
     {
-      account: '0x7A2C00eC3e3F6e8229AE5b1D9F31F0328d24D0FC',
-      chainId: 1,
-      signatureType: 'EIP712',
       orders: [
         {
           primitives: [
