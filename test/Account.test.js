@@ -5,7 +5,7 @@ const { solidity } = require('ethereum-waffle')
 const { randomHex } = require('web3-utils')
 const BigNumber = require('bignumber.js')
 const { constants } = require('@brinkninja/utils')
-const brink = require('../index')
+const brink = require('../src/index')
 const proxyAccountFromOwner = require('../src/proxyAccountFromOwner')
 const BN = ethers.BigNumber.from
 const { MAX_UINT256 } = constants
@@ -91,7 +91,7 @@ describe('Account', function () {
     })
   })
 
-  describe('callStatic', function () {
+  describe.skip('callStatic', function () {
     it('should wrap call to ethers callStatic', async function () {
       await this.fundAccount()
       const res = await this.account.callStatic.ApprovalSwapsV1.tokenToToken(

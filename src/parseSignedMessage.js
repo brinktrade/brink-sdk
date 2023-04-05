@@ -1,6 +1,5 @@
-_ = require('lodash')
+const _ = require('lodash')
 const { VERIFIERS } = require('@brinkninja/config').mainnet
-
 
 module.exports = (opts = {}) => {
   const parseSignedMessage = (signedMessage, parseSignedMessageOpts = {}) => {

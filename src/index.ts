@@ -1,11 +1,12 @@
-const _ = require('lodash')
-const Account = require('./src/Account')
-const AccountSigner = require('./src/AccountSigner')
-const getChainId = require('./src/getChainId')
-const ParseSignedMessage = require('./src/parseSignedMessage')
+import _ from 'lodash'
+import Account from './Account'
+import AccountSigner from './AccountSigner'
+import getChainId from './getChainId'
+import ParseSignedMessage from './parseSignedMessage'
 
-const setupBrink = (opts = {}) => {
-  const account = (ownerAddress, accountOpts = {}) => {
+const setupBrink = (opts: any = {}) => {
+
+  const account = (ownerAddress: string, accountOpts: any = {}) => {
     const { provider, signer, verifiers } = accountOpts
     const prov = provider || opts.provider
     if (!prov) throw new Error(`no provider specified`)
@@ -23,7 +24,7 @@ const setupBrink = (opts = {}) => {
     })
   }
 
-  const accountSigner = (accountOwnerSigner, signerOpts = {}) => {
+  const accountSigner = (accountOwnerSigner: any, signerOpts: any = {}) => {
     if (!accountOwnerSigner) throw new Error(`no accountOwnerSigner specified`)
 
     let network = signerOpts.network || opts.network
@@ -31,22 +32,22 @@ const setupBrink = (opts = {}) => {
 
     const vers = signerOpts.verifiers || opts.verifiers
 
-    return new AccountSigner({
-      signer: accountOwnerSigner,
-      chainId: getChainId(network),
-      verifiers: vers
-    })
+    return new AccountSigner(
+      accountOwnerSigner,
+      getChainId(network),
+      vers
+    )
   }
 
   return {
     Account: account,
     AccountSigner: accountSigner,
-    proxyAccountFromOwner: require('./src/proxyAccountFromOwner'),
-    recoverSigner: require('./src/recoverSigner'),
-    verifySignedMessage: require('./src/verifySignedMessage'),
+    proxyAccountFromOwner: require('./proxyAccountFromOwner'),
+    recoverSigner: require('./recoverSigner'),
+    verifySignedMessage: require('./verifySignedMessage'),
     parseSignedMessage: ParseSignedMessage({ verifiers: opts.verifiers }),
-    encodeFunctionCall: require('./src/encodeFunctionCall'),
-    verifyParamInput: require('./src/utils/verifyParamInput')
+    encodeFunctionCall: require('./encodeFunctionCall'),
+    verifyParamInput: require('./utils/verifyParamInput')
   }
 }
 
