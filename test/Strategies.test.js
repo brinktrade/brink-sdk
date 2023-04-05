@@ -11,6 +11,18 @@ describe('Strategies', function () {
               params: [0, 1]
             },
             {
+              functionName: 'requireBlockNotMined',
+              params: [169832100000000]
+            },
+            {
+              functionName: 'requireUint256LowerBound',
+              params: [
+                '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
+                '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8',
+                (BigInt(1000) * BigInt(2)**BigInt(96)).toString()
+              ]
+            },
+            {
               functionName: 'marketSwapExactInput',
               params: [
                 '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',

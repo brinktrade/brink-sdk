@@ -1,10 +1,12 @@
-import UseBit from './UseBit'
+import Primitive from '../Primitive'
 import MarketSwapExactInput from './MarketSwapExactInput'
+import RequireBlockNotMined from './RequireBlockNotMined'
+import RequireUint256LowerBound from './RequireUint256LowerBound'
+import UseBit from './UseBit'
 import { PrimitiveFunctionName } from '../StrategyTypes'
 
 type PrimitiveMapping = {
-  useBit: typeof UseBit
-  marketSwapExactInput: typeof MarketSwapExactInput
+  [key in PrimitiveFunctionName]: typeof Primitive
 }
 
 function createMappingObject(mapping: Record<string, Function>): PrimitiveMapping {
@@ -15,8 +17,10 @@ function createMappingObject(mapping: Record<string, Function>): PrimitiveMappin
 }
 
 const primitiveMapping: PrimitiveMapping = createMappingObject({
-  useBit: UseBit,
   marketSwapExactInput: MarketSwapExactInput,
+  requireBlockNotMined: RequireBlockNotMined,
+  requireUint256LowerBound: RequireUint256LowerBound,
+  useBit: UseBit
 })
 
 export default function createPrimitive<T extends keyof PrimitiveMapping>(
@@ -24,5 +28,8 @@ export default function createPrimitive<T extends keyof PrimitiveMapping>(
   params: unknown[]
 ): InstanceType<PrimitiveMapping[T]> {
   const PrimitiveClass = primitiveMapping[functionName]
+  if (!PrimitiveClass) {
+    throw new Error(`Unknown primitive: ${functionName}`)
+  }
   return new (PrimitiveClass as any)(...params) as InstanceType<PrimitiveMapping[T]>
 }

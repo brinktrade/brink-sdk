@@ -26,7 +26,9 @@ export type Token = {
 
 export type PrimitiveFunctionName = 
   'useBit' |
-  'marketSwapExactInput'
+  'marketSwapExactInput' |
+  'requireBlockNotMined' |
+  'requireUint256LowerBound'
 
 export type PrimitiveData = {
   functionName: PrimitiveFunctionName
