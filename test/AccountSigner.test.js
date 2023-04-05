@@ -5,6 +5,7 @@ const { BN: ethersBN } = require('@brinkninja/utils')
 const { toBN: web3BN } = require('web3-utils')
 const { solidity } = require('ethereum-waffle')
 const { MAX_UINT256, ZERO_ADDRESS } = require('@brinkninja/utils').constants
+const { Strategy } = require('../src/strategies')
 const brink = require('../src/index')
 
 const BN = ethers.BigNumber.from
@@ -174,6 +175,13 @@ describe('AccountSigner', function () {
       expect(signedMsg.signedParams[0].value).to.equal(doThingVerifierDef.contractAddress)
     })
   })
+
+  describe('strategy signing', function () {
+    it.skip('should sign a strategy', async function () {
+      const strategyData = await buildStrategy()
+      console.log('DAT:', strategyData)
+    })
+  })
 })
 
 async function tokenToTokenSignWithBnTest(_BN) {
@@ -186,4 +194,50 @@ async function tokenToTokenSignWithBnTest(_BN) {
   expect(params[4].value).to.equal('10')
   expect(params[5].value).to.equal('10')
   expect(params[6].value).to.equal('115792089237316195423570985008687907853269984665640564039457584007913129639935')
+}
+
+async function buildStrategy () {
+  const strategy1 = new Strategy(
+    {
+      account: '0x7A2C00eC3e3F6e8229AE5b1D9F31F0328d24D0FC',
+      chainId: 1,
+      signatureType: 'EIP712',
+      orders: [
+        {
+          primitives: [
+            {
+              functionName: 'useBit',
+              params: [0, 1]
+            },
+            {
+              functionName: 'marketSwapExactInput',
+              params: [
+                '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
+                '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8',
+                '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+                [
+                  0,
+                  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+                  '0x0000000000000000000000000000000000000000000000000000000000000000',
+                  0,
+                  false
+                ],
+                [
+                  0,
+                  '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+                  '0x0000000000000000000000000000000000000000000000000000000000000000',
+                  0,
+                  false
+                ],
+                1450000000,
+                10000,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  )
+  return await strategy1.toJSON()
 }

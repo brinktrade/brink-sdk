@@ -13,6 +13,9 @@ const {
 
 const { VERIFIERS } = require('@brinkninja/config').mainnet
 
+// TODO: move to config
+const StrategyTargetAddress = '0x0a8A4c2aF510Afe2A40D230696cAcA6967f75BbF'
+
 class AccountSigner {
 
   constructor ({ signer, chainId, verifiers = [] }) {
@@ -71,6 +74,13 @@ class AccountSigner {
   async signerAddress () {
     const addr = await this._signer.getAddress()
     return addr
+  }
+
+  async signStrategy (strategyData) {
+    const signedStrategy = await this.signMetaDelegateCall(
+      StrategyTargetAddress, strategyData
+    )
+    return signedStrategy
   }
 
   async signMetaDelegateCall (toAddress, call) {
