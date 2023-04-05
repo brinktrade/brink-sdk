@@ -2,8 +2,10 @@ import { PrimitiveData, PrimitiveFunctionName, ContractCallParams } from './Stra
 import evm from './StrategiesEVM'
 
 const primitiveRequiresUnsignedMap: { [key in PrimitiveFunctionName]: boolean } = {
-  useBit: false,
-  marketSwapExactInput: true
+  marketSwapExactInput: true,
+  requireBlockNotMined: false,
+  requireUint256LowerBound: false,
+  useBit: false
 }
 
 class Primitive {
