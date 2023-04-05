@@ -5,8 +5,6 @@ import { Transaction } from '@ethereumjs/tx'
 import { EVMResult } from '@ethereumjs/evm'
 import { VM } from '@ethereumjs/vm'
 import StrategyBuilder01 from '../contracts/StrategyBuilder01.json'
-import OrderBuilder01 from '../contracts/OrderBuilder01.json'
-import OrdersBuilder01 from '../contracts/OrdersBuilder01.json'
 import PrimitiveBuilder01 from '../contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from '../contracts/UnsignedDataBuilder01.json'
 import {
@@ -41,8 +39,6 @@ export class StrategiesEVM {
 
   _nonce: number = 0
   StrategyBuilder!: ethers.Contract
-  OrderBuilder!: ethers.Contract
-  OrdersBuilder!: ethers.Contract
   PrimitiveBuilder!: ethers.Contract
   UnsignedDataBuilder!: ethers.Contract
 
@@ -63,8 +59,6 @@ export class StrategiesEVM {
       this._vm = await VM.create({ common: this._common })
       
       this.StrategyBuilder = await this.deployContract(StrategyBuilder01, this._strategyTargetAddress, this._primitivesAddress)
-      this.OrderBuilder = await this.deployContract(OrderBuilder01)
-      this.OrdersBuilder = await this.deployContract(OrdersBuilder01)
       this.PrimitiveBuilder = await this.deployContract(PrimitiveBuilder01)
       this.UnsignedDataBuilder = await this.deployContract(UnsignedDataBuilder01)
       
@@ -104,7 +98,7 @@ export class StrategiesEVM {
 
   async primitiveData (functionName: PrimitiveFunctionName, ...args: ContractCallParams): Promise<string> {
     const primitiveData = await this.callContractFn(this.PrimitiveBuilder, functionName as unknown as string, ...args)
-    return `0x${primitiveData}`
+    return `0x${cleanDynamicBytes(primitiveData)}`
   }
 
   async strategyData (
@@ -112,25 +106,24 @@ export class StrategiesEVM {
     beforeCalls: CallStruct[] = [],
     afterCalls: CallStruct[] = []
   ): Promise<string> {
-    // ether.js seems to treat struct arrays vs nested struct arrays differently. Here it expects the
-    // orders param to be in the form of [[[{ data: <string>, requiresUnsignedCall: <bool>}]]]
-    // the primitive struct here is an object with named params for the struct
-    const orderStructsArray: PrimitiveStruct[][][] = orders.map(
-      o => ([
-        o.primitives.map(p => ({
-          data: p.data as string,
-          requiresUnsignedCall: p.requiresUnsignedCall as boolean
-        }))
-      ])
+    const ordersBytesArray: string[][] = orders.map(
+      o => o.primitives.map(p => p.data as string)
     )
+
     const strategyData: string = await this.callContractFn(
       this.StrategyBuilder,
-      `strategyData(((bytes,bool)[])[],(address,bytes)[],(address,bytes)[])`,
-      orderStructsArray,
+      'strategyData(bytes[][],(address,bytes)[],(address,bytes)[])',
+      ordersBytesArray,
       beforeCalls,
       afterCalls
     )
-    return `0x${strategyData}`
+
+    // ethereumjs-vm returns the data with 28 bytes of extra 00's appended.
+    // the strategies break with these extra bytes. it seems to be consistently adding
+    // exactly 28 bytes of empty data, so trimming them out fixes the issue
+
+    const strategyDataTrimmed = strategyData.slice(0, -56)
+    return `0x${cleanDynamicBytes(strategyDataTrimmed)}`
   }
 
   async strategyMessageHash (
@@ -148,16 +141,6 @@ export class StrategiesEVM {
       chainId
     )
     return `0x${messageHash}`
-  }
-
-  async orderData (...primitiveStructs: PrimitiveStruct[]): Promise<string> {
-    // here ethers.js expects the struct to be an array, no named params
-    const orderData = await this.callContractFn(
-      this.OrderBuilder,
-      `order(${Array(primitiveStructs.length).fill('(bytes,bool)').join(',')})`,
-      ...primitiveStructs.map(primitiveStruct => [primitiveStruct.data, primitiveStruct.requiresUnsignedCall])
-    )
-    return `0x${orderData}`
   }
 
   async callContractFn (contract: ethers.Contract, fnName: string, ...args: ContractCallParams): Promise<any> {
@@ -182,6 +165,11 @@ export class StrategiesEVM {
       throw new Error(`${exceptionError.errorType}: ${exceptionError.error}`)
     }
   }
+}
+
+function cleanDynamicBytes (bytes: string): string {
+  // remove the first 2 bytes32 slots (pointer and length)
+  return bytes.slice(128)
 }
 
 // TODO: move these to config
