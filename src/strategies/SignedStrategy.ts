@@ -1,6 +1,6 @@
 import Strategy from './Strategy'
-import { SignedStrategyData, StrategyData, SignatureType } from './StrategyTypes'
-import evm from './StrategiesEVM'
+import { SignedStrategyData, SignatureType } from './StrategyTypes'
+import Config from '../Config'
 
 class SignedStrategy {
   account: string
@@ -8,6 +8,7 @@ class SignedStrategy {
   signatureType: SignatureType
   strategy: Strategy
   signature: string
+  strategyContract: string
 
   constructor(signedStrategyData: SignedStrategyData) {
     this.account = signedStrategyData.account
@@ -15,28 +16,8 @@ class SignedStrategy {
     this.signatureType = signedStrategyData.signatureType
     this.strategy = new Strategy(signedStrategyData.strategy)
     this.signature = signedStrategyData.signature
+    this.strategyContract = Config.get('STRATEGY_CONTRACT') as string
   }
-
-  // async toJSON (): Promise<SignedStrategyData> {
-  //   const strategyData: StrategyData = await this.strategy.toJSON()
-
-  //   const hash = await evm.strategyMessageHash(
-  //     this.signatureType,
-  //     strategyData.data as string,
-  //     this.account,
-  //     this.chainId
-  //   )
-
-  //   return {
-  //     strategy: strategyData,
-  //     hash,
-  //     account: this.account,
-  //     chainId: this.chainId,
-  //     signatureType: this.signatureType,
-  //     signature: this.signature
-  //   }
-  // }
-
 }
 
 export default SignedStrategy

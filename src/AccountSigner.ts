@@ -1,4 +1,5 @@
 import { SignedStrategyData, StrategyData } from './strategies/StrategyTypes'
+import Config from './Config'
 
 const _ = require('lodash')
 const { signEIP712 } = require('@brinkninja/utils')
@@ -15,8 +16,7 @@ const {
 
 const { VERIFIERS } = require('@brinkninja/config').mainnet
 
-// TODO: move to config
-const StrategyTargetAddress = '0x0a8A4c2aF510Afe2A40D230696cAcA6967f75BbF'
+const STRATEGY_CONTRACT: string = Config.get('STRATEGY_CONTRACT') as string
 
 class AccountSigner {
 
@@ -98,7 +98,7 @@ class AccountSigner {
       chainId: this._chainId,
       method: 'metaDelegateCall',
       paramTypes: metaDelegateCallSignedParamTypes,
-      params: [ StrategyTargetAddress, strategyData.data ]
+      params: [ STRATEGY_CONTRACT, strategyData.data ]
     })
     return {
       hash: typedDataHash,
@@ -107,7 +107,8 @@ class AccountSigner {
       chainId: this._chainId,
       signatureType: 'EIP712',
       signature,
-      strategy: strategyData
+      strategy: strategyData,
+      strategyContract: STRATEGY_CONTRACT
     }
   }
 

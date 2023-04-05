@@ -46,6 +46,7 @@ export type StrategyData = {
   orders: OrderData[]
   beforeCalls: any[]
   afterCalls: any[]
+  primitivesContract: string,
   data?: string
 }
 
@@ -56,7 +57,8 @@ export type SignedStrategyData = {
   chainId: BigInt
   signatureType: SignatureType
   signature: string
-  strategy: StrategyData
+  strategy: StrategyData,
+  strategyContract: string
 }
 
 export type PrimitiveStruct = {

@@ -4,13 +4,13 @@ import { Address } from '@ethereumjs/util'
 import { Transaction } from '@ethereumjs/tx'
 import { EVMResult } from '@ethereumjs/evm'
 import { VM } from '@ethereumjs/vm'
+import config from '../Config'
 import StrategyBuilder01 from '../contracts/StrategyBuilder01.json'
 import PrimitiveBuilder01 from '../contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from '../contracts/UnsignedDataBuilder01.json'
 import {
   ContractCallParams,
   PrimitiveFunctionName,
-  PrimitiveStruct,
   CallStruct,
   SignatureType,
   SignatureTypeEnum,
@@ -30,8 +30,8 @@ const signer = new ethers.Wallet(privateKey)
 
 export class StrategiesEVM {
 
-  readonly _strategyTargetAddress: string
-  readonly _primitivesAddress: string
+  readonly _strategyContractAddress: string
+  readonly _primitivesContractAddress: string
 
   _common: Common
   _vm!: VM
@@ -43,11 +43,11 @@ export class StrategiesEVM {
   UnsignedDataBuilder!: ethers.Contract
 
   constructor (
-    strategyTargetAddress: string,
-    primitivesAddress: string
+    strategyContractAddress: string,
+    primitivesContractAddress: string
   ) {
-    this._strategyTargetAddress = strategyTargetAddress
-    this._primitivesAddress = primitivesAddress
+    this._strategyContractAddress = strategyContractAddress
+    this._primitivesContractAddress = primitivesContractAddress
 
     this._common = new Common({ chain: Chain.Mainnet })
     this._initVM()
@@ -58,7 +58,7 @@ export class StrategiesEVM {
       this._vmInitializing = true
       this._vm = await VM.create({ common: this._common })
       
-      this.StrategyBuilder = await this.deployContract(StrategyBuilder01, this._strategyTargetAddress, this._primitivesAddress)
+      this.StrategyBuilder = await this.deployContract(StrategyBuilder01, this._strategyContractAddress, this._primitivesContractAddress)
       this.PrimitiveBuilder = await this.deployContract(PrimitiveBuilder01)
       this.UnsignedDataBuilder = await this.deployContract(UnsignedDataBuilder01)
       
@@ -172,8 +172,7 @@ function cleanDynamicBytes (bytes: string): string {
   return bytes.slice(128)
 }
 
-// TODO: move these to config
 export default new StrategiesEVM(
-  "0x0a8A4c2aF510Afe2A40D230696cAcA6967f75BbF",
-  "0xD35d062aC72C7afE566b1002819d129b6DfF3d34"
+  config.get('STRATEGY_CONTRACT') as string,
+  config.get('PRIMITIVES_CONTRACT') as string,
 )

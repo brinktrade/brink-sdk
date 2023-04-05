@@ -3,6 +3,7 @@ import Account from './Account'
 import AccountSigner from './AccountSigner'
 import getChainId from './getChainId'
 import ParseSignedMessage from './parseSignedMessage'
+import Config from './Config'
 
 const setupBrink = (opts: any = {}) => {
 
@@ -47,8 +48,17 @@ const setupBrink = (opts: any = {}) => {
     verifySignedMessage: require('./verifySignedMessage'),
     parseSignedMessage: ParseSignedMessage({ verifiers: opts.verifiers }),
     encodeFunctionCall: require('./encodeFunctionCall'),
-    verifyParamInput: require('./utils/verifyParamInput')
+    verifyParamInput: require('./utils/verifyParamInput'),
+    config: mapToJSON(Config)
   }
+}
+
+function mapToJSON(map: Map<string, any>): Record<string, any> {
+  const obj: Record<string, any> = {};
+  for (const [key, value] of map.entries()) {
+    obj[key] = value;
+  }
+  return obj;
 }
 
 module.exports = setupBrink

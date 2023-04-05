@@ -1,3 +1,4 @@
+import Config from '../Config'
 import { StrategyData } from './StrategyTypes'
 import Order from './Order'
 import evm from './StrategiesEVM'
@@ -29,6 +30,7 @@ class Strategy {
         this.beforeCalls,
         this.afterCalls
       ),
+      primitivesContract: Config.get('PRIMITIVES_CONTRACT') as string,
       orders,
       beforeCalls: this.beforeCalls,
       afterCalls: this.afterCalls
