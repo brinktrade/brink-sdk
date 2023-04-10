@@ -1,6 +1,7 @@
-import { OrderData } from './StrategyTypes'
+import { OrderData, ValidationResult } from './StrategyTypes'
 import Primitive from './Primitive'
 import createPrimitive from './Primitives/createPrimitive'
+import { invalidResult, validResult } from './Validation'
 
 class Order {
 
@@ -25,6 +26,18 @@ class Order {
     return {
       primitives
     }
+  }
+
+  validate (): ValidationResult {
+    if (this.primitives.length == 0) return { valid: false }
+    
+    let numSwaps = 0
+    for (let i = 0; i < this.primitives.length; i++) {
+      if (this.primitives[i].type == 'swap') numSwaps++
+    }
+    if (numSwaps !== 1) return invalidResult('WRONG_NUMBER_OF_SWAPS')
+
+    return validResult()
   }
 
 }

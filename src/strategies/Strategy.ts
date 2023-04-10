@@ -1,7 +1,8 @@
 import Config from '../Config'
-import { StrategyData } from './StrategyTypes'
+import { StrategyData, ValidationResult, InvalidReason, invalidReasonMessages } from './StrategyTypes'
 import Order from './Order'
 import evm from './StrategiesEVM'
+import { invalidResult, validResult } from './Validation'
 
 class Strategy {
   orders: Order[] = []
@@ -37,6 +38,21 @@ class Strategy {
     }
   }
 
+  validate (): ValidationResult {
+    if (this.orders.length == 0) {
+      return invalidResult('ZERO_ORDERS')
+    }
+    
+    for (let i = 0; i < this.orders.length; i++) {
+      const order = this.orders[i]
+      const orderValidationResult = order.validate()
+      if (!orderValidationResult.valid) return orderValidationResult
+    }
+
+    return validResult()
+  }
 }
+
+
 
 export default Strategy

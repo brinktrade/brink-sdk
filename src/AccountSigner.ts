@@ -1,4 +1,5 @@
-import { SignedStrategyData, StrategyData } from './strategies/StrategyTypes'
+import { SignedStrategy, Strategy } from './strategies'
+import { StrategyData } from './strategies/StrategyTypes'
 import Config from './Config'
 
 const _ = require('lodash')
@@ -88,8 +89,15 @@ class AccountSigner {
     return addr
   }
 
-  async signStrategyEIP712 (strategyData: StrategyData): Promise<SignedStrategyData> {
+  async signStrategyEIP712 (strategyData: StrategyData): Promise<SignedStrategy> {
     const accountAddress = await this.accountAddress()
+    
+    const strategy = new Strategy(strategyData)
+    const strategyValidation = strategy.validate()
+    if (!strategyValidation.valid) {
+      throw new Error(`Invalid strategy: ${strategyValidation.reason}: ${strategyValidation.message}`)
+    }
+
     const { typedDataHash, signature } = await signEIP712({
       signer: this._signer,
       contractAddress: accountAddress,
@@ -100,7 +108,7 @@ class AccountSigner {
       paramTypes: metaDelegateCallSignedParamTypes,
       params: [ STRATEGY_CONTRACT, strategyData.data ]
     })
-    return {
+    return new SignedStrategy({
       hash: typedDataHash,
       account: accountAddress,
       signer: await this._signer.getAddress(),
@@ -109,7 +117,7 @@ class AccountSigner {
       signature,
       strategy: strategyData,
       strategyContract: STRATEGY_CONTRACT
-    }
+    })
   }
 
   async signMetaDelegateCall (toAddress: string, call: any) {
