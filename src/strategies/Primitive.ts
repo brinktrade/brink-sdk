@@ -1,4 +1,4 @@
-import { PrimitiveData, PrimitiveFunctionName, ContractCallParams } from './StrategyTypes'
+import { PrimitiveData, PrimitiveFunctionName, PrimitiveType, ContractCallParams } from './StrategyTypes'
 import evm from './StrategiesEVM'
 
 const primitiveRequiresUnsignedMap: { [key in PrimitiveFunctionName]: boolean } = {
@@ -8,9 +8,17 @@ const primitiveRequiresUnsignedMap: { [key in PrimitiveFunctionName]: boolean } 
   useBit: false
 }
 
+const primitiveTypeMap: { [key in PrimitiveFunctionName]: PrimitiveType } = {
+  marketSwapExactInput: 'swap',
+  requireBlockNotMined: 'require',
+  requireUint256LowerBound: 'require',
+  useBit: 'require'
+}
+
 class Primitive {
   functionName!: PrimitiveFunctionName
   params!: ContractCallParams
+  type!: PrimitiveType
 
   constructor(primitiveData: PrimitiveData) {
     this.fromJSON(primitiveData)
@@ -19,6 +27,7 @@ class Primitive {
   fromJSON (primitiveData: PrimitiveData) {
     this.functionName = primitiveData.functionName
     this.params = primitiveData.params
+    this.type = primitiveTypeMap[this.functionName]
   }
 
   async toJSON (): Promise<PrimitiveData> {

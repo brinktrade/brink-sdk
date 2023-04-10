@@ -30,6 +30,10 @@ export type PrimitiveFunctionName =
   'requireBlockNotMined' |
   'requireUint256LowerBound'
 
+export type PrimitiveType =
+  'swap' |
+  'require'
+
 export type PrimitiveData = {
   functionName: PrimitiveFunctionName
   params: ContractCallParams
@@ -69,4 +73,20 @@ export type PrimitiveStruct = {
 export type CallStruct = {
   targetContract: string
   data: string
+}
+
+export type ValidationResult = {
+  valid: boolean
+  reason?: InvalidReason
+  message?: string
+}
+
+export type InvalidReason = keyof typeof invalidReasonMessages
+
+export const invalidReasonMessages = {
+  ZERO_ORDERS: 'Strategy must have at least 1 order',
+  WRONG_NUMBER_OF_SWAPS: 'All orders must have exactly 1 swap',
+  SIGNATURE_MISMATCH: 'Signer address does not match recovered address from signature',
+  ACCOUNT_MISMATCH: 'Account address is not owned by signer',
+  HASH_MISMATCH: 'Hash does not match strategy data'
 }

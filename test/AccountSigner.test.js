@@ -5,7 +5,7 @@ const { BN: ethersBN } = require('@brinkninja/utils')
 const { toBN: web3BN } = require('web3-utils')
 const { solidity } = require('ethereum-waffle')
 const { MAX_UINT256, ZERO_ADDRESS } = require('@brinkninja/utils').constants
-const { Strategy } = require('../src/strategies')
+const { Strategy, Order, UseBit } = require('../src/strategies')
 const brink = require('../src/index')
 
 const BN = ethers.BigNumber.from
@@ -180,7 +180,14 @@ describe('AccountSigner', function () {
     it('should sign a strategy', async function () {
       const strategyData = await buildStrategy()
       const signedStrategy = await this.accountSigner.signStrategyEIP712(strategyData)
-      console.log(JSON.stringify(signedStrategy, null, 2))
+      expect(signedStrategy.strategy).not.to.be.undefined
+    })
+
+    it('should throw validation error when signing invalid strategy', async function () {
+      const strategy = new Strategy()
+      strategy.orders[0] = new Order()
+      strategy.orders[0].primitives[0] = new UseBit(0, 1)
+      await expect(this.accountSigner.signStrategyEIP712(await strategy.toJSON())).to.be.rejectedWith('Invalid strategy: WRONG_NUMBER_OF_SWAPS: All orders must have exactly 1 swap')
     })
   })
 })
