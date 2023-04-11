@@ -39,6 +39,7 @@
     "web3-utils": "^1.7.3"
   },
   "license": "GPL-3.0-or-later",
+  "main": "build/index.js",
   "scripts": {
     "test": "hardhat test",
     "build": "rm -rf build && tsc"
