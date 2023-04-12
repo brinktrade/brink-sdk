@@ -41,9 +41,20 @@
     "web3-utils": "^1.7.3"
   },
   "license": "GPL-3.0-or-later",
-  "main": "build/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./strategies": {
+      "types": "./dist/strategies.d.ts",
+      "default": "./dist/strategies.js"
+    }
+  },
   "scripts": {
     "test": "hardhat test",
-    "build": "rm -rf build && tsc"
+    "build": "rm -rf dist && tsc"
   }
 }
