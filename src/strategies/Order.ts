@@ -1,4 +1,4 @@
-import { OrderData, ValidationResult } from './StrategyTypes'
+import { OrderJSON, ValidationResult, PrimitiveFunctionName } from './StrategyTypes'
 import Primitive from './Primitive'
 import createPrimitive from './Primitives/createPrimitive'
 import { invalidResult, validResult } from './Validation'
@@ -7,19 +7,23 @@ class Order {
 
   primitives: Primitive[] = []
 
-  constructor(orderData: OrderData | undefined) {
-    if (orderData) {
-      this.fromJSON(orderData)
+  public constructor ()
+  public constructor (orderJSON: OrderJSON)
+  public constructor (primitives: Primitive[])
+  public constructor(...args: any[]) {
+    let orderJSON: OrderJSON = { primitives: [] }
+    if (typeof args[0] === 'object') {
+      orderJSON = args[0]
+    } else if (Array.isArray(args[0])) {
+      orderJSON.primitives = args[0]
     }
-  }
 
-  fromJSON (orderData: OrderData) {
-    this.primitives = orderData.primitives.map(primitiveData => {
+    this.primitives = orderJSON.primitives.map((primitiveData: { functionName: PrimitiveFunctionName, params: unknown[] }) => {
       return createPrimitive(primitiveData.functionName, primitiveData.params)
     })
   }
 
-  async toJSON (): Promise<OrderData> {
+  async toJSON (): Promise<OrderJSON> {
     const primitives = await Promise.all(
       this.primitives.map(async primitive => await primitive.toJSON())
     )

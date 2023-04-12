@@ -1,26 +1,52 @@
 import Config from '../Config'
-import { StrategyData, ValidationResult, InvalidReason, invalidReasonMessages } from './StrategyTypes'
+import { StrategyJSON, ValidationResult } from './StrategyTypes'
 import Order from './Order'
 import evm from './StrategiesEVM'
 import { invalidResult, validResult } from './Validation'
 
+const { PRIMITIVES_CONTRACT } = Config
+
 class Strategy {
-  orders: Order[] = []
-  beforeCalls: any[] = []
-  afterCalls: any[] = []
+  orders: Order[]
+  beforeCalls: any[]
+  afterCalls: any[]
+  primitivesContract: string
 
-  constructor(
-    strategyData: StrategyData | undefined) {
-    if (strategyData) {
-      this.fromJSON(strategyData)
+  public constructor ()
+  public constructor (json: StrategyJSON)
+  public constructor (orders: Order[])
+  public constructor (orders: Order[], beforeCalls: any[], afterCalls: any[])
+  public constructor (orders: Order[], beforeCalls: any[], afterCalls: any[], primitivesContract: string)
+  public constructor(...args: any[]) {
+    let strategyJSON: StrategyJSON = {
+      orders: [],
+      beforeCalls: [],
+      afterCalls: [],
+      primitivesContract: PRIMITIVES_CONTRACT,
     }
+
+    if (args.length == 1 && typeof args[0] === 'object') {
+      strategyJSON = args[0]
+    } else if (args.length == 1 && Array.isArray(args[0])) {
+      strategyJSON.orders = args[0]
+    } else if (args.length == 3) {
+      strategyJSON.orders = args[0]
+      strategyJSON.beforeCalls = args[1]
+      strategyJSON.afterCalls = args[2]
+    } else if (args.length == 4) {
+      strategyJSON.orders = args[0]
+      strategyJSON.beforeCalls = args[1]
+      strategyJSON.afterCalls = args[2]
+      strategyJSON.primitivesContract = args[3]
+    }
+
+    this.orders = strategyJSON.orders.map(orderJSON => new Order(orderJSON))
+    this.beforeCalls = strategyJSON.beforeCalls || [] as any[]
+    this.afterCalls = strategyJSON.afterCalls || [] as any[]
+    this.primitivesContract = strategyJSON.primitivesContract || PRIMITIVES_CONTRACT
   }
 
-  fromJSON (strategyData: StrategyData) {
-    this.orders = strategyData.orders.map(orderData => new Order(orderData))
-  }
-
-  async toJSON (): Promise<StrategyData> {
+  async toJSON (): Promise<StrategyJSON> {
     const orders = await Promise.all(
       this.orders.map(async order => await order.toJSON())
     )
@@ -31,7 +57,7 @@ class Strategy {
         this.beforeCalls,
         this.afterCalls
       ),
-      primitivesContract: Config.get('PRIMITIVES_CONTRACT') as string,
+      primitivesContract: Config['PRIMITIVES_CONTRACT'] as string,
       orders,
       beforeCalls: this.beforeCalls,
       afterCalls: this.afterCalls

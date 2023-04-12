@@ -26,7 +26,7 @@ class SignedStrategy {
     this.signatureType = signedStrategyData.signatureType
     this.signature = signedStrategyData.signature
     this.strategy = new Strategy(signedStrategyData.strategy)
-    this.strategyContract = Config.get('STRATEGY_CONTRACT') as string
+    this.strategyContract = Config['STRATEGY_CONTRACT'] as string
   }
 
   async validate (): Promise<ValidationResult> {

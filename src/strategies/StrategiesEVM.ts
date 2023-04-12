@@ -14,7 +14,7 @@ import {
   CallStruct,
   SignatureType,
   SignatureTypeEnum,
-  OrderData
+  OrderJSON
 } from './StrategyTypes'
 
 export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
@@ -102,7 +102,7 @@ export class StrategiesEVM {
   }
 
   async strategyData (
-    orders: OrderData[] = [],
+    orders: OrderJSON[] = [],
     beforeCalls: CallStruct[] = [],
     afterCalls: CallStruct[] = []
   ): Promise<string> {
@@ -173,6 +173,6 @@ function cleanDynamicBytes (bytes: string): string {
 }
 
 export default new StrategiesEVM(
-  config.get('STRATEGY_CONTRACT') as string,
-  config.get('PRIMITIVES_CONTRACT') as string,
+  config['STRATEGY_CONTRACT'] as string,
+  config['PRIMITIVES_CONTRACT'] as string,
 )
