@@ -1,5 +1,5 @@
 import { SignedStrategy, Strategy } from './strategies'
-import { StrategyData } from './strategies/StrategyTypes'
+import { StrategyJSON } from './strategies/StrategyTypes'
 import Config from './Config'
 
 const _ = require('lodash')
@@ -17,7 +17,7 @@ const {
 
 const { VERIFIERS } = require('@brinkninja/config').mainnet
 
-const STRATEGY_CONTRACT: string = Config.get('STRATEGY_CONTRACT') as string
+const STRATEGY_CONTRACT: string = Config['STRATEGY_CONTRACT'] as string
 
 class AccountSigner {
 
@@ -89,10 +89,10 @@ class AccountSigner {
     return addr
   }
 
-  async signStrategyEIP712 (strategyData: StrategyData): Promise<SignedStrategy> {
+  async signStrategyEIP712 (strategyJSON: StrategyJSON): Promise<SignedStrategy> {
     const accountAddress = await this.accountAddress()
     
-    const strategy = new Strategy(strategyData)
+    const strategy = new Strategy(strategyJSON)
     const strategyValidation = strategy.validate()
     if (!strategyValidation.valid) {
       throw new Error(`Invalid strategy: ${strategyValidation.reason}: ${strategyValidation.message}`)
@@ -106,7 +106,7 @@ class AccountSigner {
       chainId: this._chainId,
       method: 'metaDelegateCall',
       paramTypes: metaDelegateCallSignedParamTypes,
-      params: [ STRATEGY_CONTRACT, strategyData.data ]
+      params: [ STRATEGY_CONTRACT, strategyJSON.data ]
     })
     return new SignedStrategy({
       hash: typedDataHash,
@@ -115,7 +115,7 @@ class AccountSigner {
       chainId: this._chainId,
       signatureType: 'EIP712',
       signature,
-      strategy: strategyData,
+      strategy: strategyJSON,
       strategyContract: STRATEGY_CONTRACT
     })
   }

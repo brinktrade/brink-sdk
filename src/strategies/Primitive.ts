@@ -1,4 +1,5 @@
-import { PrimitiveData, PrimitiveFunctionName, PrimitiveType, ContractCallParams } from './StrategyTypes'
+import Token from './Token'
+import { PrimitiveJSON, PrimitiveFunctionName, PrimitiveType, ContractCallParams } from './StrategyTypes'
 import evm from './StrategiesEVM'
 
 const primitiveRequiresUnsignedMap: { [key in PrimitiveFunctionName]: boolean } = {
@@ -16,26 +17,30 @@ const primitiveTypeMap: { [key in PrimitiveFunctionName]: PrimitiveType } = {
 }
 
 class Primitive {
-  functionName!: PrimitiveFunctionName
-  params!: ContractCallParams
-  type!: PrimitiveType
+  functionName: PrimitiveFunctionName
+  params: ContractCallParams
+  type: PrimitiveType
 
-  constructor(primitiveData: PrimitiveData) {
-    this.fromJSON(primitiveData)
-  }
-
-  fromJSON (primitiveData: PrimitiveData) {
-    this.functionName = primitiveData.functionName
-    this.params = primitiveData.params
+  constructor(primitiveJSON: PrimitiveJSON) {
+    this.functionName = primitiveJSON.functionName
+    this.params = primitiveJSON.params
     this.type = primitiveTypeMap[this.functionName]
   }
 
-  async toJSON (): Promise<PrimitiveData> {
+  async toJSON (): Promise<PrimitiveJSON> {
     const data = await evm.primitiveData(this.functionName, ...this.params)
     return {
       data: data,
       functionName: this.functionName,
-      params: this.params,
+      params: this.params.map(param => {
+        if (typeof param === 'bigint') {
+          return param.toString()
+        } else if (param instanceof Token) {
+          return param.toJSON()
+        } else {
+          return param
+        }
+      }),
       requiresUnsignedCall: primitiveRequiresUnsignedMap[this.functionName]
     }
   }

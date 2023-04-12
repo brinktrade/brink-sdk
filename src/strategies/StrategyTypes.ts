@@ -1,5 +1,7 @@
+import Token from './Token'
+
 export type ContractCallParams = (
-  boolean | string | BigInt | SignatureTypeEnum | Token | PrimitiveStruct | CallStruct | ContractCallParams
+  boolean | string | BigInt | SignatureTypeEnum | TokenStruct | TokenJSON | PrimitiveStruct | CallStruct | ContractCallParams
 )[]
 
 export enum SignatureTypeEnum {
@@ -16,11 +18,19 @@ export enum TokenStandard {
   ETH = 3
 }
 
-export type Token = {
+export type TokenStruct = {
   standard: TokenStandard
   addr: string
   idsMerkleRoot: string
   id: BigInt
+  disallowFlagged: boolean
+}
+
+export type TokenJSON = {
+  standard: TokenStandard
+  addr: string
+  idsMerkleRoot: string
+  id: string
   disallowFlagged: boolean
 }
 
@@ -34,23 +44,23 @@ export type PrimitiveType =
   'swap' |
   'require'
 
-export type PrimitiveData = {
+export type PrimitiveJSON = {
   functionName: PrimitiveFunctionName
   params: ContractCallParams
   data?: string
   requiresUnsignedCall?: boolean
 }
 
-export type OrderData = {
-  primitives: PrimitiveData[]
+export type OrderJSON = {
+  primitives: PrimitiveJSON[]
   data?: string
 }
 
-export type StrategyData = {
-  orders: OrderData[]
-  beforeCalls: any[]
-  afterCalls: any[]
-  primitivesContract: string,
+export type StrategyJSON = {
+  orders: OrderJSON[]
+  beforeCalls?: any[]
+  afterCalls?: any[]
+  primitivesContract?: string,
   data?: string
 }
 
@@ -61,7 +71,7 @@ export type SignedStrategyData = {
   chainId: BigInt
   signatureType: SignatureType
   signature: string
-  strategy: StrategyData,
+  strategy: StrategyJSON,
   strategyContract: string
 }
 

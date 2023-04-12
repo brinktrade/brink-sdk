@@ -49,16 +49,8 @@ const setupBrink = (opts: any = {}) => {
     parseSignedMessage: ParseSignedMessage({ verifiers: opts.verifiers }),
     encodeFunctionCall: require('./encodeFunctionCall'),
     verifyParamInput: require('./utils/verifyParamInput'),
-    config: mapToJSON(Config)
+    config: Config
   }
-}
-
-function mapToJSON(map: Map<string, any>): Record<string, any> {
-  const obj: Record<string, any> = {};
-  for (const [key, value] of map.entries()) {
-    obj[key] = value;
-  }
-  return obj;
 }
 
 module.exports = setupBrink
