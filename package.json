@@ -1,6 +1,6 @@
 {
   "name": "@brinkninja/sdk",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.0-alpha.4",
   "devDependencies": {
     "@openzeppelin/contracts": "4.3.3",
     "chai": "^4.3.4",
