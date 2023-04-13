@@ -1,7 +1,5 @@
-import Token from './Token'
-
 export type ContractCallParams = (
-  boolean | string | BigInt | SignatureTypeEnum | TokenStruct | TokenJSON | PrimitiveStruct | CallStruct | ContractCallParams
+  BigInt | boolean | string | SignatureTypeEnum | TokenStruct | TokenJSON | PrimitiveStruct | CallStruct | ContractCallParams
 )[]
 
 export enum SignatureTypeEnum {
