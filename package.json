@@ -49,8 +49,8 @@
       "default": "./dist/index.js"
     },
     "./strategies": {
-      "types": "./dist/strategies.d.ts",
-      "default": "./dist/strategies.js"
+      "types": "./dist/strategies/index.d.ts",
+      "default": "./dist/strategies/index.js"
     }
   },
   "scripts": {
