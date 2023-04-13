@@ -8,6 +8,7 @@ import config from '../Config'
 import StrategyBuilder01 from '../contracts/StrategyBuilder01.json'
 import PrimitiveBuilder01 from '../contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from '../contracts/UnsignedDataBuilder01.json'
+import SwapIO from '../contracts/SwapIO.json'
 import {
   ContractCallParams,
   PrimitiveFunctionName,
@@ -41,6 +42,7 @@ export class StrategiesEVM {
   StrategyBuilder!: ethers.Contract
   PrimitiveBuilder!: ethers.Contract
   UnsignedDataBuilder!: ethers.Contract
+  SwapIO!: ethers.Contract
 
   constructor (
     strategyContractAddress: string,
@@ -61,7 +63,8 @@ export class StrategiesEVM {
       this.StrategyBuilder = await this.deployContract(StrategyBuilder01, this._strategyContractAddress, this._primitivesContractAddress)
       this.PrimitiveBuilder = await this.deployContract(PrimitiveBuilder01)
       this.UnsignedDataBuilder = await this.deployContract(UnsignedDataBuilder01)
-      
+      this.SwapIO = await this.deployContract(SwapIO)
+
       this._vmInitializing = false
     }
   }

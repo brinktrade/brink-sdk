@@ -51,6 +51,10 @@
     "./strategies": {
       "types": "./dist/strategies/index.d.ts",
       "default": "./dist/strategies/index.js"
+    },
+    "./SwapIO": {
+      "types": "./dist/SwapIO/index.d.ts",
+      "default": "./dist/SwapIO/index.js"
     }
   },
   "scripts": {
