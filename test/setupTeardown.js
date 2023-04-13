@@ -43,6 +43,9 @@ beforeEach(async function () {
   const MockAccountBits = await ethers.getContractFactory('MockAccountBits')
   this.mockAccountBits = await MockAccountBits.deploy()
 
+  const MockUint256Oracle = await ethers.getContractFactory('MockUint256Oracle')
+  this.mockUint256Oracle = await MockUint256Oracle.deploy()
+
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
   this.accountSigner = AccountSigner(this.ethersAccountSigner)
 

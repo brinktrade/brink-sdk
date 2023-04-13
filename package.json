@@ -55,6 +55,10 @@
     "./SwapIO": {
       "types": "./dist/SwapIO/index.d.ts",
       "default": "./dist/SwapIO/index.js"
+    },
+    "./oracles": {
+      "types": "./dist/oracles/index.d.ts",
+      "default": "./dist/oracles/index.js"
     }
   },
   "scripts": {
