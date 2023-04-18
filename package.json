@@ -45,20 +45,20 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
     },
     "./strategies": {
-      "types": "./dist/strategies/index.d.ts",
-      "default": "./dist/strategies/index.js"
+      "types": "./dist/src/strategies/index.d.ts",
+      "default": "./dist/src/strategies/index.js"
     },
     "./SwapIO": {
-      "types": "./dist/SwapIO/index.d.ts",
-      "default": "./dist/SwapIO/index.js"
+      "types": "./dist/src/SwapIO/index.d.ts",
+      "default": "./dist/src/SwapIO/index.js"
     },
     "./oracles": {
-      "types": "./dist/oracles/index.d.ts",
-      "default": "./dist/oracles/index.js"
+      "types": "./dist/src/oracles/index.d.ts",
+      "default": "./dist/src/oracles/index.js"
     }
   },
   "scripts": {
