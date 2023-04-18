@@ -1,5 +1,5 @@
 import Primitive from '../Primitive'
-import Oracle from '../Oracles/Oracle'
+import { Oracle } from '../../oracles'
 import { validateAddress, validateBytes, validateUint } from '../../utils/SolidityValidation'
 
 export default class RequireUint256LowerBound extends Primitive {

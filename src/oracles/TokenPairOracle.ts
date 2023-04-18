@@ -1,4 +1,4 @@
-import Token from '../Token'
+import { Token } from '../strategies'
 import Oracle from './Oracle'
 
 abstract class TokenPairOracle extends Oracle {

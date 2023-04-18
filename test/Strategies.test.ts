@@ -1,12 +1,12 @@
 import { expect } from 'chai'
 import { FeeAmount } from '@uniswap/v3-sdk'
 import { Strategy, Order, UseBit } from '../src/strategies'
-import UniV3Twap from '../src/strategies/Oracles/UniV3Twap'
-import MarketSwapExactInput from '../src/strategies/Primitives/MarketSwapExactInput'
-import RequireUint256LowerBound from '../src/strategies/Primitives/RequireUint256LowerBound'
+import { UniV3Twap } from '../src/oracles'
+import { MarketSwapExactInput } from '../src/strategies'
+import { RequireUint256LowerBound } from '../src/strategies'
 import { PrimitiveFunctionName } from '../src/strategies/StrategyTypes'
 import Config from '../src/Config'
-import Token from '../src/strategies/Token'
+import { Token } from '../src/strategies'
 
 const { UNIV3_TWAP_ADAPTER } = Config
 

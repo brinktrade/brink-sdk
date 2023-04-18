@@ -1,8 +1,8 @@
 import { utils } from 'ethers'
 import { FeeAmount } from '@uniswap/v3-sdk'
-import Token from '../Token'
-import Config from '../../Config'
-import getUniV3Pool from '../../utils/getUniV3Pool'
+import { Token } from '../strategies'
+import Config from '../Config'
+import getUniV3Pool from '../utils/getUniV3Pool'
 import TokenPairOracle from './TokenPairOracle'
 
 const abiCoder = utils.defaultAbiCoder
