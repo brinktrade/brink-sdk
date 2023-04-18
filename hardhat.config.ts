@@ -1,4 +1,5 @@
 import '@nomiclabs/hardhat-ethers'
+import 'module-alias/register'
 
 const config = {
   networks: {

@@ -10,7 +10,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "declaration": true
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@brink-sdk/*": ["src/*"],
+      "@brink-sdk": ["src"]
+    }
   },
   "include": [
     "src/**/*",

@@ -3,7 +3,7 @@ const { ethers } = require('hardhat')
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
 const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
 const { MAX_UINT256 } = constants
-const brink = require('../src/index')
+const brink = require('../src/index').default
 const randomSigner = require('./helpers/randomSigner')
 const mockLedgerSignerBadV = require('./helpers/mockLedgerSignerBadV')
 

@@ -35,6 +35,7 @@
     "ethereumjs-util": "^6.2.0",
     "ethers": "^5.7.2",
     "lodash": "^4.17.15",
+    "module-alias": "^2.2.2",
     "ts-node": "^10.0.0",
     "typescript": "^4.2.3",
     "web3-eth-abi": "^1.7.3",
@@ -64,5 +65,8 @@
   "scripts": {
     "test": "hardhat test",
     "build": "rm -rf dist && tsc"
+  },
+  "_moduleAliases": {
+    "@brink-sdk": "dist/src"
   }
 }

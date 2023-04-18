@@ -5,6 +5,12 @@ import getChainId from './getChainId'
 import ParseSignedMessage from './parseSignedMessage'
 import Config from './Config'
 
+export * from './strategies'
+export * from './oracles'
+export * from './SwapIO'
+export * from './Config'
+export { default as Config } from './Config'
+
 const setupBrink = (opts: any = {}) => {
 
   const account = (ownerAddress: string, accountOpts: any = {}) => {
@@ -53,4 +59,4 @@ const setupBrink = (opts: any = {}) => {
   }
 }
 
-module.exports = setupBrink
+export default setupBrink
