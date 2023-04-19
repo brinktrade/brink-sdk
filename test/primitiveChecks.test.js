@@ -5,7 +5,7 @@ const BigNumber = require('bignumber.js')
 const { bitUsed } = require('@brink-sdk')
 const { expect } = chai
 
-describe.only('Primitive Checks', function () {
+describe('Primitive Checks', function () {
   describe('bitUsed', function () {
     it('when given bit is used, should return true', async function () {
       // mock bits 0,1,2 unused. 3,4,5 used 
