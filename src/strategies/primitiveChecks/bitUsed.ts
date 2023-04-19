@@ -1,3 +1,4 @@
+import { ethers } from 'ethers'
 import isDeployed from "./isDeployed"
 import bitmapPointer from '../../utils/bitmapPointer'
 import BigNumber from 'bignumber.js'
@@ -5,7 +6,7 @@ import { padLeft } from 'web3-utils'
 
 
 // if bit is used, return false, else return true
-const bitUsed = async (provider: any, accountAddress: String, bitmapIndex: BigInt, bit: BigInt) => {
+const bitUsed = async (provider: ethers.providers.Provider, accountAddress: string, bitmapIndex: BigInt, bit: BigInt): Promise<Boolean>  => {
   if (!await isDeployed(accountAddress, provider)) {
     return false
   }
@@ -28,7 +29,7 @@ const bitUsed = async (provider: any, accountAddress: String, bitmapIndex: BigIn
 
 }
 
-function bnToBinaryString (bn: BigNumber) {
+function bnToBinaryString (bn: BigNumber | string) {
   // using bignumber.js here for the base-2 support
   const bitmapBN = new BigNumber(bn.toString())
   const bitmapBinStr = padLeft(bitmapBN.toString(2), 256, '0').split("").reverse().join("")

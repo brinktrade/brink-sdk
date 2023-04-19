@@ -22,7 +22,7 @@ describe.only('Primitive Checks', function () {
     })
     it('when account is not deployed, should return false', async function () {
       const bit = BN(2).pow(BN(3))
-      expect(await bitUsed(ethers.provider, this.mockAccountBits.address, 0, bit)).to.equal(false)
+      expect(await bitUsed(ethers.provider, this.account.address, 0, bit)).to.equal(false)
     })
   })
 
