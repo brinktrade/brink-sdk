@@ -1,5 +1,6 @@
 export * from './Primitives'
 export * from './StrategyTypes'
+export * from './PrimitiveChecks'
 export { default as Strategy } from './Strategy'
 export { default as SignedStrategy } from './SignedStrategy'
 export { default as Order } from './Order'
