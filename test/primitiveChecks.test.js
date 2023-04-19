@@ -2,7 +2,10 @@ const { ethers } = require('hardhat')
 const chai = require('chai')
 const BN = ethers.BigNumber.from
 const BigNumber = require('bignumber.js')
-const { bitUsed } = require('@brink-sdk')
+const {
+  bitUsed,
+  checkRequireBlockNotMined 
+} = require('@brink-sdk')
 const { expect } = chai
 
 describe('Primitive Checks', function () {
@@ -23,6 +26,15 @@ describe('Primitive Checks', function () {
     it('when account is not deployed, should return false', async function () {
       const bit = BN(2).pow(BN(3))
       expect(await bitUsed(ethers.provider, this.account.address, 0, bit)).to.equal(false)
+    })
+  })
+
+  describe('checkRequireBlockNotMined', async function () {
+    it('when block has not been hit, return true', async function () {
+      expect(await checkRequireBlockNotMined(ethers.provider, BigInt('10000000000000000000000000000000'))).to.equal(true)
+    })
+    it('when block has been passed, return false', async function () {
+      expect(await checkRequireBlockNotMined(ethers.provider, 1)).to.equal(false)
     })
   })
 
