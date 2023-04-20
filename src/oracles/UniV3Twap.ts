@@ -19,7 +19,7 @@ class UniV3Twap extends TokenPairOracle {
     initCodeHashManualOverride?: string
   ) {
     const isInverse = tokenA.addr.toLowerCase() > tokenB.addr.toLowerCase()
-    const contractAddress = isInverse ? Config['UNIV3_TWAP_INVERSE_ADAPTER'] : Config['UNIV3_TWAP_ADAPTER']
+    const contractAddress = isInverse ? Config['TWAP_INVERSE_ADAPTER'] : Config['TWAP_ADAPTER']
 
     // params for the oracle are the UniV3 pool address and the TWAP interval
     const poolAddress = getUniV3Pool(tokenA.addr, tokenB.addr, fee, initCodeHashManualOverride)

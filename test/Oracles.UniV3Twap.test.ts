@@ -14,11 +14,11 @@ const weth = new Token(WETH_ADDRESS)
 describe('UniV3Twap', function () {
   it('should return standard TWAP adapter data from token pair input where A < B', async function () {
     const uniV3Twap = new UniV3Twap(usdc, weth, BigInt(1000))
-    expect(uniV3Twap.contractAddress).to.equal(Config['UNIV3_TWAP_ADAPTER'])
+    expect(uniV3Twap.contractAddress).to.equal(Config['TWAP_ADAPTER'])
   })
 
   it('should return inverse TWAP adapter data from token pair input where B < A', async function () {
     const uniV3Twap = new UniV3Twap(usdc, dai, BigInt(1000))
-    expect(uniV3Twap.contractAddress).to.equal(Config['UNIV3_TWAP_INVERSE_ADAPTER'])
+    expect(uniV3Twap.contractAddress).to.equal(Config['TWAP_INVERSE_ADAPTER'])
   })
 })

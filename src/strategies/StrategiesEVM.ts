@@ -176,6 +176,6 @@ function cleanDynamicBytes (bytes: string): string {
 }
 
 export default new StrategiesEVM(
-  config['STRATEGY_CONTRACT'] as string,
-  config['PRIMITIVES_CONTRACT'] as string,
+  config['STRATEGY_TARGET_01'] as string,
+  config['PRIMITIVES_01'] as string,
 )

@@ -17,7 +17,7 @@ const {
 
 const { VERIFIERS } = require('@brinkninja/config').mainnet
 
-const STRATEGY_CONTRACT: string = Config['STRATEGY_CONTRACT'] as string
+const STRATEGY_TARGET_01: string = Config['STRATEGY_TARGET_01'] as string
 
 class AccountSigner {
 
@@ -106,7 +106,7 @@ class AccountSigner {
       chainId: this._chainId,
       method: 'metaDelegateCall',
       paramTypes: metaDelegateCallSignedParamTypes,
-      params: [ STRATEGY_CONTRACT, strategyJSON.data ]
+      params: [ STRATEGY_TARGET_01, strategyJSON.data ]
     })
     return new SignedStrategy({
       hash: typedDataHash,
@@ -116,7 +116,7 @@ class AccountSigner {
       signatureType: 'EIP712',
       signature,
       strategy: strategyJSON,
-      strategyContract: STRATEGY_CONTRACT
+      strategyContract: STRATEGY_TARGET_01
     })
   }
 
