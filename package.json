@@ -63,7 +63,7 @@
     }
   },
   "scripts": {
-    "test": "hardhat test",
+    "test": "rm -rf dist && tsc && hardhat test",
     "build": "rm -rf dist && tsc"
   },
   "_moduleAliases": {
