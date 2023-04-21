@@ -4,9 +4,11 @@ const BN = ethers.BigNumber.from
 const BigNumber = require('bignumber.js')
 const {
   bitUsed,
-  checkRequireBlockNotMined 
+  checkRequireBlockNotMined,
+  checkRequireUint256LowerBound
 } = require('@brink-sdk')
 const { expect } = chai
+const { defaultAbiCoder } = ethers.utils
 
 describe('Primitive Checks', function () {
   describe('bitUsed', function () {
@@ -26,6 +28,19 @@ describe('Primitive Checks', function () {
     it('when account is not deployed, should return false', async function () {
       const bit = BN(2).pow(BN(3))
       expect(await bitUsed(ethers.provider, this.account.address, 0, bit)).to.equal(false)
+    })
+  })
+
+  describe('checkRequireUint256LowerBound', function () {
+    it('when oracle price is less than lower bound return true', async function () {
+      const paramsEncoded = defaultAbiCoder.encode(['uint256'], [BigInt(5) * BigInt(10)**BigInt(18)])
+      expect(await checkRequireUint256LowerBound(ethers.provider, this.mockUint256Oracle.address, paramsEncoded, BigInt(30) * BigInt(10)**BigInt(18))).to.equal(true)
+    })
+
+    it('when oracle price is greater than lower bound return false', async function () {
+      const paramsEncoded = defaultAbiCoder.encode(['uint256'], [BigInt(5) * BigInt(10)**BigInt(18)])
+      expect(await checkRequireUint256LowerBound(ethers.provider, this.mockUint256Oracle.address, paramsEncoded, BigInt(1) * BigInt(10)**BigInt(18))).to.equal(false)
+
     })
   })
 
