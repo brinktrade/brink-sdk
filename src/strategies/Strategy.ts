@@ -4,7 +4,7 @@ import Order from './Order'
 import evm from './StrategiesEVM'
 import { invalidResult, validResult } from './Validation'
 
-const { PRIMITIVES_CONTRACT } = Config
+const { PRIMITIVES_01 } = Config
 
 class Strategy {
   orders: Order[]
@@ -22,7 +22,7 @@ class Strategy {
       orders: [],
       beforeCalls: [],
       afterCalls: [],
-      primitivesContract: PRIMITIVES_CONTRACT,
+      primitivesContract: PRIMITIVES_01,
     }
 
     if (args.length == 1 && typeof args[0] === 'object') {
@@ -43,7 +43,7 @@ class Strategy {
     this.orders = strategyJSON.orders.map(orderJSON => new Order(orderJSON))
     this.beforeCalls = strategyJSON.beforeCalls || [] as any[]
     this.afterCalls = strategyJSON.afterCalls || [] as any[]
-    this.primitivesContract = strategyJSON.primitivesContract || PRIMITIVES_CONTRACT
+    this.primitivesContract = strategyJSON.primitivesContract || PRIMITIVES_01
   }
 
   async toJSON (): Promise<StrategyJSON> {
@@ -57,7 +57,7 @@ class Strategy {
         this.beforeCalls,
         this.afterCalls
       ),
-      primitivesContract: Config['PRIMITIVES_CONTRACT'] as string,
+      primitivesContract: Config['PRIMITIVES_01'] as string,
       orders,
       beforeCalls: this.beforeCalls,
       afterCalls: this.afterCalls
