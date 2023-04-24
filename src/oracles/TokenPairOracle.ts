@@ -1,7 +1,8 @@
+import { ethers } from 'ethers'
 import { Token } from '../strategies'
-import Oracle from './Oracle'
+import Uint256Oracle from './Uint256Oracle'
 
-abstract class TokenPairOracle extends Oracle {
+abstract class TokenPairOracle extends Uint256Oracle {
 
   tokenA: Token
   tokenB: Token
@@ -10,6 +11,10 @@ abstract class TokenPairOracle extends Oracle {
     super(contractAddress, paramsEncoded)
     this.tokenA = tokenA
     this.tokenB = tokenB
+  }
+
+  async price (signerOrProvider: ethers.Signer | ethers.providers.Provider): Promise<BigInt> {
+    return await this.value(signerOrProvider)
   }
 
 }

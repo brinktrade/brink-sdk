@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { marketSwapExactOutput_getInput } from '../src/SwapIO'
+import { marketSwapExactOutput_getInput } from '@brink-sdk'
 
 describe('marketSwapExactOutput_getInput', function () {
   it('should return output and fee data', async function () {

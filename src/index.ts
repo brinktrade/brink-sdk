@@ -9,7 +9,10 @@ export * from './strategies'
 export * from './oracles'
 export * from './SwapIO'
 export * from './Config'
+export * from './Types'
+export * from './utils'
 export { default as Config } from './Config'
+export { default as proxyAccountFromOwner } from './proxyAccountFromOwner'
 
 const setupBrink = (opts: any = {}) => {
 

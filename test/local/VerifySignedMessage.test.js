@@ -1,4 +1,4 @@
-const brink = require('../src/index').default
+const brink = require('@brink-sdk').default
 const { ethers } = require('hardhat')
 const BN = ethers.BigNumber.from
 const { MAX_UINT256 } = require('@brinkninja/utils').constants

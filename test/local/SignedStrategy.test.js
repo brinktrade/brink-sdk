@@ -1,5 +1,5 @@
 const { expect } = require("chai")
-const { Strategy } = require('../src/strategies')
+const { Strategy } = require('@brink-sdk')
 
 describe('SignedStrategy', function () {
   describe('validate()', function () {

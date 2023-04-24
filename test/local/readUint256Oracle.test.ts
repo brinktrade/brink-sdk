@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat'
 import { expect } from 'chai'
-import { readUint256Oracle } from '../src/oracles'
+import { readUint256Oracle } from '@brink-sdk'
 
 const { defaultAbiCoder } = ethers.utils
 
