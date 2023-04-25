@@ -7,3 +7,4 @@ cache
 test/cache
 test/artifacts
 yarn-**
+.env
