@@ -2,6 +2,8 @@ import { ethers } from 'hardhat'
 import brink from '@brink-sdk'
 import randomSigner from '../helpers/randomSigner'
 
+const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
+
 beforeEach(async function () {
   const signers = await ethers.getSigners()
   this.defaultSigner = signers[0]
@@ -28,4 +30,6 @@ beforeEach(async function () {
 
   // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
   this.accountSigner = AccountSigner(this.ethersAccountSigner)
+
+  this.testFulfillSwap = await deploySaltedContract('TestFulfillSwap')
 })

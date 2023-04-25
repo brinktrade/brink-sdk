@@ -9,6 +9,7 @@ import StrategyBuilder01 from '../contracts/StrategyBuilder01.json'
 import PrimitiveBuilder01 from '../contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from '../contracts/UnsignedDataBuilder01.json'
 import SwapIO from '../contracts/SwapIO.json'
+import IdsProof from './IdsProof'
 import {
   ContractCallParams,
   PrimitiveFunctionName,
@@ -144,6 +145,40 @@ export class StrategiesEVM {
       chainId
     )
     return `0x${messageHash}`
+  }
+
+  async unsignedMarketSwapData (
+    recipient: string,
+    tokenInIdsProof: IdsProof,
+    tokenOutIdsProof: IdsProof,
+    callData: CallStruct
+  ): Promise<string> {
+    const unsignedMarketSwapData: string = await this.callContractFn(
+      this.UnsignedDataBuilder,
+      'unsignedMarketSwapData',
+      recipient,
+      tokenInIdsProof.toJSON(),
+      tokenOutIdsProof.toJSON(),
+      callData
+    )
+    return `0x${unsignedMarketSwapData}`
+  }
+
+  async unsignedData (orderIndex: number, unsignedCalls: string[]): Promise<string> {
+    if (unsignedCalls.length === 0) {
+      throw new Error(`unsignedData needs at least 1 unsignedCall`)
+    }
+    if (unsignedCalls.length > 10) {
+      throw new Error(`unsignedData cannot have more than 10 unsignedCalls`)
+    }
+
+    const unsignedData: string = await this.callContractFn(
+      this.UnsignedDataBuilder,
+      `unsignedData(uint8,${'bytes,'.repeat(unsignedCalls.length).slice(0, -1)})`,
+      orderIndex,
+      ...unsignedCalls
+    )
+    return `0x${unsignedData}`
   }
 
   async callContractFn (contract: ethers.Contract, fnName: string, ...args: ContractCallParams): Promise<any> {

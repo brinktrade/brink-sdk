@@ -1,12 +1,14 @@
 import { ethers } from 'hardhat'
 import {
-  executeStrategy,
+  unsignedMarketSwapData,
   MarketSwapExactInput,
   Order,
   Strategy,
   Token,
   UniV3Twap,
-  UseBit
+  UseBit,
+  IdsProof,
+  marketSwapExactInput_getOutput
 } from '@brink-sdk'
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
@@ -18,6 +20,10 @@ describe('executeStrategy', function () {
     const weth = new Token(WETH_ADDRESS)
     const priceOracle = new UniV3Twap(usdc, weth, BigInt(1000))
 
+    const usdcInput = BigInt(1450_000000)
+    const feePercent = BigInt(10000)
+    const feeMin = BigInt(0)
+
     const strategy = new Strategy()
     strategy.orders[0] = new Order()
     strategy.orders[0].primitives[0] = new UseBit(BigInt(0), BigInt(2**0))
@@ -26,22 +32,47 @@ describe('executeStrategy', function () {
       await this.accountSigner.signerAddress(),
       new Token(USDC_ADDRESS),
       new Token(WETH_ADDRESS),
-      BigInt(1450_000000),
-      BigInt(10000),
-      BigInt(0)
+      usdcInput,
+      feePercent,
+      feeMin
     )
     const signedStrategy = await this.accountSigner.signStrategyEIP712(await strategy.toJSON())
 
     console.log('SIGNED!: ', signedStrategy)
 
-    console.log('PRICE: ', await priceOracle.price(ethers.provider))
+    const priceX96 = await priceOracle.price(ethers.provider)
+    console.log('PRICE: ', priceX96)
 
-    // this.fulfillTokenOutData = (await this.testFulfillSwap.populateTransaction.fulfillTokenOutSwap(
-    //   WETH_ADDRESS, '10', this.ownerAddress
-    // )).data
+    const { output: wethOutput } = await marketSwapExactInput_getOutput(
+      usdcInput,
+      priceX96,
+      feePercent,
+      feeMin
+    )
+    console.log('WETH OUT: ', wethOutput.toString())
 
-    // executeStrategy({
-    //   strategy
-    // })
+    this.fulfillTokenOutData = (await this.testFulfillSwap.populateTransaction.fulfillTokenOutSwap(
+      WETH_ADDRESS, wethOutput.toString(), this.ownerAddress
+    )).data
+
+    console.log('fulfill data: ', this.fulfillTokenOutData)
+
+    const unsignedSwapCall = await unsignedMarketSwapData(
+      this.ownerAddress,
+      new IdsProof(),
+      new IdsProof(),
+      {
+        targetContract: this.testFulfillSwap.address,
+        data: this.fulfillTokenOutData
+      }
+    )
+    console.log('UNSIGNED SWAP CALL: ', unsignedSwapCall)
+
+    const res = await this.account.executeStrategy({
+      signedStrategy,
+      orderIndex: 0,
+      unsignedCalls: [unsignedSwapCall]
+    })
+    console.log(res)
   })
 })
