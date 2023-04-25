@@ -5,8 +5,8 @@ const { solidity } = require('ethereum-waffle')
 const { randomHex } = require('web3-utils')
 const BigNumber = require('bignumber.js')
 const { constants } = require('@brinkninja/utils')
-const brink = require('../src/index').default
-const proxyAccountFromOwner = require('../src/proxyAccountFromOwner')
+const brink = require('@brink-sdk').default
+const { proxyAccountFromOwner } = require('@brink-sdk')
 const BN = ethers.BigNumber.from
 const { MAX_UINT256 } = constants
 chai.use(chaiAsPromised)

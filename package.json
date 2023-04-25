@@ -29,6 +29,7 @@
     "@uniswap/sdk-core": "^3.2.2",
     "@uniswap/v3-sdk": "^3.9.0",
     "bignumber.js": "^9.0.1",
+    "dotenv": "^16.0.3",
     "eth-lib": "^0.1.29",
     "eth-sig-util": "^2.5.3",
     "ethereumjs-abi": "^0.6.8",
@@ -63,7 +64,9 @@
     }
   },
   "scripts": {
-    "test": "rm -rf dist && tsc && hardhat test",
+    "test": "yarn test-local && yarn test-fork",
+    "test-local": "rm -rf dist && tsc && hardhat test --config hardhat.local.config.ts",
+    "test-fork": "rm -rf dist && tsc && hardhat test --config hardhat.fork.config.ts",
     "build": "rm -rf dist && tsc"
   },
   "_moduleAliases": {

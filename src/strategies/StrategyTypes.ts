@@ -1,5 +1,5 @@
 export type ContractCallParams = (
-  BigInt | boolean | string | SignatureTypeEnum | TokenStruct | TokenJSON | PrimitiveStruct | CallStruct | ContractCallParams
+  BigInt | boolean | string | SignatureTypeEnum | TokenStruct | TokenJSON | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParams
 )[]
 
 export enum SignatureTypeEnum {
@@ -30,6 +30,15 @@ export type TokenJSON = {
   idsMerkleRoot: string
   id: string
   disallowFlagged: boolean
+}
+
+export type IdsProofStruct = {
+  ids: BigInt[]
+  merkleProof_hashes: string[]
+  merkleProof_flags: boolean[]
+  statusProof_lastTransferTimes: BigInt[]
+  statusProof_timestamps: BigInt[]
+  statusProof_signatures: string[];
 }
 
 export type PrimitiveFunctionName = 

@@ -1,5 +1,8 @@
+import dotenv from 'dotenv'
 import '@nomiclabs/hardhat-ethers'
 import 'module-alias/register'
+
+dotenv.config()
 
 const config = {
   networks: {
@@ -7,7 +10,11 @@ const config = {
       accounts: {
         accountsBalance: '1000000000000000000000000000' // 1 billion ETH
       },
-      allowUnlimitedContractSize: true
+      allowUnlimitedContractSize: true,
+      forking: {
+        url: process.env.MAINNET_RPC_URL,
+        blockNumber: 17098427
+      }
     }
   },
   solidity: {
@@ -27,12 +34,13 @@ const config = {
   },
   mocha: {
     timeout: 10000,
-    file: './test/setupTeardown.js'
+    file: './test/fork/setup.js'
   },
   paths: {
     sources: "./test/contracts",
     cache: "./test/cache",
-    artifacts: "./test/artifacts"
+    artifacts: "./test/artifacts",
+    tests: "./test/fork"
   }
 }
 

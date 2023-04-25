@@ -1,5 +1,8 @@
+import { ethers } from 'ethers'
+import evm from './strategies/StrategiesEVM'
+import { SignedStrategy } from './strategies'
+
 const _ = require('lodash')
-const { ethers } = require('ethers')
 const { toChecksumAddress, padLeft } = require('web3-utils')
 const BigNumber = require('bignumber.js')
 const { DEPLOY_AND_CALL, ACCOUNT_FACTORY } = require('@brinkninja/core/constants')
@@ -9,6 +12,12 @@ const verifySignedMessage = require('./verifySignedMessage')
 const bitmapPointer = require('./utils/bitmapPointer')
 const addSegmentedObj = require('./utils/addSegmentedObj')
 const { VERIFIERS } = require('@brinkninja/config').mainnet
+
+export interface ExecuteStrategyArgs {
+  signedStrategy: SignedStrategy,
+  orderIndex: number,
+  unsignedCalls: string[]
+}
 
 const BN = ethers.BigNumber.from
 
@@ -22,7 +31,7 @@ const _metaCalls = [
   'metaDelegateCall_EIP1271'
 ]
 
-const _paramTypesMap = {
+const _paramTypesMap: any = {
   'metaDelegateCall': [
     { name: 'to', type: 'address' },
     { name: 'data', type: 'bytes' },
@@ -50,7 +59,7 @@ const _paramTypesMap = {
   ]
 }
 
-const _abiMap = {
+const _abiMap: any = {
   Account: require('./contracts/Account.abi'),
   AccountFactory: require('./contracts/AccountFactory.abi'),
   DeployAndCall: require('./contracts/DeployAndCall.abi'),
@@ -58,11 +67,25 @@ const _abiMap = {
 }
 
 class Account {
+  _ownerAddress: string
+  _provider: ethers.providers.Provider
+  _signer: ethers.Signer
+
+  address: string
+  estimateGas: Object
+  populateTransaction: Object
+  callStatic: Object
+
   constructor ({
     ownerAddress,
     provider,
     signer,
     verifiers = []
+  }: {
+    ownerAddress: string,
+    provider: ethers.providers.Provider,
+    signer: ethers.Signer,
+    verifiers?: Array<any>
   }) {
     this._ownerAddress = ownerAddress
     this._provider = provider
@@ -75,27 +98,33 @@ class Account {
     this.callStatic = {}
 
     // wraps ethers contract functions and exposes them on the Account object
-    const _setupEthersWrappedTx = (fnNameSegments, fn, numParams) => {
+    const _setupEthersWrappedTx = (
+      fnNameSegments: any,
+      fn: any,
+      numParams: number
+    ) => {
       let txOptsIndex = numParams
 
       const segments = !_.isArray(fnNameSegments) ? [fnNameSegments] : fnNameSegments
 
+      const $this: Account = this
+
       addSegmentedObj(this, segments, (async function () {
-        const { contract, functionName, params } = await fn.apply(this, arguments)
+        const { contract, functionName, params } = await fn.apply($this, arguments)
         let txOptions = arguments[txOptsIndex] || {}
         const tx = await contract[functionName].apply(contract, [...params, txOptions])
         return tx
       }).bind(this))
 
       addSegmentedObj(this.estimateGas, segments, (async function () {
-        const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
+        const { contract, contractName, functionName, paramTypes, params } = await fn.apply($this, arguments)
         let txOptions = arguments[txOptsIndex] || {}
         const gas = await contract.estimateGas[functionName].apply(contract, [...params, txOptions])
         return { contractName, functionName, paramTypes, params, gas }
       }).bind(this))
 
       addSegmentedObj(this.populateTransaction, segments, (async function () {
-        const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
+        const { contract, contractName, functionName, paramTypes, params } = await fn.apply($this, arguments)
         let txOptions = arguments[txOptsIndex] || {}
         const txData = await contract.populateTransaction[functionName].apply(contract, [...params, txOptions])
         return {
@@ -105,21 +134,35 @@ class Account {
       }).bind(this))
 
       addSegmentedObj(this.callStatic, segments, (async function () {
-        const { contract, contractName, functionName, paramTypes, params } = await fn.apply(this, arguments)
+        const { contract, contractName, functionName, paramTypes, params } = await fn.apply($this, arguments)
         let txOptions = arguments[txOptsIndex] || {}
         const returnValues = await contract.callStatic[functionName].apply(contract, [...params, txOptions])
         return { contractName, functionName, paramTypes, params, returnValues }
       }).bind(this))
     }
 
-    _setupEthersWrappedTx('metaDelegateCall', async (signedMessage, unsignedParams = []) => {
+    _setupEthersWrappedTx('executeStrategy', async ({
+      signedStrategy,
+      orderIndex,
+      unsignedCalls,
+    }: ExecuteStrategyArgs): Promise<any> => {
+      const strategyJSON = (await signedStrategy.toJSON()).strategy
+      const unsignedData = await evm.unsignedData(orderIndex, unsignedCalls)
+      const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
+        'metaDelegateCall',
+        [signedStrategy.strategyContract, strategyJSON.data, signedStrategy.signature, unsignedData]
+      )
+      return { contract, contractName, functionName, params, paramTypes }
+    }, 2)
+
+    _setupEthersWrappedTx('metaDelegateCall', async (signedMessage: any, unsignedParams = []) => {
       return this._metaDelegateCall(signedMessage, unsignedParams)
     }, 2)
 
     // sets up ethers functions for all verifiers in config
     const verifierDefs = [...VERIFIERS, ...verifiers]
     verifierDefs.forEach(({ contractName, functionName, contractAddress, paramTypes }) => {
-      const unsignedParams = _.filter(paramTypes, t => !t.signed)
+      const unsignedParams = _.filter(paramTypes, (t: any) => !t.signed)
       const $this = this
       _setupEthersWrappedTx([contractName, functionName], async function () {
         const signedMessage = arguments[0]
@@ -145,14 +188,14 @@ class Account {
       }
     }, 0)
 
-    _setupEthersWrappedTx('externalCall', async (value, to, data) => {
+    _setupEthersWrappedTx('externalCall', async (value: any, to: any, data: any) => {
       const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
         'externalCall', [value, to, data]
       )
       return { contract, contractName, functionName, params, paramTypes }
     }, 3)
 
-    _setupEthersWrappedTx('delegateCall', async (to, data) => {
+    _setupEthersWrappedTx('delegateCall', async (to: any, data: any) => {
       const { contract, contractName, functionName, params, paramTypes } = await this._getTxData(
         'delegateCall', [to, data]
       )
@@ -160,7 +203,7 @@ class Account {
     }, 2)
   }
 
-  async _metaDelegateCall (signedMessage, unsignedParams) {
+  async _metaDelegateCall (signedMessage: any, unsignedParams: any) {
     verifySignedMessage(signedMessage)
     const { signedData, unsignedData } = this.getMetaDelegateCallData(signedMessage, unsignedParams)
     const verifierAddress = signedMessage.signedParams[0].value
@@ -176,9 +219,9 @@ class Account {
     return code !== '0x'
   }
 
-  getMetaDelegateCallData(signedMessage, unsignedParams) {
-    let functionCall = {}
-    let callData = {}
+  getMetaDelegateCallData(signedMessage: any, unsignedParams: any) {
+    let functionCall: any = {}
+    let callData: any = {}
     for (let i = 0; i < signedMessage.signedParams.length; i++) {
       if (signedMessage.signedParams[i].callData) {
         callData = signedMessage.signedParams[i].callData
@@ -232,7 +275,7 @@ class Account {
     return { bitmapIndex, bit }
   }
 
-  async loadBitmap (bitmapIndex) {
+  async loadBitmap (bitmapIndex: any) {
     if (await this.isDeployed()) {
       const bmp = await this.storageLoad(bitmapPointer(bitmapIndex))
       // using bignumber.js here for the base-2 support
@@ -242,7 +285,7 @@ class Account {
     }
   }
 
-  async bitUsed (bitmapIndex, bit) {
+  async bitUsed (bitmapIndex: any, bit: any) {
     if (!await this.isDeployed()) {
       return false
     }
@@ -265,7 +308,7 @@ class Account {
     return false
   }
 
-  async storageLoad (pos) {
+  async storageLoad (pos: any) {
     if (!await this.isDeployed()) {
       return '0x'
     } else {
@@ -274,7 +317,7 @@ class Account {
     }
   }
 
-  async _sendAccountTransaction (functionName, params = []) {
+  async _sendAccountTransaction (functionName: any, params = []) {
     const {
       contract,
       functionName: txFunctionName,
@@ -284,7 +327,7 @@ class Account {
     return tx
   }
 
-  async _getTxData (functionName, params) {
+  async _getTxData (functionName: any, params: any) {
     const isDirect = _directCalls.includes(functionName)
     const isMeta = _metaCalls.includes(functionName)
 
@@ -336,20 +379,20 @@ class Account {
     return this._ethersContract('DeployAndCall', DEPLOY_AND_CALL)
   }
 
-  _ethersContract(contractName, contractAddress) {
+  _ethersContract(contractName: string, contractAddress: string) {
     return new ethers.Contract(
       contractAddress, _abiMap[contractName], this._signer
     )
   }
 
-  isProxyOwner (address) {
+  isProxyOwner (address: string) {
     return toChecksumAddress(address) == toChecksumAddress(this._ownerAddress)
   }
 }
 
 // splits a call for metaDelegateCall into signedData and unsignedData
 // TODO: this only works if all signed data params are fixed bytes32, will not work for dynamic params
-function splitCallData (callData, numSignedParams) {
+function splitCallData (callData: string, numSignedParams: number) {
   let parsedCallData = callData.indexOf('0x') == 0 ? callData.slice(2) : callData
   // signed data is the prefix + fnSig + signedParams
   const bytes32SlotLen = 64 
@@ -362,11 +405,11 @@ function splitCallData (callData, numSignedParams) {
   return { signedData, unsignedData }
 }
 
-function bnToBinaryString (bn) {
+function bnToBinaryString (bn: any) {
   // using bignumber.js here for the base-2 support
   const bitmapBN = new BigNumber(bn.toString())
   const bitmapBinStr = padLeft(bitmapBN.toString(2), 256, '0').split("").reverse().join("")
   return bitmapBinStr
 }
 
-module.exports = Account
+export default Account
