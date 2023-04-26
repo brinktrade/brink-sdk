@@ -161,7 +161,7 @@ export class StrategiesEVM {
       tokenOutIdsProof.toJSON(),
       callData
     )
-    return `0x${unsignedMarketSwapData}`
+    return `0x${cleanDynamicBytes(unsignedMarketSwapData)}`
   }
 
   async unsignedData (orderIndex: number, unsignedCalls: string[]): Promise<string> {
@@ -178,7 +178,7 @@ export class StrategiesEVM {
       orderIndex,
       ...unsignedCalls
     )
-    return `0x${unsignedData}`
+    return `0x${cleanDynamicBytes(unsignedData)}`
   }
 
   async callContractFn (contract: ethers.Contract, fnName: string, ...args: ContractCallParams): Promise<any> {
