@@ -33,7 +33,7 @@ const config = {
     },
   },
   mocha: {
-    timeout: 10000,
+    timeout: 60000,
     file: './test/fork/setup.js'
   },
   paths: {

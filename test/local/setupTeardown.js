@@ -1,3 +1,4 @@
+require('@nomiclabs/hardhat-ethers')
 const _ = require('lodash')
 const { ethers } = require('hardhat')
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')

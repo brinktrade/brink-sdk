@@ -4,7 +4,10 @@
     "module": "commonjs",
     "allowJs": true,
     "outDir": "dist",
-    "rootDirs": ["src", "test-local"],
+    "rootDirs": [
+      "src",
+      "test"
+    ],
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
@@ -19,8 +22,7 @@
   },
   "include": [
     "src/**/*",
-    "test-local/**/*",
-    "test/test-fork/**/*"
+    "test/**/*"
   ],
   "files": [
     "hardhat.local.config.ts",
