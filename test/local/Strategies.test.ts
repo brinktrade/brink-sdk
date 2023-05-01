@@ -25,6 +25,7 @@ describe('Strategies', function () {
     const strategy1 = new Strategy(validStrategy1)
     const strategyJSON = await strategy1.toJSON()
     expect(strategyJSON.orders.length).to.equal(1)
+    expect(strategyJSON.orders[0].orderIndex).to.equal(0)
     expect(strategyJSON.orders[0].primitives.length).to.equal(4)
   })
 

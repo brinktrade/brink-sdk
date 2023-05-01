@@ -59,8 +59,9 @@ export type PrimitiveJSON = {
 }
 
 export type OrderJSON = {
-  primitives: PrimitiveJSON[]
   data?: string
+  orderIndex?: number
+  primitives: PrimitiveJSON[]
 }
 
 export type StrategyJSON = {

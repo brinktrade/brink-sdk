@@ -48,8 +48,12 @@ class Strategy {
 
   async toJSON (): Promise<StrategyJSON> {
     const orders = await Promise.all(
-      this.orders.map(async order => await order.toJSON())
-    )
+      this.orders.map(async (order, orderIndex) => ( 
+        {
+          ...await order.toJSON(),
+          orderIndex,
+        }
+    )))
 
     return {
       data: await evm.strategyData(
