@@ -60,7 +60,7 @@ export type PrimitiveJSON = {
 
 export type OrderJSON = {
   data?: string
-  orderIndex?: number
+  index: number
   primitives: PrimitiveJSON[]
 }
 

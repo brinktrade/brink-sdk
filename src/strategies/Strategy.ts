@@ -40,7 +40,7 @@ class Strategy {
       strategyJSON.primitivesContract = args[3]
     }
 
-    this.orders = strategyJSON.orders.map(orderJSON => new Order(orderJSON))
+    this.orders = strategyJSON.orders.map((orderJSON, index) => new Order({...orderJSON, index: orderJSON.index || index}))
     this.beforeCalls = strategyJSON.beforeCalls || [] as any[]
     this.afterCalls = strategyJSON.afterCalls || [] as any[]
     this.primitivesContract = strategyJSON.primitivesContract || PRIMITIVES_01
@@ -48,12 +48,8 @@ class Strategy {
 
   async toJSON (): Promise<StrategyJSON> {
     const orders = await Promise.all(
-      this.orders.map(async (order, orderIndex) => ( 
-        {
-          ...await order.toJSON(),
-          orderIndex,
-        }
-    )))
+      this.orders.map(async order => await order.toJSON()
+    ))
 
     return {
       data: await evm.strategyData(
