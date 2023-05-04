@@ -6,7 +6,7 @@ const { randomHex } = require('web3-utils')
 const BigNumber = require('bignumber.js')
 const { constants } = require('@brinkninja/utils')
 const brink = require('@brink-sdk').default
-const { proxyAccountFromOwner } = require('@brink-sdk')
+const { accountFromOwner } = require('@brink-sdk')
 const BN = ethers.BigNumber.from
 const { MAX_UINT256 } = constants
 chai.use(chaiAsPromised)
@@ -152,7 +152,7 @@ describe('Account', function () {
       })
 
       it('should set the account address', function () {
-        const expectedAccountAddress = proxyAccountFromOwner(this.ownerAddress)
+        const expectedAccountAddress = accountFromOwner(this.ownerAddress)
         expect(this.account.address).to.equal(expectedAccountAddress)
       })
     })

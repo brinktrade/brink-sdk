@@ -11,8 +11,10 @@ export * from './SwapIO'
 export * from './Config'
 export * from './Types'
 export * from './utils'
+export * from './strategyEIP712TypedData'
 export { default as Config } from './Config'
-export { default as proxyAccountFromOwner } from './proxyAccountFromOwner'
+export { default as accountFromOwner } from './accountFromOwner'
+export { default as strategyEIP712TypedData } from './strategyEIP712TypedData'
 
 const setupBrink = (opts: any = {}) => {
 
@@ -52,7 +54,6 @@ const setupBrink = (opts: any = {}) => {
   return {
     Account: account,
     AccountSigner: accountSigner,
-    proxyAccountFromOwner: require('./proxyAccountFromOwner'),
     recoverSigner: require('./recoverSigner'),
     verifySignedMessage: require('./verifySignedMessage'),
     parseSignedMessage: ParseSignedMessage({ verifiers: opts.verifiers }),

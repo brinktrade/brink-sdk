@@ -1,6 +1,6 @@
 const recoverSigner = require('./recoverSigner')
 const typedDataEIP712 = require('./typedDataEIP712')
-const proxyAccountFromOwner = require('./proxyAccountFromOwner')
+const accountFromOwner = require('./accountFromOwner').default
 const { toChecksumAddress, isAddress } = require('web3-utils')
 const encodeFunctionCall = require('./encodeFunctionCall')
 
@@ -134,13 +134,6 @@ const verifySignedMessage = (signedMessage) => {
   if (encodedFunctionCall !== signedMessage.signedParams[1].value) {
     throw new Error('Encoded bytes value does not match encoded call data params')
   }
-}
-
-const accountFromOwner = (ownerAddress) => {
-  if (!isAddress(ownerAddress)) {
-    throw new Error(`accountFromOwner() Error: ${ownerAddress} is not a valid address`)
-  }
-  return proxyAccountFromOwner(ownerAddress)
 }
 
 

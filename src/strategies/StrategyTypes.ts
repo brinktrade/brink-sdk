@@ -119,3 +119,9 @@ export type TransactionData = {
   value: BigInt,
 }
 
+export type ParamType = {
+  name: string
+  type: string
+  calldata?: boolean
+}
+

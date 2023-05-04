@@ -5,8 +5,8 @@ import Strategy from './Strategy'
 import { SignedStrategyData, SignatureType, ValidationResult } from './StrategyTypes'
 import Config from '../Config'
 import { validResult, invalidResult } from './Validation'
-import proxyAccountFromOwner from '../proxyAccountFromOwner'
-import { metaDelegateCallSignedParamTypes } from '../constants'
+import accountFromOwner from '../accountFromOwner'
+import { MetaDelegateCallSignedParamTypes } from '../constants'
 
 class SignedStrategy {
   hash: string
@@ -35,7 +35,7 @@ class SignedStrategy {
       return strategyValidationResult
     }
 
-    if (proxyAccountFromOwner(this.signer).toLowerCase() != this.account.toLowerCase()) {
+    if (accountFromOwner(this.signer).toLowerCase() != this.account.toLowerCase()) {
       return invalidResult('ACCOUNT_MISMATCH')
     }
 
@@ -51,7 +51,7 @@ class SignedStrategy {
     const { typedData, typedDataHash } = getTypedData(
       domain,
       'metaDelegateCall',
-      metaDelegateCallSignedParamTypes,
+      MetaDelegateCallSignedParamTypes,
       [ this.strategyContract, strategyData ]
     )
     if (typedDataHash.toLowerCase() !== this.hash.toLowerCase()) {

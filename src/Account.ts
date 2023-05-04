@@ -1,12 +1,12 @@
 import { ethers } from 'ethers'
 import evm from './strategies/StrategiesEVM'
 import { SignedStrategy } from './strategies'
+import accountFromOwner from './accountFromOwner'
 
 const _ = require('lodash')
 const { toChecksumAddress, padLeft } = require('web3-utils')
 const BigNumber = require('bignumber.js')
 const { DEPLOY_AND_CALL, ACCOUNT_FACTORY } = require('@brinkninja/core/constants')
-const proxyAccountFromOwner = require('./proxyAccountFromOwner')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const verifySignedMessage = require('./verifySignedMessage')
 const bitmapPointer = require('./utils/bitmapPointer')
@@ -91,7 +91,7 @@ class Account {
     this._provider = provider
     this._signer = signer
 
-    this.address = proxyAccountFromOwner(this._ownerAddress)
+    this.address = accountFromOwner(this._ownerAddress)
 
     this.estimateGas = {}
     this.populateTransaction = {}

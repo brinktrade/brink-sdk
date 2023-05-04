@@ -1,6 +1,7 @@
 import { SignedStrategy, Strategy } from './strategies'
 import { StrategyJSON } from './strategies/StrategyTypes'
 import Config from './Config'
+import accountFromOwner from './accountFromOwner'
 
 const _ = require('lodash')
 const { signEIP712 } = require('@brinkninja/utils')
@@ -9,10 +10,9 @@ const capitalize = require('./utils/capitalize')
 const verifyParamInput = require('./utils/verifyParamInput')
 const isBigNumber = require('./utils/isBigNumber')
 const addSegmentedObj = require('./utils/addSegmentedObj')
-const proxyAccountFromOwner = require('./proxyAccountFromOwner')
 const encodeFunctionCall = require('./encodeFunctionCall')
 const {
-  metaDelegateCallSignedParamTypes, tokenTypes
+  MetaDelegateCallSignedParamTypes, tokenTypes
 } = require('./constants')
 
 const { VERIFIERS } = require('@brinkninja/config').mainnet
@@ -80,7 +80,7 @@ class AccountSigner {
   }
 
   async accountAddress () {
-    const addr = proxyAccountFromOwner(await this.signerAddress())
+    const addr = accountFromOwner(await this.signerAddress())
     return addr
   }
 
@@ -105,7 +105,7 @@ class AccountSigner {
       contractVersion: this._accountVersion,
       chainId: this._chainId,
       method: 'metaDelegateCall',
-      paramTypes: metaDelegateCallSignedParamTypes,
+      paramTypes: MetaDelegateCallSignedParamTypes,
       params: [ STRATEGY_TARGET_01, strategyJSON.data ]
     })
     return new SignedStrategy({
@@ -123,7 +123,7 @@ class AccountSigner {
   async signMetaDelegateCall (toAddress: string, call: any) {
     const signedFnCall = await this.signFunctionCall(
       'metaDelegateCall',
-      metaDelegateCallSignedParamTypes,
+      MetaDelegateCallSignedParamTypes,
       new Map<number, any>([
         [0, toAddress],
         [1, call]
