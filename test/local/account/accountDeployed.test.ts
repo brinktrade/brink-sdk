@@ -8,7 +8,7 @@ import {
 describe.only('accountDeployed', function () {
   it('when account is deployed should return true', async function () {
     const deployTx = await deployAccount(this.ownerAddress)
-    await this.defaultSigner.sendTransaction({ to: deployTx.tx.to, data: deployTx.tx.data })
+    await this.defaultSigner.sendTransaction(deployTx)
     expect(await accountDeployed(this.accountAddress, ethers.provider)).to.be.true
   })
 

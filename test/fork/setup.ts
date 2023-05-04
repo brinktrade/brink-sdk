@@ -26,7 +26,7 @@ beforeEach(async function () {
 
   this.ethersAccountSigner = await randomSigner()
   this.ownerAddress = this.ethersAccountSigner.address
-  this.account = accountFromOwner(this.ownerAddress)
+  this.accountAddress = accountFromOwner(this.ownerAddress)
 
   // const { AccountSigner, Account } = brink({ network: 'hardhat' })
 
@@ -43,7 +43,7 @@ beforeEach(async function () {
   // })
 
   const AccountImpl = await ethers.getContractFactory('Account')
-  this.proxyAccountContract = await AccountImpl.attach(this.account.address)
+  this.proxyAccountContract = await AccountImpl.attach(this.accountAddress)
 
   // // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
   // this.accountSigner = AccountSigner(this.ethersAccountSigner)

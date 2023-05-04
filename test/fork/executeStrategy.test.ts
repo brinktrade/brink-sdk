@@ -1,22 +1,26 @@
 import { ethers } from 'hardhat'
 import { expect } from 'chai'
 import {
+  deployAccount,
   unsignedMarketSwapData,
   MarketSwapExactInput,
   Order,
   Strategy,
+  SignedStrategy,
   Token,
   UniV3Twap,
   UseBit,
   IdsProof,
   marketSwapExactInput_getOutput,
-  executeStrategy
+  executeStrategy,
+  strategyEIP712TypedData
 } from '@brink-sdk'
 import fundWithERC20 from '../helpers/fundWithERC20'
 
 describe('executeStrategy', function () {
-  it('should execute a simple market swap strategy', async function () {
-    await this.account.deploy()
+  it.only('should execute a simple market swap strategy', async function () {
+    const deployTx = await deployAccount(this.ownerAddress)
+    await this.defaultSigner.sendTransaction(deployTx)
 
     const usdc = new Token(this.USDC_ADDRESS)
     const weth = new Token(this.WETH_ADDRESS)
@@ -32,7 +36,7 @@ describe('executeStrategy', function () {
     strategy.orders[0].primitives[0] = new UseBit(BigInt(0), BigInt(2**0))
     strategy.orders[0].primitives[1] = new MarketSwapExactInput(
       priceOracle,
-      this.accountOwner,
+      this.ownerAddress,
       new Token(this.USDC_ADDRESS),
       new Token(this.WETH_ADDRESS),
       usdcInput,
@@ -41,11 +45,26 @@ describe('executeStrategy', function () {
     )
 
     // sign the strategy
-    const signedStrategy = await this.accountSigner.signStrategyEIP712(await strategy.toJSON())
+    const chainId = 31337
+    const strategyJSON = await strategy.toJSON()
+    const { domain, types, value } = await strategyEIP712TypedData({
+      signer: this.ethersAccountSigner.address,
+      chainId,
+      strategy: strategyJSON
+    })
+    const signature = await this.ethersAccountSigner._signTypedData(
+      domain, types, value
+    )
+    const signedStrategy = new SignedStrategy({
+      strategy: strategyJSON,
+      chainId,
+      signature,
+      signer: this.ethersAccountSigner.address
+    })
 
     // fund and approve USDC
     await fundWithERC20(this.whale, this.USDC_ADDRESS, this.ethersAccountSigner.address, usdcInput)
-    await this.usdc.connect(this.ethersAccountSigner).approve(this.account.address, usdcInput)
+    await this.usdc.connect(this.ethersAccountSigner).approve(this.accountAddress, usdcInput)
 
     // use the USDC/WETH price oracle to get the exact expected WETH output
     const priceX96 = await priceOracle.price(ethers.provider)
@@ -79,12 +98,13 @@ describe('executeStrategy', function () {
     const filler_wethBal_0 = await this.weth.balanceOf(this.filler.address)
 
     // execute order 0 for the strategy
-    const executeStrategyAction = await executeStrategy({
+    const tx = await executeStrategy({
       signedStrategy,
       orderIndex: 0,
       unsignedCalls: [unsignedSwapCall]
     })
-    await this.defaultSigner.sendTransaction(executeStrategyAction.tx)
+    const r = await this.defaultSigner.sendTransaction(tx)
+    console.log('R: ', r)
 
     // expect signer to have paid USDC and received WETH
     const signer_usdcBal_1 = await this.usdc.balanceOf(this.ethersAccountSigner.address)

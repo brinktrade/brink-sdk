@@ -1,6 +1,7 @@
 export * from './primitiveChecks'
 export * from './Primitives'
 export * from './IdsProof'
+export * from './SignedStrategy'
 export * from './StrategyTypes'
 export { default as IdsProof } from './IdsProof'
 export { default as Order } from './Order'

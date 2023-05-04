@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { EVMAction } from './StrategyTypes'
+import { TransactionData } from './StrategyTypes'
 import SignedStrategy from './SignedStrategy'
 import evm from './StrategiesEVM'
 import AccountABI from '../contracts/Account.abi'
@@ -18,7 +18,7 @@ async function executeStrategy ({
   signedStrategy,
   orderIndex,
   unsignedCalls
-}: ExecuteStrategyArgs): Promise<EVMAction> {
+}: ExecuteStrategyArgs): Promise<TransactionData> {
   const validationResult = await signedStrategy.validate()
   if (!validationResult.valid) {
     throw new Error(`Invalid strategy: ${validationResult.message}`)
@@ -27,7 +27,7 @@ async function executeStrategy ({
   const strategyJSON = (await signedStrategy.toJSON()).strategy
   const unsignedData = await evm.unsignedData(orderIndex, unsignedCalls)
 
-  const accountContract = new ethers.Contract(signedStrategy.account, AccountABI)
+  const accountContract = new ethers.Contract(signedStrategy.account(), AccountABI)
   const txData = await accountContract.populateTransaction.metaDelegateCall(
     signedStrategy.strategyContract,
     strategyJSON.data,
@@ -35,12 +35,9 @@ async function executeStrategy ({
     unsignedData
   )
   return {
-    tx: {
-      to: txData.to || '0x',
-      data: txData.data || '0x',
-      value: BigInt(txData.value ? txData.value.toString() : 0)
-    },
-    type: 'transaction'
+    to: txData.to as string,
+    data: txData.data as string,
+    value: BigInt(0)
   }
 }
 

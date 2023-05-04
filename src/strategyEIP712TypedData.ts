@@ -1,5 +1,5 @@
 import { Strategy } from './strategies'
-import { StrategyJSON, ParamType } from './strategies/StrategyTypes'
+import { StrategyJSON, EIP712TypedData } from './strategies/StrategyTypes'
 import Config from './Config'
 import { MetaDelegateCallSignedParamTypes } from './constants'
 import accountFromOwner from './accountFromOwner'
@@ -12,20 +12,6 @@ export type StrategyEIP712TypedDataArgs = {
   chainId: number
   strategy: StrategyJSON
   strategyContract?: string
-}
-
-export type EIP712TypedData = {
-  types: Record<string, ParamType[]>
-  domain: EIP712TypedDataDomain,
-  value: Record<string, string>,
-  hash: string
-}
-
-export type EIP712TypedDataDomain = {
-  name: string
-  version: string
-  chainId: number
-  verifyingContract: string
 }
 
 async function strategyEIP712TypedData ({

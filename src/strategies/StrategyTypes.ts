@@ -1,3 +1,5 @@
+import { Signature, ethers } from 'ethers'
+
 export type ContractCallParams = (
   BigInt | boolean | string | SignatureTypeEnum | TokenStruct | TokenJSON | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParams
 )[]
@@ -71,15 +73,36 @@ export type StrategyJSON = {
   data?: string
 }
 
-export type SignedStrategyData = {
-  hash: string
-  account: string
+export type SignedStrategyArgs = {
   signer: string
-  chainId: BigInt
+  chainId: number
+  signature: string
+  strategy: StrategyJSON
+  strategyContract?: string
+  signatureType?: SignatureType
+}
+
+export type SignedStrategyJSON = {
+  eip712Data: EIP712TypedData
+  account: string
+  chainId: number
+  signer: string
   signatureType: SignatureType
   signature: string
-  strategy: StrategyJSON,
+  strategy: StrategyJSON
   strategyContract: string
+}
+
+export type EIP712TypedData = {
+  types: Record<string, ParamType[]>
+  domain: {
+    name: string
+    version: string
+    chainId: number
+    verifyingContract: string
+  }
+  value: Record<string, string>
+  hash: string
 }
 
 export type PrimitiveStruct = {
@@ -106,11 +129,6 @@ export const invalidReasonMessages = {
   SIGNATURE_MISMATCH: 'Signer address does not match recovered address from signature',
   ACCOUNT_MISMATCH: 'Account address is not owned by signer',
   HASH_MISMATCH: 'Hash does not match strategy data'
-}
-
-export type EVMAction = {
-  tx: TransactionData,
-  type: 'call' | 'transaction' | 'deploy'
 }
 
 export type TransactionData = {

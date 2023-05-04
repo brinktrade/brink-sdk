@@ -22,10 +22,10 @@ const STRATEGY_TARGET_01: string = Config['STRATEGY_TARGET_01'] as string
 class AccountSigner {
 
   _signer: any
-  _chainId: BigInt
+  _chainId: number
   _accountVersion: string
 
-  constructor (signer: any, chainId: BigInt, verifiers = []) {
+  constructor (signer: any, chainId: number, verifiers = []) {
     this._signer = signer
     this._chainId = chainId
     this._accountVersion = '1'
@@ -89,36 +89,36 @@ class AccountSigner {
     return addr
   }
 
-  async signStrategyEIP712 (strategyJSON: StrategyJSON): Promise<SignedStrategy> {
-    const accountAddress = await this.accountAddress()
+  // async signStrategyEIP712 (strategyJSON: StrategyJSON): Promise<SignedStrategy> {
+  //   const accountAddress = await this.accountAddress()
     
-    const strategy = new Strategy(strategyJSON)
-    const strategyValidation = strategy.validate()
-    if (!strategyValidation.valid) {
-      throw new Error(`Invalid strategy: ${strategyValidation.reason}: ${strategyValidation.message}`)
-    }
+  //   const strategy = new Strategy(strategyJSON)
+  //   const strategyValidation = strategy.validate()
+  //   if (!strategyValidation.valid) {
+  //     throw new Error(`Invalid strategy: ${strategyValidation.reason}: ${strategyValidation.message}`)
+  //   }
 
-    const { typedDataHash, signature } = await signEIP712({
-      signer: this._signer,
-      contractAddress: accountAddress,
-      contractName: 'BrinkAccount',
-      contractVersion: this._accountVersion,
-      chainId: this._chainId,
-      method: 'metaDelegateCall',
-      paramTypes: MetaDelegateCallSignedParamTypes,
-      params: [ STRATEGY_TARGET_01, strategyJSON.data ]
-    })
-    return new SignedStrategy({
-      hash: typedDataHash,
-      account: accountAddress,
-      signer: await this._signer.getAddress(),
-      chainId: this._chainId,
-      signatureType: 'EIP712',
-      signature,
-      strategy: strategyJSON,
-      strategyContract: STRATEGY_TARGET_01
-    })
-  }
+  //   const { typedDataHash, signature } = await signEIP712({
+  //     signer: this._signer,
+  //     contractAddress: accountAddress,
+  //     contractName: 'BrinkAccount',
+  //     contractVersion: this._accountVersion,
+  //     chainId: this._chainId,
+  //     method: 'metaDelegateCall',
+  //     paramTypes: MetaDelegateCallSignedParamTypes,
+  //     params: [ STRATEGY_TARGET_01, strategyJSON.data ]
+  //   })
+  //   return new SignedStrategy({
+  //     hash: typedDataHash,
+  //     account: accountAddress,
+  //     signer: await this._signer.getAddress(),
+  //     chainId: this._chainId,
+  //     signatureType: 'EIP712',
+  //     signature,
+  //     strategy: strategyJSON,
+  //     strategyContract: STRATEGY_TARGET_01
+  //   })
+  // }
 
   async signMetaDelegateCall (toAddress: string, call: any) {
     const signedFnCall = await this.signFunctionCall(
