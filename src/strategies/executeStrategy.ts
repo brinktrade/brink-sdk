@@ -4,6 +4,10 @@ import SignedStrategy from './SignedStrategy'
 import evm from './StrategiesEVM'
 import AccountABI from '../contracts/Account.abi'
 
+// TODO: transform bad v ledger sigs here with sigToValidECDSA()
+// we were previously doing this in AccountSigner, now that we don't have opinionated signing fn
+// it needs to be done here before execution
+
 export interface ExecuteStrategyArgs {
   signedStrategy: SignedStrategy,
   orderIndex: number,

@@ -4,7 +4,7 @@ const BN = ethers.BigNumber.from
 const { MAX_UINT256 } = require('@brinkninja/utils').constants
 const chai = require('chai')
 const { expect } = chai
-const { verifySignedMessage } = brink()
+// const { verifySignedMessage } = brink()
 
 describe('VerifySignedMessage', function () {
   it('Verifies a correctly signed tokenToToken message', async function () {

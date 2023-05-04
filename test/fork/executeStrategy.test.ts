@@ -32,7 +32,7 @@ describe('executeStrategy', function () {
     strategy.orders[0].primitives[0] = new UseBit(BigInt(0), BigInt(2**0))
     strategy.orders[0].primitives[1] = new MarketSwapExactInput(
       priceOracle,
-      await this.accountSigner.signerAddress(),
+      this.accountOwner,
       new Token(this.USDC_ADDRESS),
       new Token(this.WETH_ADDRESS),
       usdcInput,

@@ -1,13 +1,13 @@
 import { ethers } from 'ethers'
-import isDeployed from "./isDeployed"
-import bitmapPointer from '../../utils/bitmapPointer'
+import accountDeployed from './accountDeployed'
+import bitmapPointer from '../utils/bitmapPointer'
 import BigNumber from 'bignumber.js'
 import { padLeft } from 'web3-utils'
 
 
 // if bit is used, return false, else return true
 const bitUsed = async (provider: ethers.providers.Provider, accountAddress: string, bitmapIndex: BigInt, bit: BigInt): Promise<Boolean>  => {
-  if (!await isDeployed(accountAddress, provider)) {
+  if (!await accountDeployed(accountAddress, provider)) {
     return false
   }
   const bitmap = await provider.getStorageAt(accountAddress, bitmapPointer(bitmapIndex))

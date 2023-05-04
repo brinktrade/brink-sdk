@@ -1,11 +1,11 @@
 const _ = require('lodash')
-const brink = require('@brink-sdk').default
+// const brink = require('@brink-sdk').default
 const { ethers } = require('hardhat')
 const BN = ethers.BigNumber.from
 const chai = require('chai')
 const { MAX_UINT256 } = require('@brinkninja/utils').constants
 const { expect } = chai
-const { parseSignedMessage } = brink()
+// const { parseSignedMessage } = brink()
 
 describe('parseSignedMessage', function () {
   it('returns tokenToToken message data', async function () {

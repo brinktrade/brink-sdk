@@ -1,12 +1,13 @@
-import _ from 'lodash'
-import Account from './Account'
-import AccountSigner from './AccountSigner'
-import getChainId from './getChainId'
-import ParseSignedMessage from './parseSignedMessage'
-import Config from './Config'
+// import _ from 'lodash'
+// import Account from './Account'
+// import AccountSigner from './AccountSigner'
+// import getChainId from './getChainId'
+// import ParseSignedMessage from './parseSignedMessage'
+// import Config from './Config'
 
-export * from './strategies'
+export * from './account'
 export * from './oracles'
+export * from './strategies'
 export * from './SwapIO'
 export * from './Config'
 export * from './Types'
@@ -16,6 +17,7 @@ export { default as Config } from './Config'
 export { default as accountFromOwner } from './accountFromOwner'
 export { default as strategyEIP712TypedData } from './strategyEIP712TypedData'
 
+/*
 const setupBrink = (opts: any = {}) => {
 
   const account = (ownerAddress: string, accountOpts: any = {}) => {
@@ -64,3 +66,4 @@ const setupBrink = (opts: any = {}) => {
 }
 
 export default setupBrink
+*/
