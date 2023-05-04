@@ -103,8 +103,7 @@ describe('executeStrategy', function () {
       orderIndex: 0,
       unsignedCalls: [unsignedSwapCall]
     })
-    const r = await this.defaultSigner.sendTransaction(tx)
-    console.log('R: ', r)
+    await this.defaultSigner.sendTransaction(tx)
 
     // expect signer to have paid USDC and received WETH
     const signer_usdcBal_1 = await this.usdc.balanceOf(this.ethersAccountSigner.address)

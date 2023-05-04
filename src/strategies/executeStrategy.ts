@@ -1,8 +1,7 @@
-import { ethers } from 'ethers'
 import { TransactionData } from './StrategyTypes'
 import SignedStrategy from './SignedStrategy'
 import evm from './StrategiesEVM'
-import AccountABI from '../contracts/Account.abi'
+import { metaDelegateCall } from '../account'
 
 // TODO: transform bad v ledger sigs here with sigToValidECDSA()
 // we were previously doing this in AccountSigner, now that we don't have opinionated signing fn
@@ -26,19 +25,13 @@ async function executeStrategy ({
 
   const strategyJSON = (await signedStrategy.toJSON()).strategy
   const unsignedData = await evm.unsignedData(orderIndex, unsignedCalls)
-
-  const accountContract = new ethers.Contract(signedStrategy.account(), AccountABI)
-  const txData = await accountContract.populateTransaction.metaDelegateCall(
+  return await metaDelegateCall(
+    signedStrategy.account(),
     signedStrategy.strategyContract,
-    strategyJSON.data,
+    strategyJSON.data as string,
     signedStrategy.signature,
     unsignedData
   )
-  return {
-    to: txData.to as string,
-    data: txData.data as string,
-    value: BigInt(0)
-  }
 }
 
 export default executeStrategy
