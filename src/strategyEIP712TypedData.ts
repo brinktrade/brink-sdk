@@ -2,7 +2,7 @@ import { Strategy } from './strategies'
 import { StrategyJSON, EIP712TypedData } from './strategies/StrategyTypes'
 import Config from './Config'
 import { MetaDelegateCallSignedParamTypes } from './constants'
-import accountFromOwner from './accountFromOwner'
+import accountFromOwner from './account/accountFromOwner'
 
 const  { getTypedData } = require('@brinkninja/utils/src/typedData')
 

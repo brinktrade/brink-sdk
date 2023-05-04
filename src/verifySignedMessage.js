@@ -1,6 +1,6 @@
 const recoverSigner = require('./recoverSigner')
 const typedDataEIP712 = require('./typedDataEIP712')
-const accountFromOwner = require('./accountFromOwner').default
+const accountFromOwner = require('./account/accountFromOwner').default
 const { toChecksumAddress, isAddress } = require('web3-utils')
 const encodeFunctionCall = require('./encodeFunctionCall')
 

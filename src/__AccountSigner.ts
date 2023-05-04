@@ -1,7 +1,7 @@
 import { SignedStrategy, Strategy } from './strategies'
 import { StrategyJSON } from './strategies/StrategyTypes'
 import Config from './Config'
-import accountFromOwner from './accountFromOwner'
+import accountFromOwner from './account/accountFromOwner'
 
 const _ = require('lodash')
 const { signEIP712 } = require('@brinkninja/utils')

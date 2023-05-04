@@ -7,7 +7,8 @@ const { MAX_UINT256 } = constants
 // const brink = require('@brink-sdk').default
 const randomSigner = require('../helpers/randomSigner')
 const mockLedgerSignerBadV = require('../helpers/mockLedgerSignerBadV')
-const { accountFromOwner } = require('@brink-sdk')
+const { accountFromOwner, deployAccount } = require('@brink-sdk')
+const { randomHex } = require('web3-utils')
 
 beforeEach(async function () {
   this.accountContract = await deploySaltedContract('Account')
@@ -91,6 +92,21 @@ beforeEach(async function () {
 
   this.encodeEthTransfer = encodeEthTransfer
   this.encodeTokenTransfer = encodeTokenTransfer
+
+  this.recipientAddress = randomHex(20)
+
+  this.fundAccount = async () => {
+    await this.defaultSigner.sendTransaction({
+      to: this.accountAddress,
+      value: ethers.utils.parseEther('1.0')
+    })
+  }
+
+  this.deployAccount = async () => {
+    const deployTx = await deployAccount(this.ownerAddress)
+    const receipt = await this.defaultSigner.sendTransaction(deployTx)
+    return receipt
+  }
 })
 
 async function encodeEthTransfer (

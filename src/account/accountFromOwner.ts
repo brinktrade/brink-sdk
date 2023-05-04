@@ -1,6 +1,6 @@
 const { ACCOUNT_FACTORY } = require('@brinkninja/core/constants')
-const saltedDeployAddress = require('./saltedDeployAddress')
-const proxyBytecode = require('./proxyBytecode')
+const saltedDeployAddress = require('../saltedDeployAddress')
+const proxyBytecode = require('../proxyBytecode')
 
 function accountFromOwner (owner: string): string {
   const { address: account } = saltedDeployAddress(

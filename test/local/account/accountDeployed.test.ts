@@ -5,10 +5,9 @@ import {
   deployAccount
 } from '@brink-sdk'
 
-describe.only('accountDeployed', function () {
+describe('accountDeployed', function () {
   it('when account is deployed should return true', async function () {
-    const deployTx = await deployAccount(this.ownerAddress)
-    await this.defaultSigner.sendTransaction(deployTx)
+    await this.deployAccount()
     expect(await accountDeployed(this.accountAddress, ethers.provider)).to.be.true
   })
 

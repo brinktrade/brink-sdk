@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import evm from './strategies/StrategiesEVM'
 import { SignedStrategy } from './strategies'
-import accountFromOwner from './accountFromOwner'
+import accountFromOwner from './account/accountFromOwner'
 
 const _ = require('lodash')
 const { toChecksumAddress, padLeft } = require('web3-utils')

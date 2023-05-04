@@ -5,7 +5,7 @@ import Strategy from './Strategy'
 import { SignedStrategyArgs, SignedStrategyJSON, SignatureType, ValidationResult, EIP712TypedData } from './StrategyTypes'
 import Config from '../Config'
 import { validResult, invalidResult } from './Validation'
-import accountFromOwner from '../accountFromOwner'
+import accountFromOwner from '../account/accountFromOwner'
 import { MetaDelegateCallSignedParamTypes } from '../constants'
 
 class SignedStrategy {
