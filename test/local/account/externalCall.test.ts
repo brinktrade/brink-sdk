@@ -2,7 +2,7 @@ import { ethers } from 'hardhat'
 import { expect } from 'chai'
 import { externalCall } from '@brink-sdk'
 
-describe.only('externalCall', function () {
+describe('externalCall', function () {
   beforeEach(async function () {
     await this.deployAccount()
     await this.fundAccount()

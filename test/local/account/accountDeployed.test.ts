@@ -1,9 +1,6 @@
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
-import {
-  accountDeployed,
-  deployAccount
-} from '@brink-sdk'
+import { accountDeployed } from '@brink-sdk'
 
 describe('accountDeployed', function () {
   it('when account is deployed should return true', async function () {
