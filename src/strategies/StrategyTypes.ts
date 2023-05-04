@@ -107,3 +107,15 @@ export const invalidReasonMessages = {
   ACCOUNT_MISMATCH: 'Account address is not owned by signer',
   HASH_MISMATCH: 'Hash does not match strategy data'
 }
+
+export type EVMAction = {
+  tx: TransactionData,
+  type: 'call' | 'transaction' | 'deploy'
+}
+
+export type TransactionData = {
+  to: string,
+  data: string,
+  value: BigInt,
+}
+

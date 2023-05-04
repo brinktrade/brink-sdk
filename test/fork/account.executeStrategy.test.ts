@@ -9,15 +9,12 @@ import {
   UniV3Twap,
   UseBit,
   IdsProof,
-  marketSwapExactInput_getOutput,
-  executeStrategy
+  marketSwapExactInput_getOutput
 } from '@brink-sdk'
 import fundWithERC20 from '../helpers/fundWithERC20'
 
-describe('executeStrategy', function () {
+describe('account.executeStrategy', function () {
   it('should execute a simple market swap strategy', async function () {
-    await this.account.deploy()
-
     const usdc = new Token(this.USDC_ADDRESS)
     const weth = new Token(this.WETH_ADDRESS)
     const priceOracle = new UniV3Twap(usdc, weth, BigInt(1000))
@@ -79,12 +76,11 @@ describe('executeStrategy', function () {
     const filler_wethBal_0 = await this.weth.balanceOf(this.filler.address)
 
     // execute order 0 for the strategy
-    const executeStrategyAction = await executeStrategy({
+    await this.account.executeStrategy({
       signedStrategy,
       orderIndex: 0,
       unsignedCalls: [unsignedSwapCall]
     })
-    await this.defaultSigner.sendTransaction(executeStrategyAction.tx)
 
     // expect signer to have paid USDC and received WETH
     const signer_usdcBal_1 = await this.usdc.balanceOf(this.ethersAccountSigner.address)
