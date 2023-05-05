@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 
-const accountDeployed = async (address: string, provider: ethers.providers.Provider) => {
-  const code = await provider.getCode(address)
+const accountDeployed = async (account: string, provider: ethers.providers.Provider) => {
+  const code = await provider.getCode(account)
   return code !== '0x'
 }
 

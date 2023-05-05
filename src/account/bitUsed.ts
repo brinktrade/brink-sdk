@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import accountDeployed from './accountDeployed'
-import bitmapPointer from '../utils/bitmapPointer'
+import bitmapPointer from './bitmapPointer'
 import BigNumber from 'bignumber.js'
 import { padLeft } from 'web3-utils'
 
@@ -10,7 +10,7 @@ const bitUsed = async (provider: ethers.providers.Provider, accountAddress: stri
   if (!await accountDeployed(accountAddress, provider)) {
     return false
   }
-  const bitmap = await provider.getStorageAt(accountAddress, bitmapPointer(bitmapIndex))
+  const bitmap = await provider.getStorageAt(accountAddress, bitmapPointer(bitmapIndex).toString())
   const bmpBinStr = bnToBinaryString(bitmap)
   const bitBinStr = bnToBinaryString(new BigNumber(bit.toString()))
 

@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { delegateCall } from '@brink-sdk'
 
 describe('delegateCall', function () {
-  it.only('should send delegateCall tx', async function () {
+  it('should send delegateCall tx', async function () {
     await this.deployAccount()
     await this.fundAccount()
     const transferAmount = await ethers.utils.parseEther('0.01')
