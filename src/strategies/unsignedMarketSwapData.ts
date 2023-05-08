@@ -1,15 +1,22 @@
-import evm from './StrategiesEVM'
+import evm from '../internal/EthereumJsVm'
 import {
   IdsProof,
   CallStruct
 } from '.'
 
-async function unsignedMarketSwapData (
-  recipient: string,
-  tokenInIdsProof: IdsProof,
-  tokenOutIdsProof: IdsProof,
+export type UnsignedMarketSwapDataArgs = {
+  recipient: string
+  tokenInIdsProof?: IdsProof
+  tokenOutIdsProof?: IdsProof
   callData: CallStruct
-): Promise<string> {
+}
+
+async function unsignedMarketSwapData ({
+  recipient,
+  tokenInIdsProof = new IdsProof(),
+  tokenOutIdsProof = new IdsProof(),
+  callData
+}: UnsignedMarketSwapDataArgs): Promise<string> {
   return await evm.unsignedMarketSwapData(
     recipient,
     tokenInIdsProof,

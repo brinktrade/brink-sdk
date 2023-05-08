@@ -1,4 +1,3 @@
-import { ethers } from 'hardhat'
 import { expect } from 'chai'
 import {
   deployAccount,
@@ -10,7 +9,6 @@ import {
   Token,
   UniV3Twap,
   UseBit,
-  IdsProof,
   marketSwapExactInput_getOutput,
   executeStrategy,
   strategyEIP712TypedData
@@ -81,15 +79,13 @@ describe('executeStrategy', function () {
     )).data
 
     // get unsigned data for the marketSwapExactInput primitive
-    const unsignedSwapCall = await unsignedMarketSwapData(
-      this.filler.address,
-      new IdsProof(),
-      new IdsProof(),
-      {
+    const unsignedSwapCall = await unsignedMarketSwapData({
+      recipient: this.filler.address,
+      callData: {
         targetContract: this.filler.address,
         data: this.fillData
       }
-    )
+    })
 
     // store initial balances
     const signer_usdcBal_0 = await this.usdc.balanceOf(this.ethersAccountSigner.address)

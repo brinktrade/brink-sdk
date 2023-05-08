@@ -1,5 +1,5 @@
 import { utils } from 'ethers'
-import evm from '../strategies/StrategiesEVM'
+import evm from '../internal/EthereumJsVm'
 
 const { defaultAbiCoder } = utils
 

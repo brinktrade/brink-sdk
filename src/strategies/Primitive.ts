@@ -1,6 +1,6 @@
 import Token from './Token'
 import { PrimitiveJSON, PrimitiveFunctionName, PrimitiveType, ContractCallParams } from './StrategyTypes'
-import evm from './StrategiesEVM'
+import evm from '../internal/EthereumJsVm'
 
 const primitiveRequiresUnsignedMap: { [key in PrimitiveFunctionName]: boolean } = {
   marketSwapExactInput: true,

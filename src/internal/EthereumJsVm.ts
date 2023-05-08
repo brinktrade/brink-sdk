@@ -9,7 +9,7 @@ import StrategyBuilder01 from '../contracts/StrategyBuilder01.json'
 import PrimitiveBuilder01 from '../contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from '../contracts/UnsignedDataBuilder01.json'
 import SwapIO from '../contracts/SwapIO.json'
-import IdsProof from './IdsProof'
+import IdsProof from '../strategies/IdsProof'
 import {
   ContractCallParams,
   PrimitiveFunctionName,
@@ -17,7 +17,7 @@ import {
   SignatureType,
   SignatureTypeEnum,
   OrderJSON
-} from './StrategyTypes'
+} from '../strategies/StrategyTypes'
 
 export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
   EIP712: SignatureTypeEnum.EIP712,
@@ -30,7 +30,7 @@ const privateKey = '0xb52943248cc157950f600feb24b2a5949b3ee818395b6525dd0ed5e6b6
 const privateKeyBuffer = Buffer.from(privateKey.slice(2), 'hex')
 const signer = new ethers.Wallet(privateKey)
 
-export class StrategiesEVM {
+export class EthereumJsVm {
 
   readonly _strategyContractAddress: string
   readonly _primitivesContractAddress: string
@@ -210,7 +210,7 @@ function cleanDynamicBytes (bytes: string): string {
   return bytes.slice(128)
 }
 
-export default new StrategiesEVM(
+export default new EthereumJsVm(
   config['STRATEGY_TARGET_01'] as string,
   config['PRIMITIVES_01'] as string,
 )
