@@ -5,7 +5,7 @@ import Strategy from './Strategy'
 import { SignedStrategyArgs, SignedStrategyJSON, SignatureType, ValidationResult, EIP712TypedData } from './StrategyTypes'
 import Config from '../Config'
 import { validResult, invalidResult } from './Validation'
-import accountFromOwner from '../account/accountFromOwner'
+import accountFromSigner from '../account/accountFromSigner'
 import { MetaDelegateCallSignedParamTypes } from '../constants'
 
 class SignedStrategy {
@@ -46,7 +46,7 @@ class SignedStrategy {
   }
 
   account (): string {
-    return accountFromOwner(this.signer)
+    return accountFromSigner(this.signer)
   }
 
   async EIP712Data (strategyData?: string): Promise<EIP712TypedData> {
@@ -81,7 +81,7 @@ class SignedStrategy {
 
     return {
       eip712Data,
-      account: accountFromOwner(this.signer),
+      account: accountFromSigner(this.signer),
       chainId: this.chainId,
       signer: this.signer,
       signatureType: this.signatureType,

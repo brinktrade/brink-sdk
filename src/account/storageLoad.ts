@@ -1,11 +1,18 @@
-import { ethers } from 'ethers'
-import accountDeployed from './accountDeployed'
+import accountFromSigner from './accountFromSigner'
+import { RpcMethodCall } from '../strategies/StrategyTypes'
 
-async function storageLoad (account: string, provider: ethers.providers.Provider, ptr: string): Promise<string> {
-  if (!await accountDeployed(account, provider)) {
-    return '0x'
-  } else {
-    return await provider.getStorageAt(account, ptr)
+export type StorageLoadArgs = {
+  signer: string,
+  pointer: string
+}
+
+function storageLoad ({
+  signer,
+  pointer
+}: StorageLoadArgs): RpcMethodCall {
+  return {
+    method: 'eth_getStorageAt',
+    params: [ accountFromSigner(signer), pointer, 'latest']
   }
 }
 

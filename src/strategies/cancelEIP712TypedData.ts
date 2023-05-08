@@ -1,7 +1,7 @@
 import { EIP712TypedData } from './StrategyTypes'
 import Config from '../Config'
 import { MetaDelegateCallSignedParamTypes } from '../constants'
-import { accountFromOwner } from '../account'
+import { accountFromSigner } from '../account'
 import encodeFunctionCall from '../encodeFunctionCall'
 
 const  { getTypedData } = require('@brinkninja/utils/src/typedData')
@@ -28,7 +28,7 @@ async function cancelEIP712TypedData ({
   }
 
   if (signer) {
-    account = accountFromOwner(signer as string)
+    account = accountFromSigner(signer as string)
   }
 
   const cancelFnCallData = encodeFunctionCall({

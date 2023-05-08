@@ -2,6 +2,8 @@ export type ContractCallParams = (
   BigInt | boolean | string | SignatureTypeEnum | TokenStruct | TokenJSON | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParams
 )[]
 
+export type RpcMethodCallParam = number | boolean | string
+
 export enum SignatureTypeEnum {
   EIP712 = 0,
   EIP1271 = 1
@@ -139,5 +141,10 @@ export type ParamType = {
   name: string
   type: string
   calldata?: boolean
+}
+
+export type RpcMethodCall = {
+  method: string,
+  params: RpcMethodCallParam[]
 }
 

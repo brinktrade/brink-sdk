@@ -7,7 +7,7 @@ const { MAX_UINT256 } = constants
 // const brink = require('@brink-sdk').default
 const randomSigner = require('../helpers/randomSigner')
 const mockLedgerSignerBadV = require('../helpers/mockLedgerSignerBadV')
-const { accountFromOwner, deployAccount } = require('@brink-sdk')
+const { accountFromSigner, deployAccount, loadBitmap } = require('@brink-sdk')
 const { randomHex } = require('web3-utils')
 
 beforeEach(async function () {
@@ -24,19 +24,19 @@ beforeEach(async function () {
 
   this.ethersAccountSigner = await randomSigner()
   this.ethersAccountBadVSigner = await mockLedgerSignerBadV()
-  this.ownerAddress = this.ethersAccountSigner.address
-  this.accountAddress = accountFromOwner(this.ownerAddress)
+  this.signerAddress = this.ethersAccountSigner.address
+  this.accountAddress = accountFromSigner(this.signerAddress)
 
   // const { AccountSigner, Account } = brink({ network: 'hardhat' })
 
   // // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  // this.account = Account(this.ownerAddress, {
+  // this.account = Account(this.signerAddress, {
   //   provider: ethers.provider,
   //   signer: this.defaultSigner
   // })
 
   // // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  // this.account_ownerSigner = Account(this.ownerAddress, {
+  // this.account_ownerSigner = Account(this.signerAddress, {
   //   provider: ethers.provider,
   //   signer: this.ethersAccountSigner
   // })
@@ -103,9 +103,15 @@ beforeEach(async function () {
   }
 
   this.deployAccount = async () => {
-    const deployTx = await deployAccount(this.ownerAddress)
+    const deployTx = await deployAccount(this.signerAddress)
     const receipt = await this.defaultSigner.sendTransaction(deployTx)
     return receipt
+  }
+
+  this.loadBitmap = async (bitmapIndex) => {
+    const rpcCall = loadBitmap({ signer: this.signerAddress, bitmapIndex })
+    const bmp = await ethers.provider.send(rpcCall.method, rpcCall.params)
+    return bmp
   }
 })
 

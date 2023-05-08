@@ -19,7 +19,7 @@ import fundWithERC20 from '../helpers/fundWithERC20'
 
 describe('executeStrategy', function () {
   it.only('should execute a simple market swap strategy', async function () {
-    const deployTx = await deployAccount(this.ownerAddress)
+    const deployTx = await deployAccount(this.signerAddress)
     await this.defaultSigner.sendTransaction(deployTx)
 
     const usdc = new Token(this.USDC_ADDRESS)
@@ -36,7 +36,7 @@ describe('executeStrategy', function () {
     strategy.orders[0].primitives[0] = new UseBit(BigInt(0), BigInt(2**0))
     strategy.orders[0].primitives[1] = new MarketSwapExactInput(
       priceOracle,
-      this.ownerAddress,
+      this.signerAddress,
       new Token(this.USDC_ADDRESS),
       new Token(this.WETH_ADDRESS),
       usdcInput,
@@ -77,7 +77,7 @@ describe('executeStrategy', function () {
 
     // get call data to fill the swap
     this.fillData = (await this.filler.populateTransaction.fulfillTokenOutSwap(
-      this.WETH_ADDRESS, wethOutput.toString(), this.ownerAddress
+      this.WETH_ADDRESS, wethOutput.toString(), this.signerAddress
     )).data
 
     // get unsigned data for the marketSwapExactInput primitive

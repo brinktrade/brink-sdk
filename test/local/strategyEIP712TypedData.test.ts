@@ -27,7 +27,7 @@ describe('strategyEIP712TypedData', function () {
 
     // get the EIP712 TypedData using signer address
     const eip712TypedData_fromSigner = await strategyEIP712TypedData({
-      signer: this.ownerAddress,
+      signer: this.signerAddress,
       chainId: 31337,
       strategy: strategyData
     })

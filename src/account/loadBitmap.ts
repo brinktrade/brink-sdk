@@ -1,15 +1,17 @@
-import { ethers } from 'ethers'
-import accountDeployed from './accountDeployed'
 import bitmapPointer from './bitmapPointer'
 import storageLoad from './storageLoad'
+import { RpcMethodCall } from '../strategies/StrategyTypes'
 
+export type LoadBitmapArgs = {
+  signer: string,
+  bitmapIndex: BigInt
+}
 
-async function loadBitmap (account: string, provider: ethers.providers.Provider, bitmapIndex: BigInt): Promise<string> {
-  if (await accountDeployed(account, provider)) {
-    return await storageLoad(account, provider, bitmapPointer(bitmapIndex))
-  } else {
-    return '0x00'
-  }
+function loadBitmap ({
+  signer,
+  bitmapIndex
+}: LoadBitmapArgs): RpcMethodCall {
+  return storageLoad({ signer, pointer: bitmapPointer(bitmapIndex) })
 }
 
 export default loadBitmap

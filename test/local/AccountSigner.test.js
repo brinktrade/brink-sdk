@@ -61,11 +61,11 @@ describe('AccountSigner', function () {
   describe('Approval Swap Signing', function () {
     beforeEach(async function () {  
       this.fulfillTokenOutData = (await this.testFulfillSwap.populateTransaction.fulfillTokenOutSwap(
-        this.token2.address, '10', this.ownerAddress
+        this.token2.address, '10', this.signerAddress
       )).data
   
       this.fulfillEthOutData = (await this.testFulfillSwap.populateTransaction.fulfillEthOutSwap(
-        '10', this.ownerAddress
+        '10', this.signerAddress
       )).data
     })
 
@@ -74,11 +74,11 @@ describe('AccountSigner', function () {
       const signedTokenToTokenSwap = await this.accountSigner.ApprovalSwapsV1.signTokenToToken(
         '0', '1', this.token.address, this.token2.address, '10', '10', MAX_UINT256
       )
-      const ownerBal0 = await this.token2.balanceOf(this.ownerAddress)
+      const ownerBal0 = await this.token2.balanceOf(this.signerAddress)
       await this.account.ApprovalSwapsV1.tokenToToken(
         signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
-      const ownerBal1 = await this.token2.balanceOf(this.ownerAddress)
+      const ownerBal1 = await this.token2.balanceOf(this.signerAddress)
       expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
     })
 
@@ -87,11 +87,11 @@ describe('AccountSigner', function () {
       const signedTokenToTokenSwap = await this.accountSigner.ApprovalSwapsV1.signTokenToToken(
         '0', '1', this.token.address, ZERO_ADDRESS, '10', '10', MAX_UINT256
       )
-      const ownerBal0 = await ethers.provider.getBalance(this.ownerAddress)
+      const ownerBal0 = await ethers.provider.getBalance(this.signerAddress)
       await this.account.ApprovalSwapsV1.tokenToToken(
         signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillEthOutData
       )
-      const ownerBal1 = await ethers.provider.getBalance(this.ownerAddress)
+      const ownerBal1 = await ethers.provider.getBalance(this.signerAddress)
       expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
     })
 

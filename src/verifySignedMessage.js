@@ -1,6 +1,6 @@
 const recoverSigner = require('./recoverSigner')
 const typedDataEIP712 = require('./typedDataEIP712')
-const accountFromOwner = require('./account/accountFromOwner').default
+const accountFromSigner = require('./account/accountFromSigner').default
 const { toChecksumAddress, isAddress } = require('web3-utils')
 const encodeFunctionCall = require('./encodeFunctionCall')
 
@@ -54,7 +54,7 @@ const verifySignedMessage = (signedMessage) => {
     throw new Error(`Provided Signer ${signer} does not match Signer ${recoveredSigner} in Signed Message`)
   }
 
-  const computedAccountAddress = accountFromOwner(signer)
+  const computedAccountAddress = accountFromSigner(signer)
   if (toChecksumAddress(computedAccountAddress) !== toChecksumAddress(accountAddress)) {
     throw new Error(`Account Address ${accountAddress} does not match Computed Address ${computedAccountAddress}`)
   }

@@ -14,7 +14,7 @@ export * from './Types'
 export * from './utils'
 export * from './strategies/strategyEIP712TypedData'
 export { default as Config } from './Config'
-export { default as accountFromOwner } from './account/accountFromOwner'
+export { default as accountFromSigner } from './account/accountFromSigner'
 export { default as strategyEIP712TypedData } from './strategies/strategyEIP712TypedData'
 
 /*

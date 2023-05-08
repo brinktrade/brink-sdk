@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { accountFromOwner } from '.'
+import { accountFromSigner } from '.'
 import AccountAbi from '../contracts/Account.abi'
 import DeployAndCallAbi from '../contracts/DeployAndCall.abi'
 import { TransactionData } from '../strategies/StrategyTypes'
@@ -24,7 +24,7 @@ async function metaDelegateCall ({
   unsignedData = '0x',
   deployAccount = false
 }: MetaDelegateCallArgs): Promise<TransactionData> {
-  const account = accountFromOwner(signer as string)
+  const account = accountFromSigner(signer as string)
 
   const accountContract = new ethers.Contract(account as string, AccountAbi)
   const txData = await accountContract.populateTransaction.metaDelegateCall(to, data, signature, unsignedData)

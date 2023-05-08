@@ -9,7 +9,7 @@ describe('delegateCall', function () {
     const transferAmount = await ethers.utils.parseEther('0.01')
     const transferEthData = await this.encodeEthTransfer('0', '1', this.recipientAddress, transferAmount.toString())
     const tx = await delegateCall({
-      signer: this.ownerAddress,
+      signer: this.signerAddress,
       to: this.transferVerifier.address,
       data: transferEthData
     })

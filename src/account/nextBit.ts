@@ -23,7 +23,8 @@ async function nextBit ({
     while(nextBitIndex < 0) {
       curBitmapIndex++
       if (provider) {
-        curBitmap = await loadBitmap(account, provider, BigInt(curBitmapIndex))
+        throw new Error('NOT IMPLEMENTED')
+        // curBitmap = await loadBitmap(account, provider, BigInt(curBitmapIndex))
       } else {
         if (!bitmaps) {
           throw new Error(`bitmaps not provided`)

@@ -2,7 +2,7 @@ import { Strategy } from '.'
 import { StrategyJSON, EIP712TypedData } from './StrategyTypes'
 import Config from '../Config'
 import { MetaDelegateCallSignedParamTypes } from '../constants'
-import accountFromOwner from '../account/accountFromOwner'
+import accountFromSigner from '../account/accountFromSigner'
 
 const  { getTypedData } = require('@brinkninja/utils/src/typedData')
 
@@ -33,7 +33,7 @@ async function strategyEIP712TypedData ({
   const strategyData = (await strategy.toJSON()).data
 
   if (!account) {
-    account = accountFromOwner(signer as string)
+    account = accountFromSigner(signer as string)
   }
 
   const domain = {

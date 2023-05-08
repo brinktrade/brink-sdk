@@ -5,7 +5,7 @@ import randomSigner from '../helpers/randomSigner'
 import ERC20_abi from '../../src/contracts/ERC20.abi'
 import impersonate from '../helpers/impersonate'
 import fundWithERC20 from '../helpers/fundWithERC20'
-import { accountFromOwner } from '@brink-sdk'
+import { accountFromSigner } from '@brink-sdk'
 
 const { ethers } = hre
 
@@ -25,19 +25,19 @@ beforeEach(async function () {
   this.usdc = new ethers.Contract(this.USDC_ADDRESS, ERC20_abi, this.defaultSigner)
 
   this.ethersAccountSigner = await randomSigner()
-  this.ownerAddress = this.ethersAccountSigner.address
-  this.accountAddress = accountFromOwner(this.ownerAddress)
+  this.signerAddress = this.ethersAccountSigner.address
+  this.accountAddress = accountFromSigner(this.signerAddress)
 
   // const { AccountSigner, Account } = brink({ network: 'hardhat' })
 
   // // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  // this.account = Account(this.ownerAddress, {
+  // this.account = Account(this.signerAddress, {
   //   provider: ethers.provider,
   //   signer: this.defaultSigner
   // })
 
   // // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  // this.account_ownerSigner = Account(this.ownerAddress, {
+  // this.account_ownerSigner = Account(this.signerAddress, {
   //   provider: ethers.provider,
   //   signer: this.ethersAccountSigner
   // })

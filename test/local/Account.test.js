@@ -6,7 +6,7 @@ const { randomHex } = require('web3-utils')
 const BigNumber = require('bignumber.js')
 const { constants } = require('@brinkninja/utils')
 const brink = require('@brink-sdk').default
-const { accountFromOwner } = require('@brink-sdk')
+const { accountFromSigner } = require('@brink-sdk')
 const BN = ethers.BigNumber.from
 const { MAX_UINT256 } = constants
 chai.use(chaiAsPromised)
@@ -28,7 +28,7 @@ describe('Account', function () {
     }
 
     this.fulfillTokenOutData = (await this.testFulfillSwap.populateTransaction.fulfillTokenOutSwap(
-      this.token2.address, '10', this.ownerAddress
+      this.token2.address, '10', this.signerAddress
     )).data
 
     // this patches in a mock storageLoad function, which will load storage from this.mockAccountBits
@@ -112,23 +112,23 @@ describe('Account', function () {
     it('should send an ETH to ERC20 swap tx', async function () {
       await this.fundAccount()
 
-      const ownerBal0 = await this.token2.balanceOf(this.ownerAddress)
+      const ownerBal0 = await this.token2.balanceOf(this.signerAddress)
 
       await this.account.ApprovalSwapsV1.tokenToToken(
         this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
 
-      const ownerBal1 = await this.token2.balanceOf(this.ownerAddress)
+      const ownerBal1 = await this.token2.balanceOf(this.signerAddress)
       expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
     })
 
     it('should send an ERC20 to ERC20 swap (without account deployment', async function () {
       await this.fundAccount()
-      const ownerBal0 = await this.token2.balanceOf(this.ownerAddress)
+      const ownerBal0 = await this.token2.balanceOf(this.signerAddress)
       await this.account.ApprovalSwapsV1.tokenToToken(
         this.signedTokenToTokenSwap, this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData
       )
-      const ownerBal1 = await this.token2.balanceOf(this.ownerAddress)
+      const ownerBal1 = await this.token2.balanceOf(this.signerAddress)
       expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
     })
 
@@ -152,7 +152,7 @@ describe('Account', function () {
       })
 
       it('should set the account address', function () {
-        const expectedAccountAddress = accountFromOwner(this.ownerAddress)
+        const expectedAccountAddress = accountFromSigner(this.signerAddress)
         expect(this.account.address).to.equal(expectedAccountAddress)
       })
     })
@@ -231,11 +231,11 @@ describe('Account', function () {
     it('should send swap via metaDelegateCall', async function () {
       await this.fundAccount()
       await this.account.deploy()
-      const ownerBal0 = await this.token2.balanceOf(this.ownerAddress)
+      const ownerBal0 = await this.token2.balanceOf(this.signerAddress)
       await this.account.metaDelegateCall(
         this.signedTokenToTokenSwap, [this.testFulfillSwap.address, this.testFulfillSwap.address, this.fulfillTokenOutData]
       )
-      const ownerBal1 = await this.token2.balanceOf(this.ownerAddress)
+      const ownerBal1 = await this.token2.balanceOf(this.signerAddress)
       expect(ownerBal1.sub(ownerBal0)).to.equal(BN('10'))
     })
 
@@ -387,7 +387,7 @@ describe('Account', function () {
       })
       const signer = AccountSigner(this.ethersAccountSigner)
       const signedMsg = await signer.FakeVerifier.signDoThing(123)
-      const account = Account(this.ownerAddress)
+      const account = Account(this.signerAddress)
       await account.deploy()
       const call = await account.populateTransaction.FakeVerifier.doThing(signedMsg, 234)
       expect(call.params[0]).to.equal(doThingVerifierDef.contractAddress)

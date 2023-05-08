@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import evm from './strategies/StrategiesEVM'
 import { SignedStrategy } from './strategies'
-import accountFromOwner from './account/accountFromOwner'
+import accountFromSigner from './account/accountFromSigner'
 
 const _ = require('lodash')
 const { toChecksumAddress, padLeft } = require('web3-utils')
@@ -91,7 +91,7 @@ class Account {
     this._provider = provider
     this._signer = signer
 
-    this.address = accountFromOwner(this._ownerAddress)
+    this.address = accountFromSigner(this._ownerAddress)
 
     this.estimateGas = {}
     this.populateTransaction = {}

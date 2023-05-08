@@ -1,7 +1,7 @@
 import { SignedStrategy, Strategy } from './strategies'
 import { StrategyJSON } from './strategies/StrategyTypes'
 import Config from './Config'
-import accountFromOwner from './account/accountFromOwner'
+import accountFromSigner from './account/accountFromSigner'
 
 const _ = require('lodash')
 const { signEIP712 } = require('@brinkninja/utils')
@@ -80,7 +80,7 @@ class AccountSigner {
   }
 
   async accountAddress () {
-    const addr = accountFromOwner(await this.signerAddress())
+    const addr = accountFromSigner(await this.signerAddress())
     return addr
   }
 
