@@ -1,4 +1,3 @@
-export * from './primitiveChecks'
 export * from './Primitives'
 export * from './cancel'
 export * from './cancelEIP712TypedData'

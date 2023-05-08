@@ -1,6 +1,6 @@
 import Oracle from './Oracle'
 import readUint256Oracle from './readUint256Oracle'
-import { EthersProviderOrSigner } from '../Types'
+import { CallData } from '../strategies/StrategyTypes'
 
 abstract class Uint256Oracle extends Oracle {
 
@@ -8,8 +8,11 @@ abstract class Uint256Oracle extends Oracle {
     super(contractAddress, paramsEncoded)
   }
 
-  async value (signerOrProvider: EthersProviderOrSigner): Promise<BigInt> {
-    return await readUint256Oracle(signerOrProvider, this.contractAddress, this.paramsEncoded)
+  async read (): Promise<CallData> {
+    return await readUint256Oracle({
+      oracleAddress: this.contractAddress,
+      oracleParams: this.paramsEncoded
+    })
   }
 
 }

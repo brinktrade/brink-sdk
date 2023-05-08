@@ -18,7 +18,7 @@ import {
 import fundWithERC20 from '../helpers/fundWithERC20'
 
 describe('executeStrategy', function () {
-  it.only('should execute a simple market swap strategy', async function () {
+  it('should execute a simple market swap strategy', async function () {
     const deployTx = await deployAccount(this.signerAddress)
     await this.defaultSigner.sendTransaction(deployTx)
 
@@ -67,7 +67,7 @@ describe('executeStrategy', function () {
     await this.usdc.connect(this.ethersAccountSigner).approve(this.accountAddress, usdcInput)
 
     // use the USDC/WETH price oracle to get the exact expected WETH output
-    const priceX96 = await priceOracle.price(ethers.provider)
+    const priceX96 = await this.defaultSigner.call(await priceOracle.price())
     const { output: wethOutput } = await marketSwapExactInput_getOutput(
       usdcInput,
       priceX96,

@@ -9,7 +9,7 @@ import {
 const BMP_0 = '0x0000000000000000000000000000000000000000000000000000000000000000'
 const BMP_1 = '0x0000000000000000000000000000000000000000000000000000000000000001'
 
-describe.only('cancel', function () {
+describe('cancel', function () {
   it('cancel with signature when account is deployed', async function () {
     await this.deployAccount()
 

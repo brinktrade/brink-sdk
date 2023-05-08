@@ -1,7 +1,7 @@
 import { nextBit } from '@brink-sdk'
 import { expectBigIntEqual } from '../../helpers'
 
-describe.only('nextBit()', function () {
+describe('nextBit()', function () {
   describe('when bitmap is empty', function () {
     it('should return the first bit', function () {
       const bitmaps = { 0: binaryToHex('0') }

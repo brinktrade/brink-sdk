@@ -137,6 +137,11 @@ export type TransactionData = {
   value: BigInt,
 }
 
+export type CallData = {
+  to: string,
+  data: string
+}
+
 export type ParamType = {
   name: string
   type: string
