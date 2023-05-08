@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import { TransactionData } from '../strategies/StrategyTypes'
-import AccountFactoryAbi from '../contracts/AccountFactory.abi'
+import AccountFactoryAbi from '../internal/contracts/AccountFactory.abi'
 import Config from '../Config'
 
 const { ACCOUNT_FACTORY } = Config

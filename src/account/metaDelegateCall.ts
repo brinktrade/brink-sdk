@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { accountFromSigner } from '.'
-import AccountAbi from '../contracts/Account.abi'
-import DeployAndCallAbi from '../contracts/DeployAndCall.abi'
+import AccountAbi from '../internal/contracts/Account.abi'
+import DeployAndCallAbi from '../internal/contracts/DeployAndCall.abi'
 import { TransactionData } from '../strategies/StrategyTypes'
 import Config from '../Config'
 

@@ -1,7 +1,7 @@
 import '@nomiclabs/hardhat-ethers'
 import { ethers } from 'hardhat'
 import randomSigner from '../helpers/randomSigner'
-import ERC20_abi from '../../src/contracts/ERC20.abi'
+import ERC20_abi from '../../src/internal/contracts/ERC20.abi'
 import impersonate from '../helpers/impersonate'
 import fundWithERC20 from '../helpers/fundWithERC20'
 import { accountFromSigner } from '@brink-sdk'
