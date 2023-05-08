@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import { accountFromSigner } from '.'
 import AccountAbi from '../internal/contracts/Account.abi'
 import DeployAndCallAbi from '../internal/contracts/DeployAndCall.abi'
-import { TransactionData } from '../strategies/StrategyTypes'
+import { TransactionData } from '../Types'
 import Config from '../Config'
 
 const { DEPLOY_AND_CALL } = Config

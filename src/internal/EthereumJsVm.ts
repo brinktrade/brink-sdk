@@ -17,7 +17,7 @@ import {
   SignatureType,
   SignatureTypeEnum,
   OrderJSON
-} from '../strategies/StrategyTypes'
+} from '../Types'
 
 export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
   EIP712: SignatureTypeEnum.EIP712,

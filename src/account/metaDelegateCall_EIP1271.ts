@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import AccountAbi from '../internal/contracts/Account.abi'
-import { TransactionData } from '../strategies/StrategyTypes'
+import { TransactionData } from '../Types'
 
 async function metaDelegateCall_EIP1271 (
   account: string,

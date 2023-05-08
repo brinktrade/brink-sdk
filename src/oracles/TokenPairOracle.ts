@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import { Token } from '../strategies'
-import { CallData } from '../strategies/StrategyTypes'
+import { CallData } from '../Types'
 import Uint256Oracle from './Uint256Oracle'
 
 abstract class TokenPairOracle extends Uint256Oracle {

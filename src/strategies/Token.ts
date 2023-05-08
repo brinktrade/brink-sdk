@@ -1,4 +1,4 @@
-import { TokenStandard, TokenStruct } from './StrategyTypes'
+import { TokenStandard, TokenStruct } from '../Types'
 
 class Token {
   standard: TokenStandard

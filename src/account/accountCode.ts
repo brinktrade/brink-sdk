@@ -1,4 +1,4 @@
-import { RpcMethodCall } from '../strategies/StrategyTypes'
+import { RpcMethodCall } from '../Types'
 import { accountFromSigner } from '.'
 
 export type AccountCodeArgs = {

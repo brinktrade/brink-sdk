@@ -1,4 +1,4 @@
-import { EIP712TypedData } from './StrategyTypes'
+import { EIP712TypedData } from '../Types'
 import Config from '../Config'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 import { accountFromSigner } from '../account'

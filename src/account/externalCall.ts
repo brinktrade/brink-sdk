@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import AccountAbi from '../internal/contracts/Account.abi'
-import { TransactionData } from '../strategies/StrategyTypes'
+import { TransactionData } from '../Types'
 
 async function externalCall (account: string, value: BigInt, to: string, data: string): Promise<TransactionData> {
   const accountContract = new ethers.Contract(account, AccountAbi)

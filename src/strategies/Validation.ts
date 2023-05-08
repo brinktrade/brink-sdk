@@ -1,4 +1,4 @@
-import { InvalidReason, ValidationResult, invalidReasonMessages } from './StrategyTypes'
+import { InvalidReason, ValidationResult, invalidReasonMessages } from '../Types'
 
 export function invalidResult (reason: InvalidReason): ValidationResult {
   return {

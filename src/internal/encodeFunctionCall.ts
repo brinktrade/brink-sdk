@@ -1,4 +1,4 @@
-import { ContractCallParams } from '../strategies/StrategyTypes'
+import { ContractCallParams } from '../Types'
 
 const web3Abi = require('web3-eth-abi')
 

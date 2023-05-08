@@ -1,5 +1,5 @@
 import accountFromSigner from './accountFromSigner'
-import { RpcMethodCall } from '../strategies/StrategyTypes'
+import { RpcMethodCall } from '../Types'
 
 export type StorageLoadArgs = {
   signer: string,

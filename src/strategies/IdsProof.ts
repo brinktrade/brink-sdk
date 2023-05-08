@@ -1,4 +1,4 @@
-import { IdsProofStruct } from './StrategyTypes'
+import { IdsProofStruct } from '../Types'
 
 export interface IdsProofArgs {
   ids?: BigInt[],

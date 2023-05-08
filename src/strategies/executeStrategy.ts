@@ -1,4 +1,4 @@
-import { TransactionData } from './StrategyTypes'
+import { TransactionData } from '../Types'
 import SignedStrategy from './SignedStrategy'
 import evm from '../internal/EthereumJsVm'
 import { metaDelegateCall } from '../account'

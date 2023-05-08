@@ -1,6 +1,6 @@
 import bitmapPointer from './bitmapPointer'
 import storageLoad from './storageLoad'
-import { RpcMethodCall } from '../strategies/StrategyTypes'
+import { RpcMethodCall } from '../Types'
 
 export type LoadBitmapArgs = {
   signer: string,

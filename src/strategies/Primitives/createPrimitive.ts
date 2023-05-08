@@ -3,7 +3,7 @@ import MarketSwapExactInput from './MarketSwapExactInput'
 import RequireBlockNotMined from './RequireBlockNotMined'
 import RequireUint256LowerBound from './RequireUint256LowerBound'
 import UseBit from './UseBit'
-import { PrimitiveFunctionName } from '../StrategyTypes'
+import { PrimitiveFunctionName } from '../../Types'
 
 type PrimitiveMapping = {
   [key in PrimitiveFunctionName]: typeof Primitive

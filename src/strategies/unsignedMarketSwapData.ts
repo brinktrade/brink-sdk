@@ -2,7 +2,7 @@ import evm from '../internal/EthereumJsVm'
 import {
   IdsProof,
   CallStruct
-} from '.'
+} from '..'
 
 export type UnsignedMarketSwapDataArgs = {
   recipient: string

@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { TransactionData } from '../strategies/StrategyTypes'
+import { TransactionData } from '../Types'
 import AccountFactoryAbi from '../internal/contracts/AccountFactory.abi'
 import Config from '../Config'
 

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import IUint256OracleAbi from '../internal/contracts/IUint256Oracle.abi'
-import { CallData } from '../strategies/StrategyTypes'
+import { CallData } from '../Types'
 
 export type ReadUint256OracleArgs = {
   oracleAddress: string

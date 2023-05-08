@@ -1,5 +1,5 @@
 import config from '../Config'
-import { TransactionData } from './StrategyTypes'
+import { TransactionData } from '../Types'
 import { metaDelegateCall } from '../account'
 import encodeFunctionCall from '../internal/encodeFunctionCall'
 
