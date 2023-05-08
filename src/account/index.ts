@@ -1,5 +1,6 @@
+export * from './accountCode'
 export * from './metaDelegateCall'
-export { default as accountDeployed } from './accountDeployed'
+export { default as accountCode } from './accountCode'
 export { default as accountFromSigner } from './accountFromSigner'
 export { default as bitmapPointer } from './bitmapPointer'
 export { default as bitUsed } from './bitUsed'
