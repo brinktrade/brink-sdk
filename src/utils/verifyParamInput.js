@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const { isAddress } = require('web3-utils')
-const { tokenTypes } = require('../constants')
+const { tokenTypes } = require('../internal/constants')
 
 const verifierParamInput = (paramVals = {}, paramTypes = []) => {
   const signedParamTypes = _.filter(paramTypes, { signed: true })

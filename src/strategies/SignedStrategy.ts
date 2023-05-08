@@ -6,7 +6,7 @@ import { SignedStrategyArgs, SignedStrategyJSON, SignatureType, ValidationResult
 import Config from '../Config'
 import { validResult, invalidResult } from './Validation'
 import accountFromSigner from '../account/accountFromSigner'
-import { MetaDelegateCallSignedParamTypes } from '../constants'
+import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 
 class SignedStrategy {
   chainId: number

@@ -1,4 +1,4 @@
-const { ZERO_ADDRESS } = require('../constants')
+const { ZERO_ADDRESS } = require('../internal/constants')
 const validAddressCheck = require('./validAddressCheck')
 
 function zeroAddressCheck(paramName, address) {
