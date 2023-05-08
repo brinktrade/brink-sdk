@@ -1,16 +1,15 @@
-import { ethers } from 'ethers'
-import accountDeployed from './accountDeployed'
-import bitmapPointer from './bitmapPointer'
 import BigNumber from 'bignumber.js'
 import { padLeft } from 'web3-utils'
 
+export type BitUsedArgs = {
+  bitmap: string
+  bit: BigInt
+}
 
-// if bit is used, return false, else return true
-const bitUsed = async (provider: ethers.providers.Provider, accountAddress: string, bitmapIndex: BigInt, bit: BigInt): Promise<Boolean>  => {
-  if (!await accountDeployed(accountAddress, provider)) {
-    return false
-  }
-  const bitmap = await provider.getStorageAt(accountAddress, bitmapPointer(bitmapIndex).toString())
+function bitUsed ({
+  bitmap,
+  bit
+}: BitUsedArgs): boolean {
   const bmpBinStr = bnToBinaryString(bitmap)
   const bitBinStr = bnToBinaryString(new BigNumber(bit.toString()))
 
@@ -26,7 +25,6 @@ const bitUsed = async (provider: ethers.providers.Provider, accountAddress: stri
     }
   }
   return false
-
 }
 
 function bnToBinaryString (bn: BigNumber | string) {
