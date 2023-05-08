@@ -1,13 +1,10 @@
 import '@nomiclabs/hardhat-ethers'
-import hre from 'hardhat'
-// import brink from '@brink-sdk'
+import { ethers } from 'hardhat'
 import randomSigner from '../helpers/randomSigner'
 import ERC20_abi from '../../src/contracts/ERC20.abi'
 import impersonate from '../helpers/impersonate'
 import fundWithERC20 from '../helpers/fundWithERC20'
 import { accountFromSigner } from '@brink-sdk'
-
-const { ethers } = hre
 
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
 
@@ -26,27 +23,10 @@ beforeEach(async function () {
 
   this.ethersAccountSigner = await randomSigner()
   this.signerAddress = this.ethersAccountSigner.address
-  this.accountAddress = accountFromSigner(this.signerAddress)
-
-  // const { AccountSigner, Account } = brink({ network: 'hardhat' })
-
-  // // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  // this.account = Account(this.signerAddress, {
-  //   provider: ethers.provider,
-  //   signer: this.defaultSigner
-  // })
-
-  // // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  // this.account_ownerSigner = Account(this.signerAddress, {
-  //   provider: ethers.provider,
-  //   signer: this.ethersAccountSigner
-  // })
+  this.accountAddress = accountFromSigner({ signer: this.signerAddress })
 
   const AccountImpl = await ethers.getContractFactory('Account')
   this.proxyAccountContract = await AccountImpl.attach(this.accountAddress)
-
-  // // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
-  // this.accountSigner = AccountSigner(this.ethersAccountSigner)
 
   this.filler = await deploySaltedContract('TestFulfillSwap')
 

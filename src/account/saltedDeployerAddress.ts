@@ -1,7 +1,21 @@
 const { soliditySha3, toChecksumAddress } = require('web3-utils')
 const { encodedParams } = require('@brinkninja/utils')
 
-function saltedDeployAddress (deployerAddress, salt, bytecode, paramTypes, paramValues) {
+export type SaltedDeployerAddressArgs = {
+  deployerAddress: string,
+  salt: string,
+  bytecode: string,
+  paramTypes: string[],
+  paramValues: string[]
+}
+
+function saltedDeployerAddress ({
+  deployerAddress,
+  salt,
+  bytecode,
+  paramTypes,
+  paramValues
+}: SaltedDeployerAddressArgs) {
   const initParams = encodedParams(paramTypes, paramValues)
   const initCode = `${bytecode}${initParams}`
   const codeHash = soliditySha3({ t: 'bytes', v: initCode })
@@ -15,4 +29,4 @@ function saltedDeployAddress (deployerAddress, salt, bytecode, paramTypes, param
   return { address, initParams, initCode, codeHash, addressAsBytes32 }
 }
 
-module.exports = saltedDeployAddress
+export default saltedDeployerAddress

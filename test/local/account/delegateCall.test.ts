@@ -15,6 +15,6 @@ describe('delegateCall', function () {
     })
     const receipt = await this.ethersAccountSigner.sendTransaction(tx)
     expect(receipt).to.not.be.undefined
-    expect(await ethers.provider.getBalance(this.recipientAddress)).to.equal(ethers.utils.parseEther('0.01'))
+    expect((await ethers.provider.getBalance(this.recipientAddress)).toString()).to.equal(ethers.utils.parseEther('0.01').toString())
   })
 })

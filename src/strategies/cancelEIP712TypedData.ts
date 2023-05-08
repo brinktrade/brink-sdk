@@ -7,29 +7,19 @@ import encodeFunctionCall from '../encodeFunctionCall'
 const  { getTypedData } = require('@brinkninja/utils/src/typedData')
 
 export type CancelEIP712TypedDataArgs = {
-  account?: string
-  signer?: string
+  signer: string
   chainId: number
   bitmapIndex: BigInt
   bit: BigInt
 }
 
 async function cancelEIP712TypedData ({
-  account,
   signer,
   chainId,
   bitmapIndex,
   bit
 }: CancelEIP712TypedDataArgs): Promise<EIP712TypedData> {  
-  if (!account && !signer) {
-    throw new Error(`account or signer required`)
-  } else if (account && signer) {
-    throw new Error(`account and signer cannot both be provided`)
-  }
-
-  if (signer) {
-    account = accountFromSigner(signer as string)
-  }
+  const account = accountFromSigner({ signer })
 
   const cancelFnCallData = encodeFunctionCall({
     functionName: 'cancel',

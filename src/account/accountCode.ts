@@ -10,7 +10,7 @@ const accountCode = ({
 }: AccountCodeArgs): RpcMethodCall => {
   return {
     method: 'eth_getCode',
-    params: [accountFromSigner(signer), 'latest']
+    params: [accountFromSigner({ signer }), 'latest']
   }
 }
 

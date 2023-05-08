@@ -1,6 +1,6 @@
 const { getTypedData } = require('@brinkninja/utils')
 
-import { ethers, BigNumberish } from 'ethers'
+import { ethers } from 'ethers'
 import Strategy from './Strategy'
 import { SignedStrategyArgs, SignedStrategyJSON, SignatureType, ValidationResult, EIP712TypedData } from './StrategyTypes'
 import Config from '../Config'
@@ -46,7 +46,7 @@ class SignedStrategy {
   }
 
   account (): string {
-    return accountFromSigner(this.signer)
+    return accountFromSigner({ signer: this.signer })
   }
 
   async EIP712Data (strategyData?: string): Promise<EIP712TypedData> {
@@ -81,7 +81,7 @@ class SignedStrategy {
 
     return {
       eip712Data,
-      account: accountFromSigner(this.signer),
+      account: accountFromSigner({ signer: this.signer }),
       chainId: this.chainId,
       signer: this.signer,
       signatureType: this.signatureType,

@@ -1,14 +1,23 @@
-require('@nomiclabs/hardhat-ethers')
-const _ = require('lodash')
-const { ethers } = require('hardhat')
+import '@nomiclabs/hardhat-ethers'
+import _ from 'lodash'
+import { ethers } from 'hardhat'
+import {
+  accountFromSigner,
+  deployAccount,
+  loadBitmap,
+  strategyEIP712TypedData,
+  SignedStrategy,
+  StrategyJSON
+} from '@brink-sdk'
+
+const { randomHex } = require('web3-utils')
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
 const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
-const { MAX_UINT256 } = constants
-// const brink = require('@brink-sdk').default
+
 const randomSigner = require('../helpers/randomSigner')
 const mockLedgerSignerBadV = require('../helpers/mockLedgerSignerBadV')
-const { accountFromSigner, deployAccount, loadBitmap } = require('@brink-sdk')
-const { randomHex } = require('web3-utils')
+
+const { MAX_UINT256 } = constants
 
 beforeEach(async function () {
   this.accountContract = await deploySaltedContract('Account')
@@ -25,21 +34,7 @@ beforeEach(async function () {
   this.ethersAccountSigner = await randomSigner()
   this.ethersAccountBadVSigner = await mockLedgerSignerBadV()
   this.signerAddress = this.ethersAccountSigner.address
-  this.accountAddress = accountFromSigner(this.signerAddress)
-
-  // const { AccountSigner, Account } = brink({ network: 'hardhat' })
-
-  // // account uses ethers signer 0 (not the account owner, it's acting as an executor)
-  // this.account = Account(this.signerAddress, {
-  //   provider: ethers.provider,
-  //   signer: this.defaultSigner
-  // })
-
-  // // account_ownerSigner uses ethers signer 1 (this is the account owner, it can do direct or meta calls)
-  // this.account_ownerSigner = Account(this.signerAddress, {
-  //   provider: ethers.provider,
-  //   signer: this.ethersAccountSigner
-  // })
+  this.accountAddress = accountFromSigner({ signer: this.signerAddress })
 
   const AccountImpl = await ethers.getContractFactory('Account')
   this.proxyAccountContract = await AccountImpl.attach(this.accountAddress)
@@ -49,6 +44,8 @@ beforeEach(async function () {
 
   const MockUint256Oracle = await ethers.getContractFactory('MockUint256Oracle')
   this.mockUint256Oracle = await MockUint256Oracle.deploy()
+
+  // TODO: fix badV signed message in execute fns:
 
   // // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
   // this.accountSigner = AccountSigner(this.ethersAccountSigner)
@@ -108,15 +105,39 @@ beforeEach(async function () {
     return receipt
   }
 
-  this.loadBitmap = async (bitmapIndex) => {
+  this.loadBitmap = async (bitmapIndex: BigInt) => {
     const rpcCall = loadBitmap({ signer: this.signerAddress, bitmapIndex })
     const bmp = await ethers.provider.send(rpcCall.method, rpcCall.params)
     return bmp
   }
+
+  this.signStrategy = async (strategy: StrategyJSON): Promise<SignedStrategy> => {
+    const chainId = 31337
+
+    const eip712TypedData = await strategyEIP712TypedData({
+      signer: this.signerAddress,
+      chainId,
+      strategy
+    })
+
+    // sign the EIP712 TypedData with an ethers signer
+    const signature = await this.ethersAccountSigner._signTypedData(
+      eip712TypedData.domain,
+      eip712TypedData.types,
+      eip712TypedData.value
+    )
+
+    return new SignedStrategy({
+      strategy,
+      signature,
+      chainId,
+      signer: this.signerAddress
+    })
+  }
 })
 
 async function encodeEthTransfer (
-  bitmapIndex, bit, recipientAddress, amount, expiryBlock = MAX_UINT256
+  bitmapIndex: BigInt, bit: BigInt, recipientAddress: string, amount: BigInt, expiryBlock = MAX_UINT256
 ) {
   return encodeFunctionCall(
     'ethTransfer',
@@ -132,7 +153,7 @@ async function encodeEthTransfer (
 }
 
 async function encodeTokenTransfer (
-  bitmapIndex, bit, tokenAddress, recipientAddress, amount, expiryBlock = MAX_UINT256
+  bitmapIndex: BigInt, bit: BigInt, tokenAddress: string, recipientAddress: string, amount: BigInt, expiryBlock = MAX_UINT256
 ) {
   return encodeFunctionCall(
     'tokenTransfer',

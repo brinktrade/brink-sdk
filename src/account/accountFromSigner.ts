@@ -1,11 +1,22 @@
-const { ACCOUNT_FACTORY } = require('@brinkninja/core/constants')
-const saltedDeployAddress = require('../saltedDeployAddress')
-const proxyBytecode = require('../proxyBytecode')
+import Config from '../Config'
+import { saltedDeployerAddress, accountBytecode } from '.'
 
-function accountFromSigner (owner: string): string {
-  const { address: account } = saltedDeployAddress(
-    ACCOUNT_FACTORY, '0x', proxyBytecode(owner), [], []
-  )
+const { ACCOUNT_FACTORY } = Config
+
+export type AccountFromSignerArgs = {
+  signer: string
+}
+
+function accountFromSigner ({
+  signer
+}: AccountFromSignerArgs): string {
+  const { address: account } = saltedDeployerAddress({
+    deployerAddress: ACCOUNT_FACTORY,
+    salt: '0x',
+    bytecode: accountBytecode({ signer }),
+    paramTypes: [],
+    paramValues: []
+  })
   return account
 }
 

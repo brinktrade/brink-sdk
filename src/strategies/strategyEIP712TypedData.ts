@@ -7,23 +7,19 @@ import accountFromSigner from '../account/accountFromSigner'
 const  { getTypedData } = require('@brinkninja/utils/src/typedData')
 
 export type StrategyEIP712TypedDataArgs = {
-  account?: string,
-  signer?: string,
+  signer: string,
   chainId: number
   strategy: StrategyJSON
   strategyContract?: string
 }
 
 async function strategyEIP712TypedData ({
-  account,
   signer,
   chainId,
   strategy: strategyJSON,
   strategyContract = Config['STRATEGY_TARGET_01'] as string
 }: StrategyEIP712TypedDataArgs): Promise<EIP712TypedData> {  
-  if (!account && !signer) {
-    throw new Error(`account or signer required`)
-  }
+  const account = accountFromSigner({ signer })
 
   const strategy = new Strategy(strategyJSON)
   const strategyValidation = strategy.validate()
@@ -31,10 +27,6 @@ async function strategyEIP712TypedData ({
     throw new Error(`Invalid strategy: ${strategyValidation.reason}: ${strategyValidation.message}`)
   }
   const strategyData = (await strategy.toJSON()).data
-
-  if (!account) {
-    account = accountFromSigner(signer as string)
-  }
 
   const domain = {
     name: 'BrinkAccount',

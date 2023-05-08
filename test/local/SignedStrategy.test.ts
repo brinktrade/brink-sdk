@@ -1,29 +1,22 @@
 import { expect } from 'chai'
-import {
-  Strategy,
-  PrimitiveFunctionName,
-  strategyEIP712TypedData
-} from '@brink-sdk'
+import { Strategy, PrimitiveFunctionName } from '@brink-sdk'
 
-describe('strategyEIP712TypedData', function () {
-  it('should return EIP712 TypedData', async function () {
-    const strategyData = await buildStrategy()
-
-    // get the EIP712 TypedData
-    const eip712TypedData = await strategyEIP712TypedData({
-      signer: this.signerAddress,
-      chainId: 31337,
-      strategy: strategyData
+describe('SignedStrategy', function () {
+  describe('validate()', function () {
+    it('should return valid for a valid SignedStrategy', async function () {
+      const strategyData = await buildStrategy()
+      const signedStrategy = await this.signStrategy(strategyData)
+      expect((await signedStrategy.validate()).valid).to.equal(true)
     })
 
-    // sign the EIP712 TypedData with an ethers signer
-    const signedData = await this.ethersAccountSigner._signTypedData(
-      eip712TypedData.domain,
-      eip712TypedData.types,
-      eip712TypedData.value
-    )
-    
-    expect(signedData.length).to.equal(132)
+    it('SignedStrategy where signer does not match signature recovered address should be invalid', async function () {
+      const strategyData = await buildStrategy()
+      let signedStrategy = await this.signStrategy(strategyData)
+      signedStrategy.signature = '0xa6d6160d57568bde2a1ca2f623cf8814e06d75ee174389e5325110f7029311c2192404dc20a07e9b71cc8747102612c081b4c20ed4f16b37cb3980dd7bd8df1c1b'
+      const validationResult = await signedStrategy.validate()
+      expect(validationResult.valid).to.equal(false)
+      expect(validationResult.reason).to.equal('SIGNATURE_MISMATCH')
+    })
   })
 })
 
@@ -35,7 +28,7 @@ async function buildStrategy () {
           primitives: [
             {
               functionName: 'useBit' as PrimitiveFunctionName,
-              params: [0, 1]
+              params: [BigInt(0), BigInt(1)]
             },
             {
               functionName: 'marketSwapExactInput' as PrimitiveFunctionName,

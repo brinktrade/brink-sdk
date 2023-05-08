@@ -24,7 +24,7 @@ async function metaDelegateCall ({
   unsignedData = '0x',
   deployAccount = false
 }: MetaDelegateCallArgs): Promise<TransactionData> {
-  const account = accountFromSigner(signer as string)
+  const account = accountFromSigner({ signer })
 
   const accountContract = new ethers.Contract(account as string, AccountAbi)
   const txData = await accountContract.populateTransaction.metaDelegateCall(to, data, signature, unsignedData)

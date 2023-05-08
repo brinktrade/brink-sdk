@@ -12,7 +12,7 @@ function storageLoad ({
 }: StorageLoadArgs): RpcMethodCall {
   return {
     method: 'eth_getStorageAt',
-    params: [ accountFromSigner(signer), pointer, 'latest']
+    params: [ accountFromSigner({ signer }), pointer, 'latest']
   }
 }
 
