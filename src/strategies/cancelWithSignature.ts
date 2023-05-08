@@ -1,7 +1,7 @@
 import config from '../Config'
 import { TransactionData } from './StrategyTypes'
 import { metaDelegateCall } from '../account'
-import encodeFunctionCall from '../encodeFunctionCall'
+import encodeFunctionCall from '../internal/encodeFunctionCall'
 
 const { CANCEL_VERIFIER } = config
 

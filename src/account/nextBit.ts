@@ -1,4 +1,4 @@
-import { bigIntToBinaryString } from '../utils'
+import { bigIntToBinaryString } from '../internal'
 
 export type NextBitArgs = {
   bitmaps: Record<number, string>

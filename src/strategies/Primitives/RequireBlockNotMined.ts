@@ -1,5 +1,5 @@
 import Primitive from '../Primitive'
-import { validateUint } from '../../utils/SolidityValidation'
+import { validateUint } from '../../internal/SolidityValidation'
 
 export default class RequireBlockNotMinedFunction extends Primitive {
   public constructor (blockNumber: BigInt) {
