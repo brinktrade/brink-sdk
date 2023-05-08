@@ -2,7 +2,7 @@ import { ethers } from 'hardhat'
 import { nextBit } from '@brink-sdk'
 import { expectBigIntEqual } from '../../helpers'
 
-describe.only('nextBit()', function () {
+describe('nextBit()', function () {
   describe('when account is deployed', function () {
     it('should return next available bit', async function () {
       await this.deployAccount()

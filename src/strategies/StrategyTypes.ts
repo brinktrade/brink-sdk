@@ -1,5 +1,3 @@
-import { Signature, ethers } from 'ethers'
-
 export type ContractCallParams = (
   BigInt | boolean | string | SignatureTypeEnum | TokenStruct | TokenJSON | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParams
 )[]

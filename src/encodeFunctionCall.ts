@@ -1,8 +1,20 @@
+import { ContractCallParams } from './strategies/StrategyTypes'
+
 const web3Abi = require('web3-eth-abi')
 
-const encodeFunctionCall = ({ functionName, paramTypes, params }) => {
+const encodeFunctionCall = (
+  {
+    functionName,
+    paramTypes,
+    params
+  }: {
+    functionName: string,
+    paramTypes: string[],
+    params: ContractCallParams
+  }
+): string => {
   if (!functionName) return `0x`
-  const types = paramTypes.map(pt => pt.type == 'uint' ? 'uint256' : pt.type)
+  const types = paramTypes.map(pt => pt == 'uint' ? 'uint256' : pt)
   const fnSig = `${functionName}(${types.join(',')})`
   const encodedFnSig = web3Abi.encodeFunctionSignature(fnSig).slice(2)
   const paramDiff = paramTypes.length - params.length
@@ -11,4 +23,4 @@ const encodeFunctionCall = ({ functionName, paramTypes, params }) => {
   return `0x${encodedFnSig}${callData}`
 }
 
-module.exports = encodeFunctionCall
+export default encodeFunctionCall

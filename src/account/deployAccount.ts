@@ -1,7 +1,9 @@
 import { ethers } from 'ethers'
 import { TransactionData } from '../strategies/StrategyTypes'
 import AccountFactoryAbi from '../contracts/AccountFactory.abi'
-const { ACCOUNT_FACTORY } = require('@brinkninja/core/constants')
+import Config from '../Config'
+
+const { ACCOUNT_FACTORY } = Config
 
 async function deployAccount (owner: string): Promise<TransactionData> {
   const accountFactory = new ethers.Contract(ACCOUNT_FACTORY, AccountFactoryAbi)

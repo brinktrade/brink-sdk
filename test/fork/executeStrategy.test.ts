@@ -18,7 +18,7 @@ import {
 import fundWithERC20 from '../helpers/fundWithERC20'
 
 describe('executeStrategy', function () {
-  it('should execute a simple market swap strategy', async function () {
+  it.only('should execute a simple market swap strategy', async function () {
     const deployTx = await deployAccount(this.ownerAddress)
     await this.defaultSigner.sendTransaction(deployTx)
 

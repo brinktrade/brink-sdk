@@ -1,3 +1,4 @@
+export * from './metaDelegateCall'
 export { default as accountDeployed } from './accountDeployed'
 export { default as accountFromOwner } from './accountFromOwner'
 export { default as bitmapPointer } from './bitmapPointer'

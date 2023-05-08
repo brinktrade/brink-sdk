@@ -12,10 +12,10 @@ export * from './SwapIO'
 export * from './Config'
 export * from './Types'
 export * from './utils'
-export * from './strategyEIP712TypedData'
+export * from './strategies/strategyEIP712TypedData'
 export { default as Config } from './Config'
 export { default as accountFromOwner } from './account/accountFromOwner'
-export { default as strategyEIP712TypedData } from './strategyEIP712TypedData'
+export { default as strategyEIP712TypedData } from './strategies/strategyEIP712TypedData'
 
 /*
 const setupBrink = (opts: any = {}) => {

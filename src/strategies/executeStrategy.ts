@@ -7,16 +7,20 @@ import { metaDelegateCall } from '../account'
 // we were previously doing this in AccountSigner, now that we don't have opinionated signing fn
 // it needs to be done here before execution
 
+// TODO: need to add provider and deployment check
+
 export interface ExecuteStrategyArgs {
   signedStrategy: SignedStrategy,
   orderIndex: number,
-  unsignedCalls: string[]
+  unsignedCalls: string[],
+  deployAccount?: boolean
 }
 
 async function executeStrategy ({
   signedStrategy,
   orderIndex,
-  unsignedCalls
+  unsignedCalls,
+  deployAccount = false
 }: ExecuteStrategyArgs): Promise<TransactionData> {
   const validationResult = await signedStrategy.validate()
   if (!validationResult.valid) {
@@ -25,13 +29,14 @@ async function executeStrategy ({
 
   const strategyJSON = (await signedStrategy.toJSON()).strategy
   const unsignedData = await evm.unsignedData(orderIndex, unsignedCalls)
-  return await metaDelegateCall(
-    signedStrategy.account(),
-    signedStrategy.strategyContract,
-    strategyJSON.data as string,
-    signedStrategy.signature,
-    unsignedData
-  )
+  return await metaDelegateCall({
+    signer: signedStrategy.signer,
+    to: signedStrategy.strategyContract,
+    data: strategyJSON.data as string,
+    signature: signedStrategy.signature,
+    unsignedData,
+    deployAccount
+  })
 }
 
 export default executeStrategy
