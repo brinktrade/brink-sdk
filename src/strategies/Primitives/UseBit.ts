@@ -1,5 +1,5 @@
 import Primitive from '../Primitive'
-import { validateUint } from '../../utils/SolidityValidation'
+import { validateUint } from '../../internal/SolidityValidation'
 
 export default class UseBit extends Primitive {
   public constructor (bitmapIndex: BigInt, bit: BigInt) {

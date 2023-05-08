@@ -1,12 +1,20 @@
 import { ethers } from 'ethers'
-import IUint256OracleAbi from '../contracts/IUint256Oracle.abi'
+import IUint256OracleAbi from '../internal/contracts/IUint256Oracle.abi'
+import { CallData } from '../Types'
 
-export default async function readUint256Oracle (
-  signerOrProvider: ethers.providers.Provider | ethers.Signer,
-  oracleAddress: string,
+export type ReadUint256OracleArgs = {
+  oracleAddress: string
   oracleParams: string
-): Promise<BigInt> {
-  const uint256Oracle = new ethers.Contract(oracleAddress, IUint256OracleAbi, signerOrProvider)
-  const res = await uint256Oracle.getUint256(oracleParams)
-  return BigInt(res)
+}
+
+export default async function readUint256Oracle ({
+  oracleAddress,
+  oracleParams
+}: ReadUint256OracleArgs): Promise<CallData> {
+  const uint256Oracle = new ethers.Contract(oracleAddress, IUint256OracleAbi)
+  const tx = await uint256Oracle.populateTransaction.getUint256(oracleParams)
+  return {
+    to: tx.to as string,
+    data: tx.data as string
+  }
 }

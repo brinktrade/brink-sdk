@@ -1,32 +1,28 @@
 const { getTypedData } = require('@brinkninja/utils')
 
-import { ethers, BigNumberish } from 'ethers'
+import { ethers } from 'ethers'
 import Strategy from './Strategy'
-import { SignedStrategyData, SignatureType, ValidationResult } from './StrategyTypes'
+import { SignedStrategyArgs, SignedStrategyJSON, SignatureType, ValidationResult, EIP712TypedData } from '../Types'
 import Config from '../Config'
 import { validResult, invalidResult } from './Validation'
-import proxyAccountFromOwner from '../proxyAccountFromOwner'
-import { metaDelegateCallSignedParamTypes } from '../constants'
+import accountFromSigner from '../account/accountFromSigner'
+import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 
 class SignedStrategy {
-  hash: string
-  account: string
-  chainId: BigInt
+  chainId: number
   signer: string
   signatureType: SignatureType
   signature: string
   strategy: Strategy
   strategyContract: string
 
-  constructor(signedStrategyData: SignedStrategyData) {
-    this.hash = signedStrategyData.hash
-    this.account = signedStrategyData.account
-    this.signer = signedStrategyData.signer
-    this.chainId = signedStrategyData.chainId
-    this.signatureType = signedStrategyData.signatureType
-    this.signature = signedStrategyData.signature
-    this.strategy = new Strategy(signedStrategyData.strategy)
-    this.strategyContract = Config['STRATEGY_TARGET_01'] as string
+  constructor(signedStrategy: SignedStrategyArgs) {
+    this.signer = signedStrategy.signer
+    this.chainId = signedStrategy.chainId
+    this.signatureType = signedStrategy.signatureType || 'EIP712'
+    this.signature = signedStrategy.signature
+    this.strategy = new Strategy(signedStrategy.strategy)
+    this.strategyContract = signedStrategy.strategyContract || Config['STRATEGY_TARGET_01'] as string
   }
 
   async validate (): Promise<ValidationResult> {
@@ -35,33 +31,11 @@ class SignedStrategy {
       return strategyValidationResult
     }
 
-    if (proxyAccountFromOwner(this.signer).toLowerCase() != this.account.toLowerCase()) {
-      return invalidResult('ACCOUNT_MISMATCH')
-    }
-
-    const domain = {
-      name: 'BrinkAccount',
-      version: '1',
-      chainId: this.chainId as BigNumberish,
-      verifyingContract: this.account
-    }
-
-    // TODO: switch for EIP712 vs EIP1271. Right now this assumes every strategy is EIP712 signed
-    const strategyData = (await this.strategy.toJSON()).data
-    const { typedData, typedDataHash } = getTypedData(
-      domain,
-      'metaDelegateCall',
-      metaDelegateCallSignedParamTypes,
-      [ this.strategyContract, strategyData ]
-    )
-    if (typedDataHash.toLowerCase() !== this.hash.toLowerCase()) {
-      return invalidResult('HASH_MISMATCH')
-    }
-
+    const { domain, types, value } = await this.EIP712Data()
     const recoveredAddress = ethers.utils.verifyTypedData(
       domain,
-      typedData.types,
-      typedData.value,
+      types,
+      value,
       this.signature
     )
     if (recoveredAddress.toLowerCase() !== this.signer.toLowerCase()) {
@@ -71,15 +45,48 @@ class SignedStrategy {
     return validResult()
   }
 
-  async toJSON () {
+  account (): string {
+    return accountFromSigner({ signer: this.signer })
+  }
+
+  async EIP712Data (strategyData?: string): Promise<EIP712TypedData> {
+    const domain = {
+      name: 'BrinkAccount',
+      version: '1',
+      chainId: this.chainId,
+      verifyingContract: this.account()
+    }
+    const { typedData, typedDataHash } = getTypedData(
+      domain,
+      'metaDelegateCall',
+      MetaDelegateCallSignedParamTypes,
+      [
+        this.strategyContract,
+        strategyData || (await this.strategy.toJSON()).data
+      ]
+    )
     return {
-      hash: this.hash,
-      account: this.account,
+      domain,
+      types: typedData.types,
+      value: typedData.value,
+      hash: typedDataHash
+    }
+  }
+
+  async toJSON (): Promise<SignedStrategyJSON> {
+    await this.validate()
+
+    const strategy = await this.strategy.toJSON()
+    const eip712Data = await this.EIP712Data(strategy.data)
+
+    return {
+      eip712Data,
+      account: accountFromSigner({ signer: this.signer }),
       chainId: this.chainId,
       signer: this.signer,
       signatureType: this.signatureType,
       signature: this.signature,
-      strategy: await this.strategy.toJSON(),
+      strategy,
       strategyContract: this.strategyContract
     }
   }

@@ -1,4 +1,4 @@
-import { OrderJSON, ValidationResult, PrimitiveFunctionName } from './StrategyTypes'
+import { OrderJSON, ValidationResult, PrimitiveFunctionName } from '../Types'
 import Primitive from './Primitive'
 import createPrimitive from './Primitives/createPrimitive'
 import { invalidResult, validResult } from './Validation'

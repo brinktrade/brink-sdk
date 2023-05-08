@@ -1,5 +1,6 @@
 import { ethers } from 'ethers'
 import { Token } from '../strategies'
+import { CallData } from '../Types'
 import Uint256Oracle from './Uint256Oracle'
 
 abstract class TokenPairOracle extends Uint256Oracle {
@@ -13,8 +14,8 @@ abstract class TokenPairOracle extends Uint256Oracle {
     this.tokenB = tokenB
   }
 
-  async price (signerOrProvider: ethers.Signer | ethers.providers.Provider): Promise<BigInt> {
-    return await this.value(signerOrProvider)
+  async price (): Promise<CallData> {
+    return await this.read()
   }
 
 }

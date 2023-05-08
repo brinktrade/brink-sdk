@@ -1,7 +1,7 @@
 import Primitive from '../Primitive'
 import Token from '../Token'
 import { Oracle } from '../../oracles'
-import { validateAddress, validateBytes, validateUint } from '../../utils/SolidityValidation'
+import { validateAddress, validateBytes, validateUint } from '../../internal/SolidityValidation'
 
 export default class MarketSwapExactInput extends Primitive {
 
