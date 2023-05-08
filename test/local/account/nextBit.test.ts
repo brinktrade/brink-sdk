@@ -1,55 +1,43 @@
-import { ethers } from 'hardhat'
 import { nextBit } from '@brink-sdk'
 import { expectBigIntEqual } from '../../helpers'
 
-describe('nextBit()', function () {
-  describe('when account is deployed', function () {
-    it('should return next available bit', async function () {
-      await this.deployAccount()
-      const { bitmapIndex, bit } = await nextBit({ account: this.accountAddress, provider: ethers.provider })
-      expectBigIntEqual(bitmapIndex, BigInt(0))
-      expectBigIntEqual(bit, BigInt(1))
-    })
-  })
-
-  describe('when account has not been deployed', function () {
-    it('should return the first bit', async function () {
-      const { bitmapIndex, bit } = await nextBit({ account: this.accountAddress, provider: ethers.provider })
+describe.only('nextBit()', function () {
+  describe('when bitmap is empty', function () {
+    it('should return the first bit', function () {
+      const bitmaps = { 0: binaryToHex('0') }
+      const { bitmapIndex, bit } = nextBit({ bitmaps })
       expectBigIntEqual(bitmapIndex, BigInt(0))
       expectBigIntEqual(bit, BigInt(1))
     })
   })
 
   describe('when bits have been stored consecutively', function () {
-    it('should return first available bit after stored bits', async function () {
-      await this.deployAccount()
+    it('should return first available bit after stored bits', function () {
       const bitmaps = { 0: binaryToHex('111') }
-      const { bitmapIndex, bit } = await nextBit({ account: this.accountAddress, bitmaps })
+      const { bitmapIndex, bit } = nextBit({ bitmaps })
       expectBigIntEqual(bitmapIndex, BigInt(0))
       expectBigIntEqual(bit, BigInt(2**3))
     })
   })
 
   describe('when bits have been stored non-consecutively', function () {
-    it('should return first available bit', async function () {
-      await this.deployAccount()
+    it('should return first available bit', function () {
       // first 4 bits flipped, 5th unflipped, 6 and 7th flipped
       const bitmaps = { 0: binaryToHex(reverseBinStr('1111011')) }
-      const { bitmapIndex, bit } = await nextBit({ account: this.accountAddress, bitmaps })
+      const { bitmapIndex, bit } = nextBit({ bitmaps })
       expectBigIntEqual(bitmapIndex, BigInt(0))
       expectBigIntEqual(bit, BigInt(2**4))
     })
   })
 
   describe('when exactly 256 bits have been stored', function () {
-    it('should return first bit from the next storage slot', async function () {
-      await this.deployAccount()
+    it('should return first bit from the next storage slot', function () {
       // mock 256 bits flipped
       const bitmaps = {
         0: binaryToHex('1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111'),
         1: '0x00'
       }
-      const { bitmapIndex, bit } = await nextBit({ account: this.accountAddress, bitmaps })
+      const { bitmapIndex, bit } = nextBit({ bitmaps })
       expectBigIntEqual(bitmapIndex, BigInt(1))
       expectBigIntEqual(bit, BigInt(2**0))
     })
