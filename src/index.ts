@@ -1,4 +1,4 @@
-export * from './account'
+export * from './core'
 export * from './oracles'
 export * from './strategies'
 export * from './swaps'

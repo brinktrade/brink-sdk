@@ -1,7 +1,7 @@
 import { TransactionData } from '../Types'
 import SignedStrategy from './SignedStrategy'
 import evm from '../internal/EthereumJsVm'
-import { metaDelegateCall } from '../account'
+import { metaDelegateCall } from '../core'
 
 // TODO: transform bad v ledger sigs here with sigToValidECDSA()
 // we were previously doing this in AccountSigner, now that we don't have opinionated signing fn
