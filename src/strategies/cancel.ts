@@ -1,6 +1,6 @@
 import config from '../Config'
 import { TransactionData } from '../Types'
-import { delegateCall } from '../account'
+import { delegateCall } from '../core'
 import encodeFunctionCall from '../internal/encodeFunctionCall'
 
 const { CANCEL_VERIFIER } = config

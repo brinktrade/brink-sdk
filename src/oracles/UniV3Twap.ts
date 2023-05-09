@@ -7,17 +7,25 @@ import TokenPairOracle from './TokenPairOracle'
 
 const abiCoder = utils.defaultAbiCoder
 
+export type UniV3TwapConstructorArgs = {
+  tokenA: Token
+  tokenB: Token
+  interval: BigInt
+  fee?: FeeAmount
+  initCodeHashManualOverride?: string
+}
+
 class UniV3Twap extends TokenPairOracle {
 
   isInverse: boolean
 
-  constructor (
-    tokenA: Token,
-    tokenB: Token,
-    interval: BigInt,
-    fee?: FeeAmount,
-    initCodeHashManualOverride?: string
-  ) {
+  constructor ({
+    tokenA,
+    tokenB,
+    interval,
+    fee = FeeAmount.MEDIUM,
+    initCodeHashManualOverride
+  }: UniV3TwapConstructorArgs) {
     const isInverse = tokenA.addr.toLowerCase() > tokenB.addr.toLowerCase()
     const contractAddress = isInverse ? Config['TWAP_INVERSE_ADAPTER'] : Config['TWAP_ADAPTER']
 
@@ -25,7 +33,7 @@ class UniV3Twap extends TokenPairOracle {
     const poolAddress = getUniV3Pool(tokenA.addr, tokenB.addr, fee, initCodeHashManualOverride)
     const paramsEncoded = abiCoder.encode(['address', 'uint32'], [poolAddress, interval])
 
-    super(tokenA, tokenB, contractAddress, paramsEncoded)
+    super({ tokenA, tokenB, contractAddress, paramsEncoded })
 
     this.isInverse = isInverse
   }

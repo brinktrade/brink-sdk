@@ -17,12 +17,16 @@ import fundWithERC20 from '../helpers/fundWithERC20'
 
 describe('executeStrategy', function () {
   it('should execute a simple market swap strategy', async function () {
-    const deployTx = await deployAccount(this.signerAddress)
+    const deployTx = await deployAccount({ signer: this.signerAddress })
     await this.defaultSigner.sendTransaction(deployTx)
 
     const usdc = new Token(this.USDC_ADDRESS)
     const weth = new Token(this.WETH_ADDRESS)
-    const priceOracle = new UniV3Twap(usdc, weth, BigInt(1000))
+    const priceOracle = new UniV3Twap({
+      tokenA: usdc,
+      tokenB: weth,
+      interval: BigInt(1000)
+    })
 
     const usdcInput = BigInt(1450_000000)
     const feePercent = BigInt(10000)
@@ -66,12 +70,12 @@ describe('executeStrategy', function () {
 
     // use the USDC/WETH price oracle to get the exact expected WETH output
     const priceX96 = await this.defaultSigner.call(await priceOracle.price())
-    const { output: wethOutput } = await marketSwapExactInput_getOutput(
-      usdcInput,
+    const { output: wethOutput } = await marketSwapExactInput_getOutput({
+      input: usdcInput,
       priceX96,
       feePercent,
       feeMin
-    )
+    })
 
     // get call data to fill the swap
     this.fillData = (await this.filler.populateTransaction.fulfillTokenOutSwap(

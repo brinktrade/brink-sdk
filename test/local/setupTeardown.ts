@@ -100,7 +100,7 @@ beforeEach(async function () {
   }
 
   this.deployAccount = async () => {
-    const deployTx = await deployAccount(this.signerAddress)
+    const deployTx = await deployAccount({ signer: this.signerAddress })
     const receipt = await this.defaultSigner.sendTransaction(deployTx)
     return receipt
   }

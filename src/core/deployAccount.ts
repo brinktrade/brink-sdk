@@ -5,9 +5,15 @@ import Config from '../Config'
 
 const { ACCOUNT_FACTORY } = Config
 
-async function deployAccount (owner: string): Promise<TransactionData> {
+export type DeployAccountArgs = {
+  signer: string
+}
+
+async function deployAccount ({
+  signer
+}: DeployAccountArgs): Promise<TransactionData> {
   const accountFactory = new ethers.Contract(ACCOUNT_FACTORY, AccountFactoryAbi)
-  const txData = await accountFactory.populateTransaction.deployAccount(owner)
+  const txData = await accountFactory.populateTransaction.deployAccount(signer)
   return {
     to: txData.to as string,
     data: txData.data as string,

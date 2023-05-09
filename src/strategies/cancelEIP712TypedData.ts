@@ -1,7 +1,7 @@
 import { EIP712TypedData } from '../Types'
 import Config from '../Config'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
-import { accountFromSigner } from '../account'
+import { accountFromSigner } from '../core'
 import encodeFunctionCall from '../internal/encodeFunctionCall'
 
 const  { getTypedData } = require('@brinkninja/utils/src/typedData')
