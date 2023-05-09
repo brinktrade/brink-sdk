@@ -11,7 +11,7 @@ function loadBitmap ({
   signer,
   bitmapIndex
 }: LoadBitmapArgs): RpcMethodCall {
-  return storageLoad({ signer, pointer: bitmapPointer(bitmapIndex) })
+  return storageLoad({ signer, pointer: bitmapPointer({ bitmapIndex }) })
 }
 
 export default loadBitmap
