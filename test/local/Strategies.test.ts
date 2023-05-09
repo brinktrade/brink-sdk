@@ -31,7 +31,12 @@ describe('Strategies', function () {
   it('should build strategy using Oracle primitive param classes', async function () {
     const strategy1 = new Strategy()
 
-    const usdc_weth_500_twap = new UniV3Twap(USDC_TOKEN, WETH_TOKEN, BigInt(3600), FeeAmount.LOW)
+    const usdc_weth_500_twap = new UniV3Twap({
+      tokenA: USDC_TOKEN,
+      tokenB: WETH_TOKEN,
+      interval: BigInt(3600),
+      fee: FeeAmount.LOW
+    })
 
     strategy1.orders[0] = new Order()
     strategy1.orders[0].primitives[0] = new UseBit(BigInt(0), BigInt(1))

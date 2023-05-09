@@ -22,7 +22,11 @@ describe('executeStrategy', function () {
 
     const usdc = new Token(this.USDC_ADDRESS)
     const weth = new Token(this.WETH_ADDRESS)
-    const priceOracle = new UniV3Twap(usdc, weth, BigInt(1000))
+    const priceOracle = new UniV3Twap({
+      tokenA: usdc,
+      tokenB: weth,
+      interval: BigInt(1000)
+    })
 
     const usdcInput = BigInt(1450_000000)
     const feePercent = BigInt(10000)
