@@ -70,12 +70,12 @@ describe('executeStrategy', function () {
 
     // use the USDC/WETH price oracle to get the exact expected WETH output
     const priceX96 = await this.defaultSigner.call(await priceOracle.price())
-    const { output: wethOutput } = await marketSwapExactInput_getOutput(
-      usdcInput,
+    const { output: wethOutput } = await marketSwapExactInput_getOutput({
+      input: usdcInput,
       priceX96,
       feePercent,
       feeMin
-    )
+    })
 
     // get call data to fill the swap
     this.fillData = (await this.filler.populateTransaction.fulfillTokenOutSwap(

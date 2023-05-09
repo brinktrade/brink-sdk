@@ -3,16 +3,25 @@ import evm from '../internal/EthereumJsVm'
 
 const { defaultAbiCoder } = utils
 
-export default async function marketSwapExactOutput_getInput (
-  output: BigInt,
-  priceX96: BigInt,
-  feePercent: BigInt,
+export type marketSwapExactOutput_getInputArgs = {
+  output: BigInt
+  priceX96: BigInt
+  feePercent: BigInt
   feeMin: BigInt
-): Promise<{
-  input: BigInt,
-  fee: BigInt,
+}
+
+export type marketSwapExactOutput_getInputResult = {
+  input: BigInt
+  fee: BigInt
   inputWithFee: BigInt
-}> {
+}
+
+export default async function marketSwapExactOutput_getInput ({
+  output,
+  priceX96,
+  feePercent,
+  feeMin
+}: marketSwapExactOutput_getInputArgs): Promise<marketSwapExactOutput_getInputResult> {
   const result = await evm.callContractFn(
     evm.SwapIO,
     'marketSwapExactOutput_getInput',
