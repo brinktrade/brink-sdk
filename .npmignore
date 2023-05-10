@@ -1,7 +1,14 @@
 node_modules
+src
 scripts
 test
 rollup**
 test-**
 test/cache
 test/artifacts
+lib
+artifacts
+cache
+yarn-**
+.env
+.env**

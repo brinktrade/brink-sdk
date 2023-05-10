@@ -8,3 +8,4 @@ test/cache
 test/artifacts
 yarn-**
 .env
+.env**
