@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import Strategy from './Strategy'
 import { SignedStrategyArgs, SignedStrategyJSON, SignatureType, ValidationResult, EIP712TypedData } from '../Types'
 import Config from '../Config'
-import { validResult, invalidResult } from './Validation'
+import { validResult, invalidResult } from '../internal/Validation'
 import accountFromSigner from '../core/accountFromSigner'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 

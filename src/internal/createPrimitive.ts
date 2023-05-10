@@ -1,9 +1,9 @@
-import Primitive from './Primitive'
-import MarketSwapExactInput from './MarketSwapExactInput'
-import RequireBlockNotMined from './RequireBlockNotMined'
-import RequireUint256LowerBound from './RequireUint256LowerBound'
-import UseBit from './UseBit'
-import { PrimitiveParamValue, PrimitiveFunctionName } from '../../Types'
+import Primitive from '../strategies/Primitives/Primitive'
+import MarketSwapExactInput from '../strategies/Primitives/MarketSwapExactInput'
+import RequireBlockNotMined from '../strategies/Primitives/RequireBlockNotMined'
+import RequireUint256LowerBound from '../strategies/Primitives/RequireUint256LowerBound'
+import UseBit from '../strategies/Primitives/UseBit'
+import { PrimitiveParamValue, PrimitiveFunctionName } from '../Types'
 
 type PrimitiveMapping = {
   [key in PrimitiveFunctionName]: typeof Primitive

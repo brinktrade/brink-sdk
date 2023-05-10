@@ -1,7 +1,7 @@
 import { OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue, PrimitiveJSON } from '../Types'
 import Primitive from './Primitives/Primitive'
-import createPrimitive from './Primitives/createPrimitive'
-import { invalidResult, validResult } from './Validation'
+import createPrimitive from '../internal/createPrimitive'
+import { invalidResult, validResult } from '../internal/Validation'
 
 export type OrderConstructorArgs = {
   primitives: PrimitiveJSON[]

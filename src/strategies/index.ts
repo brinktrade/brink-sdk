@@ -15,13 +15,13 @@ export { default as executeStrategy } from './executeStrategy'
 export * from './IdsProof'
 export { default as IdsProof } from './IdsProof'
 
+export * from './Order'
 export { default as Order } from './Order'
-
-export { default as Primitive } from './Primitives/Primitive'
 
 export * from './SignedStrategy'
 export { default as SignedStrategy } from './SignedStrategy'
 
+export * from './Strategy'
 export { default as Strategy } from './Strategy'
 
 export * from './strategyEIP712TypedData'

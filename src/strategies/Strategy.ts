@@ -2,7 +2,7 @@ import Config from '../Config'
 import { StrategyJSON, ValidationResult, OrderJSON } from '../Types'
 import Order from './Order'
 import evm from '../internal/EthereumJsVm'
-import { invalidResult, validResult } from './Validation'
+import { invalidResult, validResult } from '../internal/Validation'
 
 const { PRIMITIVES_01 } = Config
 
