@@ -71,8 +71,7 @@
     "test": "yarn test-local && yarn test-fork",
     "test-local": "rm -rf dist && tsc && hardhat test --config hardhat.local.config.ts",
     "test-fork": "rm -rf dist && tsc && hardhat test --config hardhat.fork.config.ts",
-    "build": "rm -rf dist && tsc --project tsconfig.build.json",
-    "publish": "rm -rf dist && tsc --project tsconfig.build.json && npm publish"
+    "build": "rm -rf dist && tsc --project tsconfig.build.json"
   },
   "_moduleAliases": {
     "@brink-sdk": "dist/src"
