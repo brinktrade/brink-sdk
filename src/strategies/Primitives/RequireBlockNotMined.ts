@@ -1,12 +1,14 @@
-import Primitive from '../Primitive'
-import { validateUint } from '../../internal/SolidityValidation'
+import Primitive from './Primitive'
 
-export default class RequireBlockNotMinedFunction extends Primitive {
-  public constructor (blockNumber: BigInt) {
-    validateUint('blockNumber', blockNumber)
+export type RequireBlockNotMinedConstructorArgs = {
+  blockNumber: BigInt
+}
+
+export default class RequireBlockNotMined extends Primitive {
+  public constructor ({ blockNumber }: RequireBlockNotMinedConstructorArgs) {
     super({
       functionName: 'requireBlockNotMined',
-      params: [blockNumber]
+      params: { blockNumber }
     })
   }
 }

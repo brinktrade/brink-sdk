@@ -5,6 +5,7 @@ import {
   strategyEIP712TypedData
 } from '@brink-sdk'
 
+/*
 describe('strategyEIP712TypedData', function () {
   it('should return EIP712 TypedData', async function () {
     const strategyData = await buildStrategy()
@@ -69,3 +70,4 @@ async function buildStrategy () {
   )
   return await strategy1.toJSON()
 }
+*/

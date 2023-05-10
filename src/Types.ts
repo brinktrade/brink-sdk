@@ -1,8 +1,10 @@
-export type ContractCallParams = (
-  BigInt | boolean | string | SignatureTypeEnum | TokenStruct | TokenJSON | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParams
-)[]
+import { Oracle } from './oracles'
+
+export type ContractCallParam = BigInt | boolean | string | SignatureTypeEnum | TokenStruct | TokenJSON | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParam[]
 
 export type RpcMethodCallParam = number | boolean | string
+
+export type PrimitiveParamValue = ContractCallParam | OracleArgs
 
 export enum SignatureTypeEnum {
   EIP712 = 0,
@@ -55,7 +57,7 @@ export type PrimitiveType =
 
 export type PrimitiveJSON = {
   functionName: PrimitiveFunctionName
-  params: ContractCallParams
+  params: Record<string, PrimitiveParamValue>
   data?: string
   requiresUnsignedCall?: boolean
 }
@@ -148,7 +150,21 @@ export type ParamType = {
   calldata?: boolean
 }
 
+export type PrimitiveParamType = {
+  name: string
+  type: string
+  signed: boolean
+}
+
 export type RpcMethodCall = {
   method: string,
   params: RpcMethodCallParam[]
 }
+
+export type OracleArgs = Oracle | OracleJSON
+
+export type OracleJSON = {
+  address: string
+  params: string
+}
+

@@ -1,63 +1,71 @@
-import Primitive from '../Primitive'
+import Primitive from './Primitive'
 import Token from '../Token'
 import { Oracle } from '../../oracles'
-import { validateAddress, validateBytes, validateUint } from '../../internal/SolidityValidation'
+import { OracleArgs, PrimitiveJSON } from '../../Types'
+
+export type MarketSwapExactInputConstructorArgs = {
+  oracle: OracleArgs,
+  signer: string
+  tokenIn: Token
+  tokenOut: Token
+  tokenInAmount: BigInt
+  feePercent: BigInt
+  feeMin: BigInt
+}
 
 export default class MarketSwapExactInput extends Primitive {
-
-  public constructor (
-    priceOracle: string,
-    priceOracleParams: string,
-    owner: string,
-    tokenIn: Token,
-    tokenOut: Token,
-    tokenInAmount: BigInt,
-    feePercent: BigInt,
-    feeMin: BigInt
-  );
-
-  public constructor (
-    priceOracle: Oracle,
-    owner: string,
-    tokenIn: Token,
-    tokenOut: Token,
-    tokenInAmount: BigInt,
-    feePercent: BigInt,
-    feeMin: BigInt
-  )
-
-  public constructor (...args: any[]) {
-    let priceOracle, priceOracleParams, owner, tokenIn, tokenOut, tokenInAmount, feePercent, feeMin
-    if (args[0] instanceof Oracle) {
-      priceOracle = args[0].contractAddress
-      priceOracleParams = args[0].paramsEncoded
-      owner = args[1]
-      tokenIn = args[2]
-      tokenOut = args[3]
-      tokenInAmount = args[4]
-      feePercent = args[5]
-      feeMin = args[6]
+  public constructor ({
+    oracle,
+    signer,
+    tokenIn,
+    tokenOut,
+    tokenInAmount,
+    feePercent,
+    feeMin
+  }: MarketSwapExactInputConstructorArgs) {
+    let oracleAddress: string
+    let oracleParams: string
+    if (oracle instanceof Oracle) {
+      const { contractAddress, paramsEncoded } = oracle
+      oracleAddress = contractAddress
+      oracleParams = paramsEncoded
     } else {
-      priceOracle = args[0]
-      priceOracleParams = args[1]
-      owner = args[2]
-      tokenIn = args[3]
-      tokenOut = args[4]
-      tokenInAmount = args[5]
-      feePercent = args[6]
-      feeMin = args[7]
+      const { address, params } = oracle
+      oracleAddress = address
+      oracleParams = params
     }
-
-    validateAddress('priceOracle', priceOracle)
-    validateBytes('priceOracleParams', priceOracleParams)
-    validateAddress('owner', owner)
-    validateUint('tokenInAmount', tokenInAmount)
-    validateUint('feePercent', feePercent, 24)
-    validateUint('feeMin', feeMin)
 
     super({
       functionName: 'marketSwapExactInput',
-      params: [priceOracle, priceOracleParams, owner, tokenIn, tokenOut, tokenInAmount, feePercent, feeMin]
+      params: {
+        priceOracle: oracleAddress,
+        priceOracleParams: oracleParams,
+        owner: signer,
+        tokenIn,
+        tokenOut,
+        tokenInAmount,
+        feePercent,
+        feeMinTokenOut: feeMin
+      }
     })
+  }
+
+  async toJSON(): Promise<PrimitiveJSON> {
+    const json = await super.toJSON()
+    return {
+      ...json,
+      params: {
+        oracle: {
+          address: json.params.priceOracle as string,
+          params: json.params.priceOracleParams as string
+        },
+        signer: json.params.owner as string,
+        tokenIn: new Token(json.params.tokenIn as string),
+        tokenOut: new Token(json.params.tokenOut as string),
+        tokenInAmount: BigInt(json.params.tokenInAmount as string),
+        feePercent: BigInt(json.params.feePercent as string),
+        feeMin: BigInt(json.params.feeMinTokenOut as string)
+      }
+    }
   }
 }

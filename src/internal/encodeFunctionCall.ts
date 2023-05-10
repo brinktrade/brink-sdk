@@ -1,4 +1,4 @@
-import { ContractCallParams } from '../Types'
+import { ContractCallParam } from '../Types'
 
 const web3Abi = require('web3-eth-abi')
 
@@ -10,7 +10,7 @@ const encodeFunctionCall = (
   }: {
     functionName: string,
     paramTypes: string[],
-    params: ContractCallParams
+    params: ContractCallParam[]
   }
 ): string => {
   if (!functionName) return `0x`

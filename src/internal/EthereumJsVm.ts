@@ -11,7 +11,7 @@ import UnsignedDataBuilder01 from './contracts/UnsignedDataBuilder01.json'
 import SwapIO from './contracts/SwapIO.json'
 import IdsProof from '../strategies/IdsProof'
 import {
-  ContractCallParams,
+  ContractCallParam,
   PrimitiveFunctionName,
   CallStruct,
   SignatureType,
@@ -100,7 +100,7 @@ export class EthereumJsVm {
     return factory.attach(result.createdAddress.toString())
   }
 
-  async primitiveData (functionName: PrimitiveFunctionName, ...args: ContractCallParams): Promise<string> {
+  async primitiveData (functionName: PrimitiveFunctionName, ...args: ContractCallParam[]): Promise<string> {
     const primitiveData = await this.callContractFn(this.PrimitiveBuilder, functionName as unknown as string, ...args)
     return `0x${cleanDynamicBytes(primitiveData)}`
   }
@@ -181,7 +181,7 @@ export class EthereumJsVm {
     return `0x${cleanDynamicBytes(unsignedData)}`
   }
 
-  async callContractFn (contract: ethers.Contract, fnName: string, ...args: ContractCallParams): Promise<any> {
+  async callContractFn (contract: ethers.Contract, fnName: string, ...args: ContractCallParam[]): Promise<any> {
     await this._initVM()
 
     const tx = await contract.populateTransaction[fnName](...args)

@@ -1,13 +1,18 @@
-import Primitive from '../Primitive'
-import { validateUint } from '../../internal/SolidityValidation'
+import Primitive from './Primitive'
+
+export type UseBitConstructorArgs = {
+  bitmapIndex: BigInt
+  bit: BigInt
+}
 
 export default class UseBit extends Primitive {
-  public constructor (bitmapIndex: BigInt, bit: BigInt) {
-    validateUint('bitmapIndex', bitmapIndex)
-    validateUint('bitmapIndex', bit)
+  public constructor ({
+    bitmapIndex,
+    bit
+  }: UseBitConstructorArgs) {
     super({
       functionName: 'useBit',
-      params: [bitmapIndex, bit]
+      params: { bitmapIndex, bit }
     })
   }
 }

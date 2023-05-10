@@ -1,5 +1,5 @@
-import { OrderJSON, ValidationResult, PrimitiveFunctionName } from '../Types'
-import Primitive from './Primitive'
+import { OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue } from '../Types'
+import Primitive from './Primitives/Primitive'
 import createPrimitive from './Primitives/createPrimitive'
 import { invalidResult, validResult } from './Validation'
 
@@ -18,7 +18,10 @@ class Order {
       orderJSON.primitives = args[0]
     }
 
-    this.primitives = orderJSON.primitives.map((primitiveData: { functionName: PrimitiveFunctionName, params: unknown[] }) => {
+    this.primitives = orderJSON.primitives.map((primitiveData: {
+      functionName: PrimitiveFunctionName,
+      params: Record<string, PrimitiveParamValue>
+    }) => {
       return createPrimitive(primitiveData.functionName, primitiveData.params)
     })
   }
