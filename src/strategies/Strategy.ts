@@ -11,7 +11,7 @@ export type StrategyConstructorArgs = {
   beforeCalls?: any[]
   afterCalls?: any[]
   primitivesContract?: string
-} | undefined
+}
 
 class Strategy {
   orders: Order[]

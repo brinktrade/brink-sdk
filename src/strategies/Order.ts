@@ -1,21 +1,22 @@
-import { OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue } from '../Types'
+import { OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue, PrimitiveJSON } from '../Types'
 import Primitive from './Primitives/Primitive'
 import createPrimitive from './Primitives/createPrimitive'
 import { invalidResult, validResult } from './Validation'
+
+export type OrderConstructorArgs = {
+  primitives: PrimitiveJSON[]
+}
 
 class Order {
 
   primitives: Primitive[] = []
 
   public constructor ()
-  public constructor (orderJSON: OrderJSON)
-  public constructor (primitives: Primitive[])
-  public constructor(...args: any[]) {
-    let orderJSON: OrderJSON = { primitives: [] }
-    if (typeof args[0] === 'object') {
-      orderJSON = args[0]
-    } else if (Array.isArray(args[0])) {
-      orderJSON.primitives = args[0]
+  public constructor (args: OrderConstructorArgs)
+  public constructor (...arr: any[]) {
+    const args: OrderConstructorArgs = arr[0] || {}
+    let orderJSON: OrderJSON = {
+      primitives: args?.primitives || []
     }
 
     this.primitives = orderJSON.primitives.map((primitiveData: {
