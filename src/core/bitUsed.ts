@@ -1,9 +1,10 @@
 import BigNumber from 'bignumber.js'
 import { padLeft } from 'web3-utils'
+import { BigIntish } from '../Types'
 
 export type BitUsedArgs = {
   bitmap: string
-  bit: BigInt
+  bit: BigIntish
 }
 
 function bitUsed ({
@@ -11,7 +12,7 @@ function bitUsed ({
   bit
 }: BitUsedArgs): boolean {
   const bmpBinStr = bnToBinaryString(bitmap)
-  const bitBinStr = bnToBinaryString(new BigNumber(bit.toString()))
+  const bitBinStr = bnToBinaryString(new BigNumber(BigInt(bit).toString()))
 
   if (bmpBinStr.length !== bitBinStr.length) {
     throw new Error(`binary string length mismatch`)

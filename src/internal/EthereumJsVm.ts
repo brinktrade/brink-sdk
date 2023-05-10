@@ -16,7 +16,8 @@ import {
   CallStruct,
   SignatureType,
   SignatureTypeEnum,
-  OrderJSON
+  OrderJSON,
+  BigIntish
 } from '../Types'
 
 export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
@@ -134,7 +135,7 @@ export class EthereumJsVm {
     signatureType: SignatureType,
     data: string,
     account: string,
-    chainId: BigInt
+    chainId: BigIntish
   ): Promise<string> {
     const messageHash: string = await this.callContractFn(
       this.StrategyBuilder,
@@ -142,7 +143,7 @@ export class EthereumJsVm {
       signatureTypeMap[signatureType],
       data,
       account,
-      chainId
+      BigInt(chainId)
     )
     return `0x${messageHash}`
   }

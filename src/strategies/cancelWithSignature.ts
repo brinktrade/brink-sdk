@@ -1,5 +1,5 @@
 import config from '../Config'
-import { TransactionData } from '../Types'
+import { TransactionData, BigIntish } from '../Types'
 import { metaDelegateCall } from '../core'
 import encodeFunctionCall from '../internal/encodeFunctionCall'
 
@@ -7,8 +7,8 @@ const { CANCEL_VERIFIER } = config
 
 export type CancelWithSignatureArgs = {
   signer: string
-  bitmapIndex: BigInt
-  bit: BigInt
+  bitmapIndex: BigIntish
+  bit: BigIntish
   signature: string
   deployAccount?: boolean
 }
@@ -23,7 +23,7 @@ async function cancelWithSignature ({
   const cancelFnCallData = encodeFunctionCall({
     functionName: 'cancel',
     paramTypes: ['uint256', 'uint256'],
-    params: [bitmapIndex, bit]
+    params: [BigInt(bitmapIndex), BigInt(bit)]
   })
 
   return await metaDelegateCall({

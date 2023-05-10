@@ -1,4 +1,4 @@
-import { EIP712TypedData } from '../Types'
+import { EIP712TypedData, BigIntish } from '../Types'
 import Config from '../Config'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 import { accountFromSigner } from '../core'
@@ -9,8 +9,8 @@ const  { getTypedData } = require('@brinkninja/utils/src/typedData')
 export type CancelEIP712TypedDataArgs = {
   signer: string
   chainId: number
-  bitmapIndex: BigInt
-  bit: BigInt
+  bitmapIndex: BigIntish
+  bit: BigIntish
 }
 
 async function cancelEIP712TypedData ({
@@ -24,7 +24,7 @@ async function cancelEIP712TypedData ({
   const cancelFnCallData = encodeFunctionCall({
     functionName: 'cancel',
     paramTypes: ['uint256', 'uint256'],
-    params: [bitmapIndex, bit]
+    params: [BigInt(bitmapIndex), BigInt(bit)]
   })
 
   const domain = {

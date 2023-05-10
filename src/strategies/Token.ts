@@ -1,10 +1,10 @@
-import { TokenStandard, TokenStruct, TokenJSON } from '../Types'
+import { TokenStandard, TokenStruct, TokenJSON, BigIntish } from '../Types'
 
 export type TokenArgs = {
   address: string
   standard?: TokenStandard
   idsMerkleRoot?: string
-  id?: BigInt
+  id?: BigIntish
   disallowFlagged?: boolean
 }
 
@@ -12,14 +12,14 @@ class Token {
   address: string
   standard: TokenStandard
   idsMerkleRoot: string
-  id: BigInt
+  id: bigint
   disallowFlagged: boolean
 
   public constructor (args: TokenArgs) {
     this.address = args.address
     this.standard = args.standard || TokenStandard.ERC20
     this.idsMerkleRoot = args.idsMerkleRoot || '0x0000000000000000000000000000000000000000000000000000000000000000'
-    this.id = args.id || BigInt(0)
+    this.id = BigInt(args?.id || 0)
     this.disallowFlagged = args.disallowFlagged || false
   }
 
