@@ -1,19 +1,20 @@
 import { utils } from 'ethers'
 import evm from '../internal/EthereumJsVm'
+import { BigIntish } from '../Types'
 
 const { defaultAbiCoder } = utils
 
 export type marketSwapExactOutput_getInputArgs = {
-  output: BigInt
-  priceX96: BigInt
-  feePercent: BigInt
-  feeMin: BigInt
+  output: BigIntish
+  priceX96: BigIntish
+  feePercent: BigIntish
+  feeMin: BigIntish
 }
 
 export type marketSwapExactOutput_getInputResult = {
-  input: BigInt
-  fee: BigInt
-  inputWithFee: BigInt
+  input: bigint
+  fee: bigint
+  inputWithFee: bigint
 }
 
 export default async function marketSwapExactOutput_getInput ({
@@ -25,10 +26,10 @@ export default async function marketSwapExactOutput_getInput ({
   const result = await evm.callContractFn(
     evm.SwapIO,
     'marketSwapExactOutput_getInput',
-    output,
-    priceX96,
-    feePercent,
-    feeMin
+    BigInt(output),
+    BigInt(priceX96),
+    BigInt(feePercent),
+    BigInt(feeMin)
   )
   const returnValues = defaultAbiCoder.decode(['uint256','uint256','uint256'], `0x${result}`)
   return {

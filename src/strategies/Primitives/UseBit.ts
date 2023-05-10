@@ -1,8 +1,9 @@
 import Primitive from './Primitive'
+import { BigIntish } from '../../Types'
 
 export type UseBitConstructorArgs = {
-  bitmapIndex: BigInt
-  bit: BigInt
+  bitmapIndex: BigIntish
+  bit: BigIntish
 }
 
 export default class UseBit extends Primitive {
@@ -12,7 +13,10 @@ export default class UseBit extends Primitive {
   }: UseBitConstructorArgs) {
     super({
       functionName: 'useBit',
-      params: { bitmapIndex, bit }
+      params: {
+        bitmapIndex: BigInt(bitmapIndex),
+        bit: BigInt(bit)
+      }
     })
   }
 }

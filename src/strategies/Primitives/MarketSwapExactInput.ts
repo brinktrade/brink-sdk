@@ -1,16 +1,16 @@
 import Primitive from './Primitive'
 import Token, { TokenArgs } from '../Token'
 import { Oracle } from '../../oracles'
-import { OracleArgs, PrimitiveJSON } from '../../Types'
+import { OracleArgs, PrimitiveJSON, BigIntish } from '../../Types'
 
 export type MarketSwapExactInputConstructorArgs = {
   oracle: OracleArgs,
   signer: string
   tokenIn: Token
   tokenOut: Token
-  tokenInAmount: BigInt
-  feePercent: BigInt
-  feeMin: BigInt
+  tokenInAmount: BigIntish
+  feePercent: BigIntish
+  feeMin: BigIntish
 }
 
 export default class MarketSwapExactInput extends Primitive {
@@ -43,9 +43,9 @@ export default class MarketSwapExactInput extends Primitive {
         owner: signer,
         tokenIn,
         tokenOut,
-        tokenInAmount,
-        feePercent,
-        feeMinTokenOut: feeMin
+        tokenInAmount: BigInt(tokenInAmount),
+        feePercent: BigInt(feePercent),
+        feeMinTokenOut: BigInt(feeMin)
       }
     })
   }

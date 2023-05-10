@@ -1,10 +1,10 @@
 import bitmapPointer from './bitmapPointer'
 import storageLoad from './storageLoad'
-import { RpcMethodCall } from '../Types'
+import { RpcMethodCall, BigIntish } from '../Types'
 
 export type LoadBitmapArgs = {
   signer: string,
-  bitmapIndex: BigInt
+  bitmapIndex: BigIntish
 }
 
 function loadBitmap ({

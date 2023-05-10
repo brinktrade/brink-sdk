@@ -1,11 +1,12 @@
 import { Oracle } from './oracles'
-import { Token } from './strategies'
 
-export type ContractCallParam = BigInt | boolean | string | SignatureTypeEnum | TokenStruct | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParam[]
+export type ContractCallParam = bigint | boolean | string | SignatureTypeEnum | TokenStruct | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParam[]
 
 export type RpcMethodCallParam = number | boolean | string
 
 export type PrimitiveParamValue = ContractCallParam | OracleArgs | TokenJSON
+
+export type BigIntish = bigint | string | number
 
 export enum SignatureTypeEnum {
   EIP712 = 0,
@@ -25,7 +26,7 @@ export type TokenStruct = {
   addr: string
   standard: TokenStandard
   idsMerkleRoot: string
-  id: BigInt
+  id: bigint
   disallowFlagged: boolean
 }
 
@@ -33,25 +34,25 @@ export type TokenJSON = {
   address: string
   standard: TokenStandard
   idsMerkleRoot: string
-  id: BigInt
+  id: bigint
   disallowFlagged: boolean
 }
 
 export type IdsProofStruct = {
-  ids: BigInt[]
+  ids: bigint[]
   merkleProof_hashes: string[]
   merkleProof_flags: boolean[]
-  statusProof_lastTransferTimes: BigInt[]
-  statusProof_timestamps: BigInt[]
+  statusProof_lastTransferTimes: bigint[]
+  statusProof_timestamps: bigint[]
   statusProof_signatures: string[];
 }
 
 export type IdsProofJSON = {
-  ids: BigInt[]
+  ids: bigint[]
   merkleProof_hashes: string[]
   merkleProof_flags: boolean[]
-  statusProof_lastTransferTimes: BigInt[]
-  statusProof_timestamps: BigInt[]
+  statusProof_lastTransferTimes: bigint[]
+  statusProof_timestamps: bigint[]
   statusProof_signatures: string[];
 }
 
@@ -146,7 +147,7 @@ export const invalidReasonMessages = {
 export type TransactionData = {
   to: string,
   data: string,
-  value: BigInt,
+  value: bigint,
 }
 
 export type CallData = {
@@ -177,4 +178,3 @@ export type OracleJSON = {
   address: string
   params: string
 }
-

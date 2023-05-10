@@ -1,11 +1,11 @@
-import { IdsProofStruct, IdsProofJSON } from '../Types'
+import { IdsProofStruct, IdsProofJSON, BigIntish } from '../Types'
 
 export interface IdsProofArgs {
-  ids?: BigInt[],
+  ids?: BigIntish[],
   merkleProof_hashes?: string[],
   merkleProof_flags?: boolean[],
-  statusProof_lastTransferTimes?: BigInt[],
-  statusProof_timestamps?: BigInt[],
+  statusProof_lastTransferTimes?: BigIntish[],
+  statusProof_timestamps?: BigIntish[],
   statusProof_signatures?: string[]
 }
 
@@ -21,11 +21,11 @@ class IdsProof {
   public constructor (args: IdsProofArgs)
   public constructor (...arr: any[]) {
     const args: IdsProofArgs = arr[0] || {}
-    this.ids = args?.ids || []
+    this.ids = mapBigIntishArray(args?.ids || [])
     this.merkleProof_hashes = args?.merkleProof_hashes || []
     this.merkleProof_flags = args?.merkleProof_flags || []
-    this.statusProof_lastTransferTimes = args?.statusProof_lastTransferTimes || []
-    this.statusProof_timestamps = args?.statusProof_timestamps || []
+    this.statusProof_lastTransferTimes = mapBigIntishArray(args?.statusProof_lastTransferTimes || [])
+    this.statusProof_timestamps = mapBigIntishArray(args?.statusProof_timestamps || [])
     this.statusProof_signatures = args?.statusProof_signatures || []
   }
 
@@ -35,15 +35,23 @@ class IdsProof {
 
   public toStruct(): IdsProofStruct {
     return {
-      ids: this.ids,
+      ids: mapBigIntArray(this.ids),
       merkleProof_hashes: this.merkleProof_hashes,
       merkleProof_flags: this.merkleProof_flags,
-      statusProof_lastTransferTimes: this.statusProof_lastTransferTimes,
-      statusProof_timestamps: this.statusProof_timestamps,
+      statusProof_lastTransferTimes: mapBigIntArray(this.statusProof_lastTransferTimes),
+      statusProof_timestamps: mapBigIntArray(this.statusProof_timestamps),
       statusProof_signatures: this.statusProof_signatures
     }
   }
 
+}
+
+function mapBigIntishArray (arr: BigIntish[]): BigInt[] {
+  return arr.map((item: BigIntish) => BigInt(item))
+}
+
+function mapBigIntArray (arr: BigInt[]): bigint[] {
+  return arr.map((item: BigInt) => BigInt(item.toString()))
 }
 
 export default IdsProof

@@ -1,14 +1,17 @@
+import { BigIntish } from '../../Types'
 import Primitive from './Primitive'
 
 export type RequireBlockNotMinedConstructorArgs = {
-  blockNumber: BigInt
+  blockNumber: BigIntish
 }
 
 export default class RequireBlockNotMined extends Primitive {
   public constructor ({ blockNumber }: RequireBlockNotMinedConstructorArgs) {
     super({
       functionName: 'requireBlockNotMined',
-      params: { blockNumber }
+      params: {
+        blockNumber: BigInt(blockNumber)
+      }
     })
   }
 }

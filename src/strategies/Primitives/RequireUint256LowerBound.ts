@@ -1,10 +1,10 @@
 import Primitive from './Primitive'
 import { Oracle } from '../../oracles'
-import { OracleArgs } from '../../Types'
+import { OracleArgs, BigIntish, PrimitiveJSON } from '../../Types'
 
 export type RequireUint256LowerBoundConstructorArgs = {
   oracle: OracleArgs,
-  lowerBound: BigInt
+  lowerBound: BigIntish
 }
 
 export default class RequireUint256LowerBound extends Primitive {
@@ -33,7 +33,7 @@ export default class RequireUint256LowerBound extends Primitive {
     })
   }
 
-  async toJSON(): Promise<any> {
+  async toJSON(): Promise<PrimitiveJSON> {
     const json = await super.toJSON()
     return {
       ...json,
@@ -42,7 +42,7 @@ export default class RequireUint256LowerBound extends Primitive {
           address: json.params.uint256Oracle as string,
           params: json.params.params as string
         },
-        lowerBound: json.params.lowerBound as string
+        lowerBound: BigInt(json.params.lowerBound as string)
       }
     }
   }

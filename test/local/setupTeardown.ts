@@ -7,7 +7,8 @@ import {
   loadBitmap,
   strategyEIP712TypedData,
   SignedStrategy,
-  StrategyJSON
+  StrategyJSON,
+  BigIntish
 } from '@brink-sdk'
 
 const { randomHex } = require('web3-utils')
@@ -105,7 +106,7 @@ beforeEach(async function () {
     return receipt
   }
 
-  this.loadBitmap = async (bitmapIndex: BigInt) => {
+  this.loadBitmap = async (bitmapIndex: BigIntish) => {
     const rpcCall = loadBitmap({ signer: this.signerAddress, bitmapIndex })
     const bmp = await ethers.provider.send(rpcCall.method, rpcCall.params)
     return bmp

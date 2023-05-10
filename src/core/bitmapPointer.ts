@@ -1,14 +1,15 @@
 import { soliditySha3 } from 'web3-utils'
+import { BigIntish } from '../Types'
 
 export type BitmapPointerArgs = {
-  bitmapIndex: BigInt
+  bitmapIndex: BigIntish
 }
 
 const bitmapPointer = ({
   bitmapIndex
 }: BitmapPointerArgs): string => {
   return `0x${(
-    BigInt(soliditySha3('bmp') as string) + BigInt(bitmapIndex.toString())
+    BigInt(soliditySha3('bmp') as string) + BigInt(bitmapIndex)
   ).toString(16)}`
 }
 
