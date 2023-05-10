@@ -1,10 +1,17 @@
 import Config from '../Config'
-import { StrategyJSON, ValidationResult } from '../Types'
+import { StrategyJSON, ValidationResult, OrderJSON } from '../Types'
 import Order from './Order'
 import evm from '../internal/EthereumJsVm'
-import { invalidResult, validResult } from './Validation'
+import { invalidResult, validResult } from '../internal/Validation'
 
 const { PRIMITIVES_01 } = Config
+
+export type StrategyConstructorArgs = {
+  orders?: OrderJSON[]
+  beforeCalls?: any[]
+  afterCalls?: any[]
+  primitivesContract?: string
+}
 
 class Strategy {
   orders: Order[]
@@ -13,37 +20,13 @@ class Strategy {
   primitivesContract: string
 
   public constructor ()
-  public constructor (json: StrategyJSON)
-  public constructor (orders: Order[])
-  public constructor (orders: Order[], beforeCalls: any[], afterCalls: any[])
-  public constructor (orders: Order[], beforeCalls: any[], afterCalls: any[], primitivesContract: string)
-  public constructor(...args: any[]) {
-    let strategyJSON: StrategyJSON = {
-      orders: [],
-      beforeCalls: [],
-      afterCalls: [],
-      primitivesContract: PRIMITIVES_01,
-    }
-
-    if (args.length == 1 && typeof args[0] === 'object') {
-      strategyJSON = args[0]
-    } else if (args.length == 1 && Array.isArray(args[0])) {
-      strategyJSON.orders = args[0]
-    } else if (args.length == 3) {
-      strategyJSON.orders = args[0]
-      strategyJSON.beforeCalls = args[1]
-      strategyJSON.afterCalls = args[2]
-    } else if (args.length == 4) {
-      strategyJSON.orders = args[0]
-      strategyJSON.beforeCalls = args[1]
-      strategyJSON.afterCalls = args[2]
-      strategyJSON.primitivesContract = args[3]
-    }
-
-    this.orders = strategyJSON.orders.map(orderJSON => new Order(orderJSON))
-    this.beforeCalls = strategyJSON.beforeCalls || [] as any[]
-    this.afterCalls = strategyJSON.afterCalls || [] as any[]
-    this.primitivesContract = strategyJSON.primitivesContract || PRIMITIVES_01
+  public constructor (args: StrategyConstructorArgs)
+  public constructor (...arr: any[]) {
+    const args: StrategyConstructorArgs = arr[0] || {}
+    this.orders = (args?.orders || []).map(orderJSON => new Order(orderJSON))
+    this.beforeCalls = args?.beforeCalls || []
+    this.afterCalls = args?.afterCalls || []
+    this.primitivesContract = args?.primitivesContract || PRIMITIVES_01
   }
 
   async toJSON (): Promise<StrategyJSON> {

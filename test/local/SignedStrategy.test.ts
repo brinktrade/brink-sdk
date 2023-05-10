@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { Strategy, PrimitiveFunctionName } from '@brink-sdk'
+import { Strategy, Token, PrimitiveJSON } from '@brink-sdk'
 
 describe('SignedStrategy', function () {
   describe('validate()', function () {
@@ -27,34 +27,27 @@ async function buildStrategy () {
         {
           primitives: [
             {
-              functionName: 'useBit' as PrimitiveFunctionName,
-              params: [BigInt(0), BigInt(1)]
-            },
+              functionName: 'useBit',
+              params: {
+                bitmapIndex: BigInt(0),
+                bit: BigInt(1)
+              }
+            } as PrimitiveJSON,
             {
-              functionName: 'marketSwapExactInput' as PrimitiveFunctionName,
-              params: [
-                '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648' as string,
-                '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8' as string,
-                '0x6399ae010188F36e469FB6E62C859dDFc558328A' as string,
-                [
-                  BigInt(0),
-                  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as string,
-                  '0x0000000000000000000000000000000000000000000000000000000000000000' as string,
-                  BigInt(0),
-                  false
-                ],
-                [
-                  BigInt(0),
-                  '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' as string,
-                  '0x0000000000000000000000000000000000000000000000000000000000000000' as string,
-                  BigInt(0),
-                  false
-                ],
-                BigInt(1450000000),
-                BigInt(10000),
-                BigInt(0)
-              ]
-            }
+              functionName: 'marketSwapExactInput',
+              params: {
+                oracle: {
+                  address: '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
+                  params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
+                },
+                signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+                tokenIn: new Token({ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }),
+                tokenOut: new Token({ address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' }),
+                tokenInAmount: BigInt(1450000000),
+                feePercent: BigInt(10000),
+                feeMin: BigInt(0)
+              }
+            } as PrimitiveJSON
           ]
         }
       ]

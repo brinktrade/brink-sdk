@@ -1,4 +1,4 @@
-import { IdsProofStruct } from '../Types'
+import { IdsProofStruct, IdsProofJSON } from '../Types'
 
 export interface IdsProofArgs {
   ids?: BigInt[],
@@ -18,25 +18,22 @@ class IdsProof {
   statusProof_signatures: string[];
 
   public constructor()
-  public constructor (...args: IdsProofArgs[]) {
-    if (args.length == 0) {
-      this.ids = []
-      this.merkleProof_hashes = []
-      this.merkleProof_flags = []
-      this.statusProof_lastTransferTimes = []
-      this.statusProof_timestamps = []
-      this.statusProof_signatures = []
-    } else {
-      this.ids = args[0].ids || []
-      this.merkleProof_hashes = args[0].merkleProof_hashes || []
-      this.merkleProof_flags = args[0].merkleProof_flags || []
-      this.statusProof_lastTransferTimes = args[0].statusProof_lastTransferTimes || []
-      this.statusProof_timestamps = args[0].statusProof_timestamps || []
-      this.statusProof_signatures = args[0].statusProof_signatures || []
-    }
+  public constructor (args: IdsProofArgs)
+  public constructor (...arr: any[]) {
+    const args: IdsProofArgs = arr[0] || {}
+    this.ids = args?.ids || []
+    this.merkleProof_hashes = args?.merkleProof_hashes || []
+    this.merkleProof_flags = args?.merkleProof_flags || []
+    this.statusProof_lastTransferTimes = args?.statusProof_lastTransferTimes || []
+    this.statusProof_timestamps = args?.statusProof_timestamps || []
+    this.statusProof_signatures = args?.statusProof_signatures || []
   }
 
-  public toJSON(): IdsProofStruct {
+  public toJSON(): IdsProofJSON {
+    return this.toStruct()
+  }
+
+  public toStruct(): IdsProofStruct {
     return {
       ids: this.ids,
       merkleProof_hashes: this.merkleProof_hashes,

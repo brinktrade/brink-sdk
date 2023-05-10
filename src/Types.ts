@@ -1,8 +1,11 @@
-export type ContractCallParams = (
-  BigInt | boolean | string | SignatureTypeEnum | TokenStruct | TokenJSON | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParams
-)[]
+import { Oracle } from './oracles'
+import { Token } from './strategies'
+
+export type ContractCallParam = BigInt | boolean | string | SignatureTypeEnum | TokenStruct | IdsProofStruct | PrimitiveStruct | CallStruct | ContractCallParam[]
 
 export type RpcMethodCallParam = number | boolean | string
+
+export type PrimitiveParamValue = ContractCallParam | OracleArgs | TokenJSON
 
 export enum SignatureTypeEnum {
   EIP712 = 0,
@@ -19,22 +22,31 @@ export enum TokenStandard {
 }
 
 export type TokenStruct = {
-  standard: TokenStandard
   addr: string
+  standard: TokenStandard
   idsMerkleRoot: string
   id: BigInt
   disallowFlagged: boolean
 }
 
 export type TokenJSON = {
+  address: string
   standard: TokenStandard
-  addr: string
   idsMerkleRoot: string
-  id: string
+  id: BigInt
   disallowFlagged: boolean
 }
 
 export type IdsProofStruct = {
+  ids: BigInt[]
+  merkleProof_hashes: string[]
+  merkleProof_flags: boolean[]
+  statusProof_lastTransferTimes: BigInt[]
+  statusProof_timestamps: BigInt[]
+  statusProof_signatures: string[];
+}
+
+export type IdsProofJSON = {
   ids: BigInt[]
   merkleProof_hashes: string[]
   merkleProof_flags: boolean[]
@@ -55,7 +67,7 @@ export type PrimitiveType =
 
 export type PrimitiveJSON = {
   functionName: PrimitiveFunctionName
-  params: ContractCallParams
+  params: Record<string, PrimitiveParamValue>
   data?: string
   requiresUnsignedCall?: boolean
 }
@@ -148,7 +160,21 @@ export type ParamType = {
   calldata?: boolean
 }
 
+export type PrimitiveParamType = {
+  name: string
+  type: string
+  signed: boolean
+}
+
 export type RpcMethodCall = {
   method: string,
   params: RpcMethodCallParam[]
 }
+
+export type OracleArgs = Oracle | OracleJSON
+
+export type OracleJSON = {
+  address: string
+  params: string
+}
+
