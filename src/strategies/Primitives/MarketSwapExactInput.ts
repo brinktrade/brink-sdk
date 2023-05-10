@@ -1,5 +1,5 @@
 import Primitive from './Primitive'
-import Token from '../Token'
+import Token, { TokenArgs } from '../Token'
 import { Oracle } from '../../oracles'
 import { OracleArgs, PrimitiveJSON } from '../../Types'
 
@@ -59,9 +59,9 @@ export default class MarketSwapExactInput extends Primitive {
           address: json.params.priceOracle as string,
           params: json.params.priceOracleParams as string
         },
-        signer: json.params.owner as string,
-        tokenIn: new Token(json.params.tokenIn as string),
-        tokenOut: new Token(json.params.tokenOut as string),
+        signer: json.params.owner,
+        tokenIn: new Token(json.params.tokenIn as TokenArgs),
+        tokenOut: new Token(json.params.tokenOut as TokenArgs),
         tokenInAmount: BigInt(json.params.tokenInAmount as string),
         feePercent: BigInt(json.params.feePercent as string),
         feeMin: BigInt(json.params.feeMinTokenOut as string)

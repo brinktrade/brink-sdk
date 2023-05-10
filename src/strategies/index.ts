@@ -27,6 +27,7 @@ export { default as Strategy } from './Strategy'
 export * from './strategyEIP712TypedData'
 export { default as strategyEIP712TypedData } from './strategyEIP712TypedData'
 
+export * from './Token'
 export { default as Token } from './Token'
 
 export * from './unsignedMarketSwapData'

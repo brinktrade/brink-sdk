@@ -18,8 +18,8 @@ const { TWAP_ADAPTER } = Config
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
-const USDC_TOKEN = new Token(USDC_ADDRESS)
-const WETH_TOKEN = new Token(WETH_ADDRESS)
+const USDC_TOKEN = new Token({ address: USDC_ADDRESS })
+const WETH_TOKEN = new Token({ address: WETH_ADDRESS })
 
 describe('Strategies', function () {
   it('should build basic strategy and convert to JSON', async function () {
@@ -150,8 +150,8 @@ const validStrategy1 = {
               params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
             },
             signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
-            tokenIn: new Token('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'),
-            tokenOut: new Token('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'),
+            tokenIn: new Token({ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }),
+            tokenOut: new Token({ address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' }),
             tokenInAmount: BigInt(1450000000),
             feePercent: BigInt(10000),
             feeMin: BigInt(0)

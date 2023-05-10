@@ -20,8 +20,8 @@ describe('executeStrategy', function () {
     const deployTx = await deployAccount({ signer: this.signerAddress })
     await this.defaultSigner.sendTransaction(deployTx)
 
-    const usdc = new Token(this.USDC_ADDRESS)
-    const weth = new Token(this.WETH_ADDRESS)
+    const usdc = new Token({ address: this.USDC_ADDRESS })
+    const weth = new Token({ address: this.WETH_ADDRESS })
     const priceOracle = new UniV3Twap({
       tokenA: usdc,
       tokenB: weth,
@@ -39,8 +39,8 @@ describe('executeStrategy', function () {
     strategy.orders[0].primitives[1] = new MarketSwapExactInput({
       oracle: priceOracle,
       signer: this.signerAddress,
-      tokenIn: new Token(this.USDC_ADDRESS),
-      tokenOut: new Token(this.WETH_ADDRESS),
+      tokenIn: new Token({ address: this.USDC_ADDRESS }),
+      tokenOut: new Token({ address: this.WETH_ADDRESS }),
       tokenInAmount: usdcInput,
       feePercent,
       feeMin

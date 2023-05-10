@@ -69,7 +69,7 @@ class Primitive {
     this.paramValues = []
     for (let i in this.paramTypes) {
       const { name, type } = this.paramTypes[i]
-      let paramVal = this.params[name]
+      let paramVal: ContractCallParam = this.params[name] as ContractCallParam
       if (typeof paramVal == 'undefined') {
         throw new Error(`Missing param '${name}' for primitive ${this.functionName}`)
       }
@@ -85,7 +85,7 @@ class Primitive {
       if (typeof paramVal === 'bigint') {
         paramVal = paramVal.toString()
       } else if (paramVal instanceof Token) {
-        paramVal = paramVal.toJSON()
+        paramVal = paramVal.toStruct()
       }
 
       this.paramValues.push(paramVal as ContractCallParam)
