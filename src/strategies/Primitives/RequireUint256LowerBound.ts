@@ -16,8 +16,8 @@ export default class RequireUint256LowerBound extends Primitive {
     let params: string
 
     if (oracle instanceof Oracle) {
-      uint256Oracle = oracle.contractAddress
-      params = oracle.paramsEncoded
+      uint256Oracle = oracle.address
+      params = oracle.params
     } else {
       uint256Oracle = oracle.address
       params = oracle.params

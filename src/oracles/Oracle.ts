@@ -1,19 +1,19 @@
 export type OracleConstructorArgs = {
-  contractAddress: string
-  paramsEncoded: string
+  address: string
+  params: string
 }
 
 abstract class Oracle {
 
-  contractAddress: string
-  paramsEncoded: string
+  address: string
+  params: string
 
   constructor ({
-    contractAddress,
-    paramsEncoded
+    address,
+    params
   }: OracleConstructorArgs) {
-    this.contractAddress = contractAddress
-    this.paramsEncoded = paramsEncoded
+    this.address = address
+    this.params = params
   }
 
 }
