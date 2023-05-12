@@ -5,8 +5,8 @@ import Uint256Oracle from './Uint256Oracle'
 export type TokenPairOracleConstructorArgs = {
   tokenA: Token
   tokenB: Token
-  contractAddress: string
-  paramsEncoded: string
+  address: string
+  params: string
 }
 
 abstract class TokenPairOracle extends Uint256Oracle {
@@ -17,10 +17,10 @@ abstract class TokenPairOracle extends Uint256Oracle {
   constructor ({
     tokenA,
     tokenB,
-    contractAddress,
-    paramsEncoded
+    address,
+    params
   }: TokenPairOracleConstructorArgs) {
-    super({ contractAddress, paramsEncoded })
+    super({ address, params })
     this.tokenA = tokenA
     this.tokenB = tokenB
   }

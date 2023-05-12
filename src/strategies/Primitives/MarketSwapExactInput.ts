@@ -23,23 +23,11 @@ export default class MarketSwapExactInput extends Primitive {
     feePercent,
     feeMin
   }: MarketSwapExactInputConstructorArgs) {
-    let oracleAddress: string
-    let oracleParams: string
-    if (oracle instanceof Oracle) {
-      const { contractAddress, paramsEncoded } = oracle
-      oracleAddress = contractAddress
-      oracleParams = paramsEncoded
-    } else {
-      const { address, params } = oracle
-      oracleAddress = address
-      oracleParams = params
-    }
-
     super({
       functionName: 'marketSwapExactInput',
       params: {
-        priceOracle: oracleAddress,
-        priceOracleParams: oracleParams,
+        priceOracle: oracle.address,
+        priceOracleParams: oracle.params,
         owner: signer,
         tokenIn,
         tokenOut,
