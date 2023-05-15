@@ -1,10 +1,31 @@
 import '@nomiclabs/hardhat-ethers'
 import { ethers } from 'hardhat'
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
+import { Contract, Wallet } from 'ethers'
 import randomSigner from '../helpers/randomSigner'
 import ERC20_abi from '../../src/internal/contracts/ERC20.abi'
 import impersonate from '../helpers/impersonate'
 import fundWithERC20 from '../helpers/fundWithERC20'
 import { accountFromSigner } from '@brink-sdk'
+
+export interface TestContext {
+  WHALE: string
+  USDC_ADDRESS: string
+  WETH_ADDRESS: string
+  defaultSigner: SignerWithAddress
+  weth: Contract
+  usdc: Contract
+  ethersAccountSigner: Wallet
+  signerAddress: string
+  accountAddress: string
+  proxyAccountContract: Contract
+  filler: Contract
+  whale: SignerWithAddress
+}
+
+declare module 'mocha' {
+  export interface Context extends TestContext {}
+}
 
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
 
