@@ -16,7 +16,6 @@ const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySalted
 const { BN, constants, encodeFunctionCall } = require('@brinkninja/utils')
 
 const randomSigner = require('../helpers/randomSigner')
-const mockLedgerSignerBadV = require('../helpers/mockLedgerSignerBadV')
 
 const { MAX_UINT256 } = constants
 
@@ -33,7 +32,6 @@ beforeEach(async function () {
   this.defaultSigner = signers[0]
 
   this.ethersAccountSigner = await randomSigner()
-  this.ethersAccountBadVSigner = await mockLedgerSignerBadV()
   this.signerAddress = this.ethersAccountSigner.address
   this.accountAddress = accountFromSigner({ signer: this.signerAddress })
 
@@ -45,14 +43,6 @@ beforeEach(async function () {
 
   const MockUint256Oracle = await ethers.getContractFactory('MockUint256Oracle')
   this.mockUint256Oracle = await MockUint256Oracle.deploy()
-
-  // TODO: fix badV signed message in execute fns:
-
-  // // accountSigner uses ethers signer 1 (it's acting as the owner of the Brink account)
-  // this.accountSigner = AccountSigner(this.ethersAccountSigner)
-
-  // // accountSigner that signs "ledger style" with bad 'v' values 00 and 01
-  // this.accountSignerBadV = AccountSigner(this.ethersAccountBadVSigner)
 
   this.token = await deploySaltedContract(
     'TestERC20',

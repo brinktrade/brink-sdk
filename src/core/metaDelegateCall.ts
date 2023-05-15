@@ -4,6 +4,7 @@ import AccountAbi from '../internal/contracts/Account.abi'
 import DeployAndCallAbi from '../internal/contracts/DeployAndCall.abi'
 import { TransactionData } from '../Types'
 import Config from '../Config'
+import { sigToValidECDSA } from '../internal'
 
 const { DEPLOY_AND_CALL } = Config
 
@@ -27,7 +28,12 @@ async function metaDelegateCall ({
   const account = accountFromSigner({ signer })
 
   const accountContract = new ethers.Contract(account as string, AccountAbi)
-  const txData = await accountContract.populateTransaction.metaDelegateCall(to, data, signature, unsignedData)
+  const txData = await accountContract.populateTransaction.metaDelegateCall(
+    to,
+    data,
+    sigToValidECDSA(signature).signature,
+    unsignedData
+  )
   if (!deployAccount) {
     return {
       to: txData.to as string,
