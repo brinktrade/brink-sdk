@@ -1,9 +1,9 @@
 import Primitive from './Primitive'
 import { Oracle } from '../../oracles'
-import { OracleArgs, BigIntish, PrimitiveJSON } from '../../Types'
+import { OracleJSON, BigIntish, PrimitiveJSON } from '@brinkninja/types'
 
 export type RequireUint256LowerBoundConstructorArgs = {
-  oracle: OracleArgs,
+  oracle: OracleJSON,
   lowerBound: BigIntish
 }
 
@@ -12,22 +12,11 @@ export default class RequireUint256LowerBound extends Primitive {
     oracle,
     lowerBound
   }: RequireUint256LowerBoundConstructorArgs) {
-    let uint256Oracle: string
-    let params: string
-
-    if (oracle instanceof Oracle) {
-      uint256Oracle = oracle.address
-      params = oracle.params
-    } else {
-      uint256Oracle = oracle.address
-      params = oracle.params
-    }
-
     super({
       functionName: 'requireUint256LowerBound',
       params: {
-        uint256Oracle,
-        params,
+        uint256Oracle: oracle.address,
+        params: oracle.params,
         lowerBound
       }
     })

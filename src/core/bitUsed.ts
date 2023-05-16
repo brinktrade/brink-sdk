@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { padLeft } from 'web3-utils'
-import { BigIntish } from '../Types'
+import { BigIntish } from '@brinkninja/types'
 
 export type BitUsedArgs = {
   bitmap: string

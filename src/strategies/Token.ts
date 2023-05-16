@@ -1,4 +1,4 @@
-import { TokenStandard, TokenStruct, TokenJSON, BigIntish } from '../Types'
+import { TokenStandard, TokenStruct, TokenJSON, BigIntish } from '@brinkninja/types'
 
 export type TokenArgs = {
   address: string

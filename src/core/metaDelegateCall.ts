@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import { accountFromSigner } from '.'
 import AccountAbi from '../internal/contracts/Account.abi'
 import DeployAndCallAbi from '../internal/contracts/DeployAndCall.abi'
-import { TransactionData } from '../Types'
+import { TransactionData } from '@brinkninja/types'
 import Config from '../Config'
 import { sigToValidECDSA } from '../internal'
 

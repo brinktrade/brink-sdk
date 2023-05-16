@@ -1,5 +1,5 @@
 import { Token } from '../strategies'
-import { CallData } from '../Types'
+import { CallData } from '@brinkninja/types'
 import Uint256Oracle from './Uint256Oracle'
 
 export type TokenPairOracleConstructorArgs = {

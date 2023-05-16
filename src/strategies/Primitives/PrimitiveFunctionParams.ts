@@ -1,4 +1,4 @@
-import { PrimitiveParamType } from '../../Types'
+import { PrimitiveParamType } from '@brinkninja/types'
 
 export const MarketSwapExactInputFunctionParams: PrimitiveParamType[] = [
   {

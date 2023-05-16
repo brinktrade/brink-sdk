@@ -1,7 +1,7 @@
+export * from '@brinkninja/types'
 export * from './core'
 export * from './oracles'
 export * from './strategies'
 export * from './swaps'
 export * from './Config'
-export * from './Types'
 export { default as Config } from './Config'

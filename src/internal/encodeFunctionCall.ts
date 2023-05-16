@@ -1,4 +1,4 @@
-import { ContractCallParam } from '../Types'
+import { ContractCallParam } from '@brinkninja/types'
 
 const web3Abi = require('web3-eth-abi')
 

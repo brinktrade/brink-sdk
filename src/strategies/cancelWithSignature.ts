@@ -1,5 +1,5 @@
 import config from '../Config'
-import { TransactionData, BigIntish } from '../Types'
+import { TransactionData, BigIntish } from '@brinkninja/types'
 import { metaDelegateCall } from '../core'
 import encodeFunctionCall from '../internal/encodeFunctionCall'
 

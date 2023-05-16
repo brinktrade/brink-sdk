@@ -1,4 +1,4 @@
-import { InvalidReason, ValidationResult, invalidReasonMessages } from '../Types'
+import { InvalidReason, ValidationResult, invalidReasonMessages } from '@brinkninja/types'
 
 export function invalidResult (reason: InvalidReason): ValidationResult {
   return {

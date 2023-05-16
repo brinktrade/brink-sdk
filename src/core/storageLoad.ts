@@ -1,5 +1,5 @@
 import accountFromSigner from './accountFromSigner'
-import { RpcMethodCall } from '../Types'
+import { RpcMethodCall } from '@brinkninja/types'
 
 export type StorageLoadArgs = {
   signer: string,

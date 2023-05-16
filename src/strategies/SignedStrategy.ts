@@ -2,7 +2,7 @@ const { getTypedData } = require('@brinkninja/utils')
 
 import { ethers } from 'ethers'
 import Strategy from './Strategy'
-import { SignedStrategyArgs, SignedStrategyJSON, SignatureType, ValidationResult, EIP712TypedData } from '../Types'
+import { SignedStrategyArgs, SignedStrategyJSON, SignatureType, ValidationResult, EIP712TypedData } from '@brinkninja/types'
 import Config from '../Config'
 import { validResult, invalidResult } from '../internal/Validation'
 import accountFromSigner from '../core/accountFromSigner'

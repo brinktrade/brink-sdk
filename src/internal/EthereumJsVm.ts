@@ -18,7 +18,7 @@ import {
   SignatureTypeEnum,
   OrderJSON,
   BigIntish
-} from '../Types'
+} from '@brinkninja/types'
 
 export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
   EIP712: SignatureTypeEnum.EIP712,
