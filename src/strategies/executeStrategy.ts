@@ -1,4 +1,4 @@
-import { TransactionData } from '../Types'
+import { TransactionData } from '@brinkninja/types'
 import SignedStrategy from './SignedStrategy'
 import evm from '../internal/EthereumJsVm'
 import { metaDelegateCall } from '../core'

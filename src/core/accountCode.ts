@@ -1,4 +1,4 @@
-import { RpcMethodCall } from '../Types'
+import { RpcMethodCall } from '@brinkninja/types'
 import { accountFromSigner } from '.'
 
 export type AccountCodeArgs = {

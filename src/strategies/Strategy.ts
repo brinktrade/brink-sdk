@@ -1,5 +1,5 @@
 import Config from '../Config'
-import { StrategyJSON, ValidationResult, OrderJSON } from '../Types'
+import { StrategyJSON, ValidationResult, OrderJSON } from '@brinkninja/types'
 import Order from './Order'
 import evm from '../internal/EthereumJsVm'
 import { invalidResult, validResult } from '../internal/Validation'

@@ -1,5 +1,5 @@
 import { soliditySha3 } from 'web3-utils'
-import { BigIntish } from '../Types'
+import { BigIntish } from '@brinkninja/types'
 
 export type BitmapPointerArgs = {
   bitmapIndex: BigIntish

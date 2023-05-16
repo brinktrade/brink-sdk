@@ -7,7 +7,7 @@ import {
   PrimitiveParamValue,
   PrimitiveParamType,
   ContractCallParam
-} from '../../Types'
+} from '@brinkninja/types'
 import {
   MarketSwapExactInputFunctionParams,
   RequireBlockNotMinedFunctionParams,

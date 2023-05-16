@@ -1,6 +1,6 @@
 import Oracle from './Oracle'
 import readUint256Oracle from './readUint256Oracle'
-import { CallData } from '../Types'
+import { CallData } from '@brinkninja/types'
 
 export type Uint256OracleConstructorArgs = {
   address: string

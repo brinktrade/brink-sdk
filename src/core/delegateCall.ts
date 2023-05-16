@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { accountFromSigner } from '.'
 import AccountAbi from '../internal/contracts/Account.abi'
-import { TransactionData } from '../Types'
+import { TransactionData } from '@brinkninja/types'
 
 export type DelegateCallArgs = {
   signer: string,

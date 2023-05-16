@@ -1,4 +1,4 @@
-import { BigIntish } from '../../Types'
+import { BigIntish } from '@brinkninja/types'
 import Primitive from './Primitive'
 
 export type RequireBlockNotMinedConstructorArgs = {

@@ -2,7 +2,7 @@ import { utils } from 'ethers'
 import { FeeAmount } from '@uniswap/v3-sdk'
 import { Token } from '../strategies'
 import Config from '../Config'
-import { BigIntish } from '../Types'
+import { BigIntish } from '@brinkninja/types'
 import getUniV3Pool from '../internal/getUniV3Pool'
 import TokenPairOracle from './TokenPairOracle'
 

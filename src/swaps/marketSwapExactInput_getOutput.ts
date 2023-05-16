@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 import evm from '../internal/EthereumJsVm'
-import { BigIntish } from '../Types'
+import { BigIntish } from '@brinkninja/types'
 
 const { defaultAbiCoder } = utils
 

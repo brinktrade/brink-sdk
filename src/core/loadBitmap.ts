@@ -1,6 +1,6 @@
 import bitmapPointer from './bitmapPointer'
 import storageLoad from './storageLoad'
-import { RpcMethodCall, BigIntish } from '../Types'
+import { RpcMethodCall, BigIntish } from '@brinkninja/types'
 
 export type LoadBitmapArgs = {
   signer: string,

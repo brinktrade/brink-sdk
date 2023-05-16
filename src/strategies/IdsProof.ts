@@ -1,4 +1,4 @@
-import { IdsProofStruct, IdsProofJSON, BigIntish } from '../Types'
+import { IdsProofStruct, IdsProofJSON, BigIntish } from '@brinkninja/types'
 
 export interface IdsProofArgs {
   ids?: BigIntish[],

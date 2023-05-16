@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import AccountAbi from '../internal/contracts/Account.abi'
-import { TransactionData, BigIntish } from '../Types'
+import { TransactionData, BigIntish } from '@brinkninja/types'
 import accountFromSigner from './accountFromSigner'
 
 export type ExternalCallArgs = {

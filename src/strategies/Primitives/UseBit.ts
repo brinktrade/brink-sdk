@@ -1,5 +1,5 @@
 import Primitive from './Primitive'
-import { BigIntish } from '../../Types'
+import { BigIntish } from '@brinkninja/types'
 
 export type UseBitConstructorArgs = {
   bitmapIndex: BigIntish

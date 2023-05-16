@@ -1,4 +1,4 @@
-import { OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue, PrimitiveJSON } from '../Types'
+import { OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue, PrimitiveJSON } from '@brinkninja/types'
 import Primitive from './Primitives/Primitive'
 import createPrimitive from '../internal/createPrimitive'
 import { invalidResult, validResult } from '../internal/Validation'

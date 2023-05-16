@@ -1,5 +1,5 @@
 import { Strategy } from '.'
-import { StrategyJSON, EIP712TypedData } from '../Types'
+import { StrategyJSON, EIP712TypedData } from '@brinkninja/types'
 import Config from '../Config'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 import accountFromSigner from '../core/accountFromSigner'

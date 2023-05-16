@@ -1,10 +1,9 @@
 import Primitive from './Primitive'
 import Token, { TokenArgs } from '../Token'
-import { Oracle } from '../../oracles'
-import { OracleArgs, PrimitiveJSON, BigIntish } from '../../Types'
+import { OracleJSON, PrimitiveJSON, BigIntish } from '@brinkninja/types'
 
 export type MarketSwapExactInputConstructorArgs = {
-  oracle: OracleArgs,
+  oracle: OracleJSON,
   signer: string
   tokenIn: Token
   tokenOut: Token

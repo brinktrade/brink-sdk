@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { TransactionData } from '../Types'
+import { TransactionData } from '@brinkninja/types'
 import AccountFactoryAbi from '../internal/contracts/AccountFactory.abi'
 import Config from '../Config'
 

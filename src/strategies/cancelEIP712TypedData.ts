@@ -1,4 +1,4 @@
-import { EIP712TypedData, BigIntish } from '../Types'
+import { EIP712TypedData, BigIntish } from '@brinkninja/types'
 import Config from '../Config'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 import { accountFromSigner } from '../core'
