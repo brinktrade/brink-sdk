@@ -10,6 +10,9 @@ import {
   StrategyJSON,
   BigIntish
 } from '@brink-sdk'
+import { use } from 'chai'
+
+use(require('chai-as-promised'))
 
 const { randomHex } = require('web3-utils')
 const deploySaltedContract = require('@brinkninja/core/test/helpers/deploySaltedContract')
