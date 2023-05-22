@@ -1,38 +1,48 @@
+import { OracleJSON, BigIntish, PrimitiveParamType } from '@brinkninja/types'
 import Primitive from './Primitive'
-import { Oracle } from '../../oracles'
-import { OracleJSON, BigIntish, PrimitiveJSON } from '@brinkninja/types'
 
-export type RequireUint256LowerBoundConstructorArgs = {
+export type RequireUint256LowerBoundArgs = {
   oracle: OracleJSON,
   lowerBound: BigIntish
 }
+
+export const RequireUint256LowerBoundFunctionParams: PrimitiveParamType[] = [
+  {
+    name: 'uint256Oracle',
+    type: 'address',
+    signed: true
+  },
+  {
+    name: 'params',
+    type: 'bytes',
+    signed: true
+  },
+  {
+    name: 'lowerBound',
+    type: 'uint256',
+    signed: true
+  }
+]
 
 export default class RequireUint256LowerBound extends Primitive {
   public constructor ({
     oracle,
     lowerBound
-  }: RequireUint256LowerBoundConstructorArgs) {
+  }: RequireUint256LowerBoundArgs) {
     super({
       functionName: 'requireUint256LowerBound',
-      params: {
-        uint256Oracle: oracle.address,
-        params: oracle.params,
-        lowerBound
-      }
+      type: 'require',
+      requiresUnsignedCall: false,
+      paramsJSON: {
+        oracle,
+        lowerBound: lowerBound.toString()
+      },
+      paramTypes: RequireUint256LowerBoundFunctionParams,
+      paramValues: [
+        oracle?.address,
+        oracle?.params,
+        lowerBound.toString()
+      ]
     })
-  }
-
-  async toJSON(): Promise<PrimitiveJSON> {
-    const json = await super.toJSON()
-    return {
-      ...json,
-      params: {
-        oracle: {
-          address: json.params.uint256Oracle as string,
-          params: json.params.params as string
-        },
-        lowerBound: BigInt(json.params.lowerBound as string)
-      }
-    }
   }
 }

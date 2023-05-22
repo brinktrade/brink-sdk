@@ -1,12 +1,4 @@
-import { TokenStandard, TokenStruct, TokenJSON, BigIntish } from '@brinkninja/types'
-
-export type TokenArgs = {
-  address: string
-  standard?: TokenStandard
-  idsMerkleRoot?: string
-  id?: BigIntish
-  disallowFlagged?: boolean
-}
+import { TokenArgs, TokenStandard, TokenStruct, TokenJSON } from '@brinkninja/types'
 
 class Token {
   address: string
@@ -38,7 +30,7 @@ class Token {
       address: this.address,
       standard: this.standard,
       idsMerkleRoot: this.idsMerkleRoot,
-      id: this.id,
+      id: this.id.toString(),
       disallowFlagged: this.disallowFlagged
     }
   }

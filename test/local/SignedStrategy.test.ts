@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { Strategy, Token, PrimitiveJSON } from '@brink-sdk'
+import { Strategy, Token, TokenArgs, PrimitiveArgs } from '@brink-sdk'
 
 describe('SignedStrategy', function () {
   describe('validate()', function () {
@@ -32,7 +32,7 @@ async function buildStrategy () {
                 bitmapIndex: BigInt(0),
                 bit: BigInt(1)
               }
-            } as PrimitiveJSON,
+            } as PrimitiveArgs,
             {
               functionName: 'marketSwapExactInput',
               params: {
@@ -41,13 +41,13 @@ async function buildStrategy () {
                   params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
                 },
                 signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
-                tokenIn: new Token({ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }),
-                tokenOut: new Token({ address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' }),
+                tokenIn: new Token({ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }) as TokenArgs,
+                tokenOut: new Token({ address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' }) as TokenArgs,
                 tokenInAmount: BigInt(1450000000),
                 feePercent: BigInt(10000),
                 feeMin: BigInt(0)
               }
-            } as PrimitiveJSON
+            } as PrimitiveArgs
           ]
         }
       ]

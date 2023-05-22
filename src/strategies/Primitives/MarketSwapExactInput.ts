@@ -1,16 +1,64 @@
+import { TokenArgs, OracleJSON, PrimitiveParamType, BigIntish } from '@brinkninja/types'
+import Token from '../Token'
 import Primitive from './Primitive'
-import Token, { TokenArgs } from '../Token'
-import { OracleJSON, PrimitiveJSON, BigIntish } from '@brinkninja/types'
 
-export type MarketSwapExactInputConstructorArgs = {
+export type MarketSwapExactInputArgs = {
   oracle: OracleJSON,
   signer: string
-  tokenIn: Token
-  tokenOut: Token
+  tokenIn: TokenArgs
+  tokenOut: TokenArgs
   tokenInAmount: BigIntish
   feePercent: BigIntish
   feeMin: BigIntish
 }
+
+export const MarketSwapExactInputFunctionParams: PrimitiveParamType[] = [
+  {
+    name: 'priceOracle',
+    type: 'address',
+    signed: true
+  },
+  {
+    name: 'priceOracleParams',
+    type: 'bytes',
+    signed: true
+  },
+  {
+    name: 'owner',
+    type: 'address',
+    signed: true
+  },
+  {
+    name: 'tokenIn',
+    type: 'Token',
+    signed: true
+  },
+  {
+    name: 'tokenOut',
+    type: 'Token',
+    signed: true
+  },
+  {
+    name: 'tokenInAmount',
+    type: 'uint256',
+    signed: true
+  },
+  {
+    name: 'feePercent',
+    type: 'uint24',
+    signed: true
+  },
+  {
+    name: 'feeMinTokenOut',
+    type: 'uint256',
+    signed: true
+  },
+  {
+    name: 'data',
+    type: 'UnsignedMarketSwapData',
+    signed: false
+  }
+]
 
 export default class MarketSwapExactInput extends Primitive {
   public constructor ({
@@ -21,38 +69,34 @@ export default class MarketSwapExactInput extends Primitive {
     tokenInAmount,
     feePercent,
     feeMin
-  }: MarketSwapExactInputConstructorArgs) {
+  }: MarketSwapExactInputArgs) {
     super({
       functionName: 'marketSwapExactInput',
-      params: {
-        priceOracle: oracle.address,
-        priceOracleParams: oracle.params,
-        owner: signer,
-        tokenIn,
-        tokenOut,
-        tokenInAmount: BigInt(tokenInAmount),
-        feePercent: BigInt(feePercent),
-        feeMinTokenOut: BigInt(feeMin)
-      }
-    })
-  }
-
-  async toJSON(): Promise<PrimitiveJSON> {
-    const json = await super.toJSON()
-    return {
-      ...json,
-      params: {
+      type: 'swap',
+      requiresUnsignedCall: true,
+      paramsJSON: {
         oracle: {
-          address: json.params.priceOracle as string,
-          params: json.params.priceOracleParams as string
+          address: oracle.address,
+          params: oracle.params
         },
-        signer: json.params.owner,
-        tokenIn: new Token(json.params.tokenIn as TokenArgs),
-        tokenOut: new Token(json.params.tokenOut as TokenArgs),
-        tokenInAmount: BigInt(json.params.tokenInAmount as string),
-        feePercent: BigInt(json.params.feePercent as string),
-        feeMin: BigInt(json.params.feeMinTokenOut as string)
-      }
-    }
+        signer,
+        tokenIn: (new Token(tokenIn)).toJSON(),
+        tokenOut: (new Token(tokenOut)).toJSON(),
+        tokenInAmount: tokenInAmount.toString(),
+        feePercent: feePercent.toString(),
+        feeMin: feeMin.toString()
+      },
+      paramTypes: MarketSwapExactInputFunctionParams,
+      paramValues: [
+        oracle.address,
+        oracle.params,
+        signer,
+        (new Token(tokenIn)).toStruct(),
+        (new Token(tokenOut)).toStruct(),
+        tokenInAmount,
+        feePercent,
+        feeMin
+      ]
+    })
   }
 }

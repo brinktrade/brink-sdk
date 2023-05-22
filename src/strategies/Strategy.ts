@@ -1,17 +1,10 @@
 import Config from '../Config'
-import { StrategyJSON, ValidationResult, OrderJSON } from '@brinkninja/types'
+import { StrategyArgs, StrategyJSON, ValidationResult } from '@brinkninja/types'
 import Order from './Order'
 import evm from '../internal/EthereumJsVm'
 import { invalidResult, validResult } from '../internal/Validation'
 
 const { PRIMITIVES_01 } = Config
-
-export type StrategyConstructorArgs = {
-  orders?: OrderJSON[]
-  beforeCalls?: any[]
-  afterCalls?: any[]
-  primitivesContract?: string
-}
 
 class Strategy {
   orders: Order[]
@@ -20,10 +13,10 @@ class Strategy {
   primitivesContract: string
 
   public constructor ()
-  public constructor (args: StrategyConstructorArgs)
+  public constructor (args: StrategyArgs)
   public constructor (...arr: any[]) {
-    const args: StrategyConstructorArgs = arr[0] || {}
-    this.orders = (args?.orders || []).map(orderJSON => new Order(orderJSON))
+    const args: StrategyArgs = arr[0] || {}
+    this.orders = (args?.orders || []).map(orderArgs => new Order(orderArgs))
     this.beforeCalls = args?.beforeCalls || []
     this.afterCalls = args?.afterCalls || []
     this.primitivesContract = args?.primitivesContract || PRIMITIVES_01

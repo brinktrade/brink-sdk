@@ -23,13 +23,17 @@ const primitiveMapping: PrimitiveMapping = createMappingObject({
   useBit: UseBit
 })
 
-export default function createPrimitive<T extends keyof PrimitiveMapping>(
+export interface CreatePrimitiverArgs {
   functionName: PrimitiveFunctionName,
   params: Record<string, PrimitiveParamValue>
-): InstanceType<PrimitiveMapping[T]> {
+}
+
+export default function createPrimitive({
+  functionName, params
+}: CreatePrimitiverArgs): Primitive {
   const PrimitiveClass = primitiveMapping[functionName]
   if (!PrimitiveClass) {
     throw new Error(`Unknown primitive: ${functionName}`)
   }
-  return new (PrimitiveClass as any)(params) as InstanceType<PrimitiveMapping[T]>
+  return new (PrimitiveClass as any)(params)
 }

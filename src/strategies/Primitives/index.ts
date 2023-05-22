@@ -1,11 +1,6 @@
 export * from './MarketSwapExactInput'
 export { default as MarketSwapExactInput } from './MarketSwapExactInput'
 
-export * from './Primitive'
-export { default as Primitive } from './Primitive'
-
-export * from './PrimitiveFunctionParams'
-
 export * from './RequireBlockNotMined'
 export { default as RequireBlockNotMined } from './RequireBlockNotMined'
 

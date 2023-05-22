@@ -158,8 +158,8 @@ export class EthereumJsVm {
       this.UnsignedDataBuilder,
       'unsignedMarketSwapData',
       recipient,
-      tokenInIdsProof.toJSON(),
-      tokenOutIdsProof.toJSON(),
+      tokenInIdsProof.toStruct(),
+      tokenOutIdsProof.toStruct(),
       callData
     )
     return `0x${cleanDynamicBytes(unsignedMarketSwapData)}`
