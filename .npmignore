@@ -12,3 +12,6 @@ cache
 yarn-**
 .env
 .env**
+default-env
+hardhat**
+tsconfig**
