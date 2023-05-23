@@ -1,13 +1,4 @@
-import { IdsProofStruct, IdsProofJSON, BigIntish } from '@brinkninja/types'
-
-export interface IdsProofArgs {
-  ids?: BigIntish[],
-  merkleProof_hashes?: string[],
-  merkleProof_flags?: boolean[],
-  statusProof_lastTransferTimes?: BigIntish[],
-  statusProof_timestamps?: BigIntish[],
-  statusProof_signatures?: string[]
-}
+import { IdsProofStruct, IdsProofArgs, IdsProofJSON, BigIntish } from '@brinkninja/types'
 
 class IdsProof {
   ids: BigInt[]
@@ -30,7 +21,14 @@ class IdsProof {
   }
 
   public toJSON(): IdsProofJSON {
-    return this.toStruct()
+    return {
+      ids: mapBigIntArrayToStr(this.ids),
+      merkleProof_hashes: this.merkleProof_hashes,
+      merkleProof_flags: this.merkleProof_flags,
+      statusProof_lastTransferTimes: mapBigIntArrayToStr(this.statusProof_lastTransferTimes),
+      statusProof_timestamps: mapBigIntArrayToStr(this.statusProof_timestamps),
+      statusProof_signatures: this.statusProof_signatures
+    }
   }
 
   public toStruct(): IdsProofStruct {
@@ -52,6 +50,10 @@ function mapBigIntishArray (arr: BigIntish[]): BigInt[] {
 
 function mapBigIntArray (arr: BigInt[]): bigint[] {
   return arr.map((item: BigInt) => BigInt(item.toString()))
+}
+
+function mapBigIntArrayToStr (arr: BigInt[]): string[] {
+  return arr.map((item: BigInt) => item.toString())
 }
 
 export default IdsProof

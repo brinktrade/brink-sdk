@@ -12,7 +12,8 @@ import {
   UseBit,
   marketSwapExactInput_getOutput,
   executeStrategy,
-  strategyEIP712TypedData
+  strategyEIP712TypedData,
+  StrategyArgs
 } from '@brink-sdk'
 import fundWithERC20 from '../helpers/fundWithERC20'
 
@@ -113,13 +114,13 @@ async function successfulExecuteStrategy (this: TestContext): Promise<{
   const { domain, types, value } = await strategyEIP712TypedData({
     signer: this.ethersAccountSigner.address,
     chainId,
-    strategy: strategyJSON
+    strategy: strategyJSON as StrategyArgs
   })
   const signature = await this.ethersAccountSigner._signTypedData(
     domain, types, value
   )
   const signedStrategy = new SignedStrategy({
-    strategy: strategyJSON,
+    strategy: strategyJSON as StrategyArgs,
     chainId,
     signature,
     signer: this.ethersAccountSigner.address

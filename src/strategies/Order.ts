@@ -1,4 +1,4 @@
-import { OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue, PrimitiveJSON } from '@brinkninja/types'
+import { OrderArgs, OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue, PrimitiveJSON } from '@brinkninja/types'
 import Primitive from './Primitives/Primitive'
 import createPrimitive from '../internal/createPrimitive'
 import { invalidResult, validResult } from '../internal/Validation'
@@ -12,18 +12,18 @@ class Order {
   primitives: Primitive[] = []
 
   public constructor ()
-  public constructor (args: OrderConstructorArgs)
+  public constructor (args: OrderArgs)
   public constructor (...arr: any[]) {
-    const args: OrderConstructorArgs = arr[0] || {}
-    let orderJSON: OrderJSON = {
+    const args: OrderArgs = arr[0] || {}
+    let orderArgs: OrderArgs = {
       primitives: args?.primitives || []
     }
 
-    this.primitives = orderJSON.primitives.map((primitiveData: {
+    this.primitives = orderArgs.primitives.map((primitiveData: {
       functionName: PrimitiveFunctionName,
       params: Record<string, PrimitiveParamValue>
     }) => {
-      return createPrimitive(primitiveData.functionName, primitiveData.params)
+      return createPrimitive(primitiveData)
     })
   }
 

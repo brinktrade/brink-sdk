@@ -7,7 +7,7 @@ import {
   loadBitmap,
   strategyEIP712TypedData,
   SignedStrategy,
-  StrategyJSON,
+  StrategyArgs,
   BigIntish
 } from '@brink-sdk'
 import { use } from 'chai'
@@ -105,7 +105,7 @@ beforeEach(async function () {
     return bmp
   }
 
-  this.signStrategy = async (strategy: StrategyJSON): Promise<SignedStrategy> => {
+  this.signStrategy = async (strategy: StrategyArgs): Promise<SignedStrategy> => {
     const chainId = 31337
 
     const eip712TypedData = await strategyEIP712TypedData({

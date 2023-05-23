@@ -1,17 +1,31 @@
-import { BigIntish } from '@brinkninja/types'
+import { BigIntish, PrimitiveParamType } from '@brinkninja/types'
 import Primitive from './Primitive'
 
-export type RequireBlockNotMinedConstructorArgs = {
+export type RequireBlockNotMinedArgs = {
   blockNumber: BigIntish
 }
 
+export const RequireBlockNotMinedFunctionParams: PrimitiveParamType[] = [
+  {
+    name: 'blockNumber',
+    type: 'uint256',
+    signed: true
+  }
+]
+
 export default class RequireBlockNotMined extends Primitive {
-  public constructor ({ blockNumber }: RequireBlockNotMinedConstructorArgs) {
+  public constructor ({ blockNumber }: RequireBlockNotMinedArgs) {
     super({
       functionName: 'requireBlockNotMined',
-      params: {
-        blockNumber: BigInt(blockNumber)
-      }
+      type: 'require',
+      requiresUnsignedCall: false,
+      paramsJSON: {
+        blockNumber: blockNumber.toString()
+      },
+      paramTypes: RequireBlockNotMinedFunctionParams,
+      paramValues: [
+        blockNumber.toString()
+      ]
     })
   }
 }

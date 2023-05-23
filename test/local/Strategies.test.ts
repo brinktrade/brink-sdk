@@ -8,9 +8,11 @@ import {
   RequireUint256LowerBound,
   UniV3Twap,
   Token,
+  TokenArgs,
   Config,
-  PrimitiveJSON,
-  OracleJSON
+  PrimitiveArgs,
+  OracleJSON,
+  StrategyArgs
 } from '@brink-sdk'
 
 const { TWAP_ADAPTER } = Config
@@ -27,6 +29,18 @@ describe('Strategies', function () {
     const strategyJSON = await strategy1.toJSON()
     expect(strategyJSON.orders.length).to.equal(1)
     expect(strategyJSON.orders[0].primitives.length).to.equal(4)
+  })
+
+  it('strategy JSON serialize/deserialize should succeed', async function () {
+    const strategy1 = new Strategy(validStrategy1)
+    const strategy1JSON = await strategy1.toJSON()
+    const json1Str = JSON.stringify(strategy1JSON)
+    expect(json1Str).not.to.be.undefined
+
+    const strategy2 = new Strategy(strategy1JSON as StrategyArgs)
+    const strategy2JSON = await strategy2.toJSON()
+    const json2Str = JSON.stringify(strategy2JSON)
+    expect(json2Str).to.deep.equal(json1Str)
   })
 
   it('should build strategy using Oracle primitive param classes', async function () {
@@ -125,13 +139,13 @@ const validStrategy1 = {
             bitmapIndex: BigInt(0),
             bit: BigInt(1)
           }
-        } as PrimitiveJSON,
+        } as PrimitiveArgs,
         {
           functionName: 'requireBlockNotMined',
           params: {
             blockNumber: BigInt(169832100000000)
           }
-        } as PrimitiveJSON,
+        } as PrimitiveArgs,
         {
           functionName: 'requireUint256LowerBound',
           params: {
@@ -141,7 +155,7 @@ const validStrategy1 = {
             },
             lowerBound: BigInt(1000) * BigInt(2)**BigInt(96)
           }
-        } as PrimitiveJSON,
+        } as PrimitiveArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -150,13 +164,13 @@ const validStrategy1 = {
               params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
             },
             signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
-            tokenIn: new Token({ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }),
-            tokenOut: new Token({ address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' }),
+            tokenIn: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' } as TokenArgs,
+            tokenOut: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' } as TokenArgs,
             tokenInAmount: BigInt(1450000000),
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as PrimitiveJSON
+        } as PrimitiveArgs
       ]
     }
   ]

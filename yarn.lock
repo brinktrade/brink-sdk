@@ -52,10 +52,10 @@
   resolved "https://registry.yarnpkg.com/@brinkninja/strategies/-/strategies-0.2.4.tgz#dad2dfead408b246139a890f01b0289c92bcb8d5"
   integrity sha512-4QVo2WnAFmmW7zYNmvkQs9PWGC/pcJ6cg2P7+7zPBbXd3mYbjBLsdau5DX9ZJu7OY6NlCRkZPiS00viLtrxg9w==
 
-"@brinkninja/types@~0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@brinkninja/types/-/types-0.2.0.tgz#cd0f64d0c67bb8e328ca4449fdd8463649a19664"
-  integrity sha512-dvcBdK2Fftz/kY5U3GEqvGpRb4sYdPsPua/rFNbeQkgcBme9tTxpsIgDPkX5ZtYUMSwrUECAM3uh05DJhF7HFQ==
+"@brinkninja/types@~0.5.5":
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/@brinkninja/types/-/types-0.5.5.tgz#419969bed86176f84542d3b442392d77d460847a"
+  integrity sha512-nQLGBx/WlrnHB15e5AvOx7ne09YWRd7e4l0uWoo3FMklWZHrhBkyu5hpw3F8rBnHJKH2YquZDmGELbJ6B0BeLA==
   dependencies:
     typescript "^5.0.4"
 
