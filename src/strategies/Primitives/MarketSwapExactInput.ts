@@ -1,6 +1,6 @@
 import { TokenArgs, OracleJSON, PrimitiveParamType, BigIntish } from '@brinkninja/types'
 import Token from '../Token'
-import Primitive from './Primitive'
+import InputTokenPrimitive from './InputTokenPrimitive'
 
 export type MarketSwapExactInputArgs = {
   oracle: OracleJSON,
@@ -60,7 +60,7 @@ export const MarketSwapExactInputFunctionParams: PrimitiveParamType[] = [
   }
 ]
 
-export default class MarketSwapExactInput extends Primitive {
+export default class MarketSwapExactInput extends InputTokenPrimitive {
   public constructor ({
     oracle,
     signer,
@@ -96,7 +96,9 @@ export default class MarketSwapExactInput extends Primitive {
         tokenInAmount,
         feePercent,
         feeMin
-      ]
+      ],
+      inputTokenParam: 'tokenIn',
+      inputAmountParam: 'tokenInAmount'
     })
   }
 }

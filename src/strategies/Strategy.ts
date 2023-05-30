@@ -1,8 +1,7 @@
 import Config from '../Config'
-import { StrategyArgs, StrategyJSON, ValidationResult } from '@brinkninja/types'
+import { StrategyArgs, StrategyJSON, ValidationResult, TokenAmount } from '@brinkninja/types'
 import Order from './Order'
-import evm from '../internal/EthereumJsVm'
-import { invalidResult, validResult } from '../internal/Validation'
+import { EthereumJsVm as evm, invalidResult, validResult, groupAndSumTokenAmounts } from '../internal'
 
 const { PRIMITIVES_01 } = Config
 
@@ -38,6 +37,19 @@ class Strategy {
       beforeCalls: this.beforeCalls,
       afterCalls: this.afterCalls
     }
+  }
+
+  tokenInputs (): TokenAmount[] {
+    const tokenInputs: TokenAmount[] = []
+    this.orders.forEach(order => {
+      order.tokenInputs().forEach(tokenInput => {
+        tokenInputs.push({
+          token: tokenInput.token,
+          amount: tokenInput.amount
+        })
+      })
+    })
+    return groupAndSumTokenAmounts(tokenInputs)
   }
 
   validate (): ValidationResult {
