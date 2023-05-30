@@ -8,7 +8,7 @@ import {
 } from '@brinkninja/types'
 import { verifyParams, EthereumJsVm as evm } from '../../internal'
 
-interface PrimitiveClassArgs {
+export interface PrimitiveClassArgs {
   functionName: PrimitiveFunctionName
   type: PrimitiveType
   requiresUnsignedCall: boolean

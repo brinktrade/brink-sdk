@@ -1,7 +1,7 @@
-import { OrderArgs, OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue, PrimitiveJSON } from '@brinkninja/types'
+import { OrderArgs, OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue, PrimitiveJSON, TokenAmount } from '@brinkninja/types'
 import Primitive from './Primitives/Primitive'
-import createPrimitive from '../internal/createPrimitive'
-import { invalidResult, validResult } from '../internal/Validation'
+import InputTokenPrimitive from './Primitives/InputTokenPrimitive'
+import { createPrimitive, invalidResult, validResult, groupAndSumTokenAmounts } from '../internal'
 
 export type OrderConstructorArgs = {
   primitives: PrimitiveJSON[]
@@ -25,6 +25,19 @@ class Order {
     }) => {
       return createPrimitive(primitiveData)
     })
+  }
+
+  tokenInputs (): TokenAmount[] {
+    const tokenInputs: TokenAmount[] = []
+    this.primitives.forEach(primitive => {
+      if (primitive instanceof InputTokenPrimitive) {
+        tokenInputs.push({
+          token: primitive.inputToken,
+          amount: primitive.inputAmount
+        })
+      }
+    })
+    return groupAndSumTokenAmounts(tokenInputs)
   }
 
   async toJSON (): Promise<OrderJSON> {
