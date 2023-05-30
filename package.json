@@ -1,6 +1,6 @@
 {
   "name": "@brinkninja/sdk",
-  "version": "5.0.0-beta.4",
+  "version": "5.0.0-beta.5",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
     "@openzeppelin/contracts": "4.3.3",
@@ -17,7 +17,7 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
-    "@brinkninja/config": "^2.2.0",
+    "@brinkninja/config": "^2.9.2",
     "@brinkninja/core": "^1.0.0",
     "@brinkninja/strategies": "^0.2.4",
     "@brinkninja/types": "~0.6.1",
