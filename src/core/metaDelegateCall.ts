@@ -38,7 +38,7 @@ async function metaDelegateCall ({
     return {
       to: txData.to as string,
       data: txData.data as string,
-      value: BigInt(0)
+      value: '0'
     }
   } else {
     const deployAndCallContract = new ethers.Contract(DEPLOY_AND_CALL, DeployAndCallAbi)
@@ -46,7 +46,7 @@ async function metaDelegateCall ({
     return {
       to: deployAndCallTxData.to as string,
       data: deployAndCallTxData.data as string,
-      value: BigInt(0)
+      value: '0'
     }
   }
 }

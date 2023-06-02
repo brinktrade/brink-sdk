@@ -22,7 +22,7 @@ async function externalCall ({
   return {
     to: txData.to as string,
     data: txData.data as string,
-    value: BigInt(0)
+    value: '0'
   }
 }
 
