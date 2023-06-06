@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import AccountAbi from '../internal/contracts/Account.abi'
 import { TransactionData, BigIntish } from '@brinkninja/types'
-import accountFromSigner from './accountFromSigner'
+import getSignerAccount from './getSignerAccount'
 
 export type ExternalCallArgs = {
   signer: string
@@ -16,7 +16,7 @@ async function externalCall ({
   value = BigInt(0),
   data = '0x'
 }: ExternalCallArgs): Promise<TransactionData> {
-  const account = accountFromSigner({ signer })
+  const account = getSignerAccount({ signer })
   const accountContract = new ethers.Contract(account, AccountAbi)
   const txData = await accountContract.populateTransaction.externalCall(BigInt(value), to, data)
   return {

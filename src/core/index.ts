@@ -4,8 +4,8 @@ export { default as accountBytecode } from './accountBytecode'
 export * from './accountCode'
 export { default as accountCode } from './accountCode'
 
-export * from './accountFromSigner'
-export { default as accountFromSigner } from './accountFromSigner'
+export * from './getSignerAccount'
+export { default as getSignerAccount } from './getSignerAccount'
 
 export * from './bitmapPointer'
 export { default as bitmapPointer } from './bitmapPointer'

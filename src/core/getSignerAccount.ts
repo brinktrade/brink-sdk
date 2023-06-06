@@ -3,13 +3,13 @@ import { saltedDeployerAddress, accountBytecode } from '.'
 
 const { ACCOUNT_FACTORY } = Config
 
-export type AccountFromSignerArgs = {
+export type GetSignerAccountArgs = {
   signer: string
 }
 
-function accountFromSigner ({
+function getSignerAccount ({
   signer
-}: AccountFromSignerArgs): string {
+}: GetSignerAccountArgs): string {
   const { address: account } = saltedDeployerAddress({
     deployerAddress: ACCOUNT_FACTORY,
     salt: '0x',
@@ -20,4 +20,4 @@ function accountFromSigner ({
   return account
 }
 
-export default accountFromSigner
+export default getSignerAccount

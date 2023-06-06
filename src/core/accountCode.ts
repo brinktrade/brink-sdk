@@ -1,5 +1,5 @@
 import { RpcMethodCall } from '@brinkninja/types'
-import { accountFromSigner } from '.'
+import { getSignerAccount } from '.'
 
 export type AccountCodeArgs = {
   signer: string
@@ -10,7 +10,7 @@ const accountCode = ({
 }: AccountCodeArgs): RpcMethodCall => {
   return {
     method: 'eth_getCode',
-    params: [accountFromSigner({ signer }), 'latest']
+    params: [getSignerAccount({ signer }), 'latest']
   }
 }
 

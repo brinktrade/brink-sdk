@@ -6,7 +6,7 @@ import randomSigner from '../helpers/randomSigner'
 import ERC20_abi from '../../src/internal/contracts/ERC20.abi'
 import impersonate from '../helpers/impersonate'
 import fundWithERC20 from '../helpers/fundWithERC20'
-import { accountFromSigner } from '@brink-sdk'
+import { getSignerAccount } from '@brink-sdk'
 
 export interface TestContext {
   WHALE: string
@@ -44,7 +44,7 @@ beforeEach(async function () {
 
   this.ethersAccountSigner = await randomSigner()
   this.signerAddress = this.ethersAccountSigner.address
-  this.accountAddress = accountFromSigner({ signer: this.signerAddress })
+  this.accountAddress = getSignerAccount({ signer: this.signerAddress })
 
   const AccountImpl = await ethers.getContractFactory('Account')
   this.proxyAccountContract = await AccountImpl.attach(this.accountAddress)

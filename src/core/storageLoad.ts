@@ -1,4 +1,4 @@
-import accountFromSigner from './accountFromSigner'
+import getSignerAccount from './getSignerAccount'
 import { RpcMethodCall } from '@brinkninja/types'
 
 export type StorageLoadArgs = {
@@ -12,7 +12,7 @@ function storageLoad ({
 }: StorageLoadArgs): RpcMethodCall {
   return {
     method: 'eth_getStorageAt',
-    params: [ accountFromSigner({ signer }), pointer, 'latest']
+    params: [ getSignerAccount({ signer }), pointer, 'latest']
   }
 }
 
