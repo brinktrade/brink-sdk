@@ -3,7 +3,7 @@ import AccountAbi from '../internal/contracts/Account.abi'
 import DeployAndCallAbi from '../internal/contracts/DeployAndCall.abi'
 import { TransactionData } from '@brinkninja/types'
 import Config from '../Config'
-import { accountFromSigner } from '.'
+import { getSignerAccount } from '.'
 
 const { DEPLOY_AND_CALL } = Config
 
@@ -24,7 +24,7 @@ async function metaDelegateCall_EIP1271 ({
   unsignedData = '0x',
   deployAccount = false
 }: MetaDelegateCall_EIP1271Args): Promise<TransactionData> {
-  const account = accountFromSigner({ signer })
+  const account = getSignerAccount({ signer })
   const accountContract = new ethers.Contract(account, AccountAbi)
   const txData = await accountContract.populateTransaction.metaDelegateCall_EIP1271(to, data, signature, unsignedData)
   if (!deployAccount) {

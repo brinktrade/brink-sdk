@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { accountFromSigner } from '.'
+import { getSignerAccount } from '.'
 import AccountAbi from '../internal/contracts/Account.abi'
 import { TransactionData } from '@brinkninja/types'
 
@@ -14,7 +14,7 @@ async function delegateCall ({
   to,
   data
 }: DelegateCallArgs): Promise<TransactionData> {
-  const account = accountFromSigner({ signer })
+  const account = getSignerAccount({ signer })
   const accountContract = new ethers.Contract(account, AccountAbi)
   const txData = await accountContract.populateTransaction.delegateCall(to, data)
   return {

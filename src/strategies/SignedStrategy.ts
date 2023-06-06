@@ -5,7 +5,7 @@ import Strategy from './Strategy'
 import { SignedStrategyArgs, SignedStrategyJSON, SignatureType, ValidationResult, EIP712TypedData } from '@brinkninja/types'
 import Config from '../Config'
 import { validResult, invalidResult } from '../internal/Validation'
-import accountFromSigner from '../core/accountFromSigner'
+import getSignerAccount from '../core/getSignerAccount'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 
 class SignedStrategy {
@@ -46,7 +46,7 @@ class SignedStrategy {
   }
 
   account (): string {
-    return accountFromSigner({ signer: this.signer })
+    return getSignerAccount({ signer: this.signer })
   }
 
   async EIP712Data (strategyData?: string): Promise<EIP712TypedData> {
@@ -81,7 +81,7 @@ class SignedStrategy {
 
     return {
       eip712Data,
-      account: accountFromSigner({ signer: this.signer }),
+      account: getSignerAccount({ signer: this.signer }),
       chainId: this.chainId,
       signer: this.signer,
       signatureType: this.signatureType,

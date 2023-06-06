@@ -2,7 +2,7 @@ import { Strategy } from '.'
 import { StrategyArgs, EIP712TypedData } from '@brinkninja/types'
 import Config from '../Config'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
-import accountFromSigner from '../core/accountFromSigner'
+import getSignerAccount from '../core/getSignerAccount'
 
 const  { getTypedData } = require('@brinkninja/utils/src/typedData')
 
@@ -19,7 +19,7 @@ async function strategyEIP712TypedData ({
   strategy: strategyArgs,
   strategyContract = Config['STRATEGY_TARGET_01'] as string
 }: StrategyEIP712TypedDataArgs): Promise<EIP712TypedData> {  
-  const account = accountFromSigner({ signer })
+  const account = getSignerAccount({ signer })
 
   const strategy = new Strategy(strategyArgs)
   const strategyValidation = strategy.validate()

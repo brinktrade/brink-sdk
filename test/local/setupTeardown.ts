@@ -2,7 +2,7 @@ import '@nomiclabs/hardhat-ethers'
 import _ from 'lodash'
 import { ethers } from 'hardhat'
 import {
-  accountFromSigner,
+  getSignerAccount,
   deployAccount,
   loadBitmap,
   strategyEIP712TypedData,
@@ -36,7 +36,7 @@ beforeEach(async function () {
 
   this.ethersAccountSigner = await randomSigner()
   this.signerAddress = this.ethersAccountSigner.address
-  this.accountAddress = accountFromSigner({ signer: this.signerAddress })
+  this.accountAddress = getSignerAccount({ signer: this.signerAddress })
 
   const AccountImpl = await ethers.getContractFactory('Account')
   this.proxyAccountContract = await AccountImpl.attach(this.accountAddress)
