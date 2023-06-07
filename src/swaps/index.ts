@@ -4,6 +4,9 @@ export { default as getLimitSwapFilledAmount } from './getLimitSwapFilledAmount'
 export * from './getLimitSwapFillState'
 export { default as getLimitSwapFillState } from './getLimitSwapFillState'
 
+export * from './getLimitSwapUnfilledAmount'
+export { default as getLimitSwapUnfilledAmount } from './getLimitSwapUnfilledAmount'
+
 export * from './marketSwapExactInput_getOutput'
 export { default as marketSwapExactInput_getOutput } from './marketSwapExactInput_getOutput'
 
