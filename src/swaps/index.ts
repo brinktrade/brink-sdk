@@ -1,3 +1,6 @@
+export * from './getLimitSwapFilledAmount'
+export { default as getLimitSwapFilledAmount } from './getLimitSwapFilledAmount'
+
 export * from './getLimitSwapFillState'
 export { default as getLimitSwapFillState } from './getLimitSwapFillState'
 
