@@ -63,10 +63,10 @@
     axios "^0.25.0"
     chai "^4.3.4"
 
-"@brinkninja/types@~0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@brinkninja/types/-/types-0.8.2.tgz#0dba953a3e246865c9507d395bb52f81bad94df2"
-  integrity sha512-qJkpgYV8abolqFtCZ+dCHsY/5RZ2HCCkb8qbRc3ghh0MpNtHbA7NBtk783AU9YB3k8lCCUoOzKAmKQGPThglEA==
+"@brinkninja/types@~0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@brinkninja/types/-/types-0.8.3.tgz#b0acf83def09eb421db9b20398e8930608f9b424"
+  integrity sha512-tqnaYODC3eBX+42u/t5LLrjrvUI2i/3N1FmiwEDHD68IJI66ElPTrR+Xb7Eya5nz2WccopzVvFyH9cFUEGW4/A==
   dependencies:
     typescript "^5.0.4"
 
