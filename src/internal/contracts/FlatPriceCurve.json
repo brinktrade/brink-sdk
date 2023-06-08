@@ -1,0 +1,894 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "remainingInput",
+          "type": "uint256"
+        }
+      ],
+      "name": "MaxInputExceeded",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "Q96",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "curvePriceData",
+          "type": "bytes"
+        }
+      ],
+      "name": "calcCurveParams",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "curveParams",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "input",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "curveParams",
+          "type": "bytes"
+        }
+      ],
+      "name": "calcOutput",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "output",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalInput",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "filledInput",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "input",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "curveParams",
+          "type": "bytes"
+        }
+      ],
+      "name": "getOutput",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "output",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b506103ea806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c8063193f63c11461005157806340792465146100775780635d76bcc61461008b578063e4e82682146100a9575b600080fd5b61006461005f366004610225565b6100bc565b6040519081526020015b60405180910390f35b6100646c0100000000000000000000000081565b61009c61009936600461027f565b90565b60405161006e91906102b4565b6100646100b7366004610302565b610103565b60006100c9858585610146565b60006100d58584610103565b905060006100ec6100e6868861035f565b85610103565b90506100f88282610378565b979650505050505050565b6000808280602001905181019061011a919061038b565b90506c0100000000000000000000000061013482866103a4565b61013e91906103bb565b949350505050565b60006101528385610378565b90508082111561017c5760405163375d4aab60e11b81526004810182905260240160405180910390fd5b50505050565b634e487b7160e01b600052604160045260246000fd5b600082601f8301126101a957600080fd5b813567ffffffffffffffff808211156101c4576101c4610182565b604051601f8301601f19908116603f011681019082821181831017156101ec576101ec610182565b8160405283815286602085880101111561020557600080fd5b836020870160208301376000602085830101528094505050505092915050565b6000806000806080858703121561023b57600080fd5b843593506020850135925060408501359150606085013567ffffffffffffffff81111561026757600080fd5b61027387828801610198565b91505092959194509250565b60006020828403121561029157600080fd5b813567ffffffffffffffff8111156102a857600080fd5b61013e84828501610198565b600060208083528351808285015260005b818110156102e1578581018301518582016040015282016102c5565b506000604082860101526040601f19601f8301168501019250505092915050565b6000806040838503121561031557600080fd5b82359150602083013567ffffffffffffffff81111561033357600080fd5b61033f85828601610198565b9150509250929050565b634e487b7160e01b600052601160045260246000fd5b8082018082111561037257610372610349565b92915050565b8181038181111561037257610372610349565b60006020828403121561039d57600080fd5b5051919050565b808202811582820484141761037257610372610349565b6000826103d857634e487b7160e01b600052601260045260246000fd5b50049056fea164736f6c6343000811000a",
+    "sourceMap": "103:489:46:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c8063193f63c11461005157806340792465146100775780635d76bcc61461008b578063e4e82682146100a9575b600080fd5b61006461005f366004610225565b6100bc565b6040519081526020015b60405180910390f35b6100646c0100000000000000000000000081565b61009c61009936600461027f565b90565b60405161006e91906102b4565b6100646100b7366004610302565b610103565b60006100c9858585610146565b60006100d58584610103565b905060006100ec6100e6868861035f565b85610103565b90506100f88282610378565b979650505050505050565b6000808280602001905181019061011a919061038b565b90506c0100000000000000000000000061013482866103a4565b61013e91906103bb565b949350505050565b60006101528385610378565b90508082111561017c5760405163375d4aab60e11b81526004810182905260240160405180910390fd5b50505050565b634e487b7160e01b600052604160045260246000fd5b600082601f8301126101a957600080fd5b813567ffffffffffffffff808211156101c4576101c4610182565b604051601f8301601f19908116603f011681019082821181831017156101ec576101ec610182565b8160405283815286602085880101111561020557600080fd5b836020870160208301376000602085830101528094505050505092915050565b6000806000806080858703121561023b57600080fd5b843593506020850135925060408501359150606085013567ffffffffffffffff81111561026757600080fd5b61027387828801610198565b91505092959194509250565b60006020828403121561029157600080fd5b813567ffffffffffffffff8111156102a857600080fd5b61013e84828501610198565b600060208083528351808285015260005b818110156102e1578581018301518582016040015282016102c5565b506000604082860101526040601f19601f8301168501019250505092915050565b6000806040838503121561031557600080fd5b82359150602083013567ffffffffffffffff81111561033357600080fd5b61033f85828601610198565b9150509250929050565b634e487b7160e01b600052601160045260246000fd5b8082018082111561037257610372610349565b92915050565b8181038181111561037257610372610349565b60006020828403121561039d57600080fd5b5051919050565b808202811582820484141761037257610372610349565b6000826103d857634e487b7160e01b600052601260045260246000fd5b50049056fea164736f6c6343000811000a",
+    "sourceMap": "103:489:46:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;273:385:48;;;;;;:::i;:::-;;:::i;:::-;;;1545:25:103;;;1533:2;1518:18;273:385:48;;;;;;;;211:57;;241:27;211:57;;439:150:46;;;;;;:::i;:::-;570:14;439:150;;;;;;;;:::i;150:205::-;;;;;;:::i;:::-;;:::i;273:385:48:-;407:11;426:53;448:10;460:11;473:5;426:21;:53::i;:::-;486:17;506:36;517:11;530;506:10;:36::i;:::-;486:56;-1:-1:-1;548:16:48;567:44;578:19;592:5;578:11;:19;:::i;:::-;599:11;567:10;:44::i;:::-;548:63;-1:-1:-1;627:26:48;641:12;548:63;627:26;:::i;:::-;618:35;273:385;-1:-1:-1;;;;;;;273:385:48:o;150:205:46:-;239:11;258:17;289:11;278:31;;;;;;;;;;;;:::i;:::-;258:51;-1:-1:-1;241:27:48;324:20:46;258:51;324:5;:20;:::i;:::-;:26;;;;:::i;:::-;315:35;150:205;-1:-1:-1;;;;150:205:46:o;664:237:48:-;763:19;785:24;798:11;785:10;:24;:::i;:::-;763:46;;827:14;819:5;:22;815:82;;;858:32;;-1:-1:-1;;;858:32:48;;;;;1545:25:103;;;1518:18;;858:32:48;;;;;;;815:82;757:144;664:237;;;:::o;14:127:103:-;75:10;70:3;66:20;63:1;56:31;106:4;103:1;96:15;130:4;127:1;120:15;146:718;188:5;241:3;234:4;226:6;222:17;218:27;208:55;;259:1;256;249:12;208:55;295:6;282:20;321:18;358:2;354;351:10;348:36;;;364:18;;:::i;:::-;439:2;433:9;407:2;493:13;;-1:-1:-1;;489:22:103;;;513:2;485:31;481:40;469:53;;;537:18;;;557:22;;;534:46;531:72;;;583:18;;:::i;:::-;623:10;619:2;612:22;658:2;650:6;643:18;704:3;697:4;692:2;684:6;680:15;676:26;673:35;670:55;;;721:1;718;711:12;670:55;785:2;778:4;770:6;766:17;759:4;751:6;747:17;734:54;832:1;825:4;820:2;812:6;808:15;804:26;797:37;852:6;843:15;;;;;;146:718;;;;:::o;869:525::-;964:6;972;980;988;1041:3;1029:9;1020:7;1016:23;1012:33;1009:53;;;1058:1;1055;1048:12;1009:53;1094:9;1081:23;1071:33;;1151:2;1140:9;1136:18;1123:32;1113:42;;1202:2;1191:9;1187:18;1174:32;1164:42;;1257:2;1246:9;1242:18;1229:32;1284:18;1276:6;1273:30;1270:50;;;1316:1;1313;1306:12;1270:50;1339:49;1380:7;1371:6;1360:9;1356:22;1339:49;:::i;:::-;1329:59;;;869:525;;;;;;;:::o;1581:320::-;1649:6;1702:2;1690:9;1681:7;1677:23;1673:32;1670:52;;;1718:1;1715;1708:12;1670:52;1758:9;1745:23;1791:18;1783:6;1780:30;1777:50;;;1823:1;1820;1813:12;1777:50;1846:49;1887:7;1878:6;1867:9;1863:22;1846:49;:::i;1906:546::-;2016:4;2045:2;2074;2063:9;2056:21;2106:6;2100:13;2149:6;2144:2;2133:9;2129:18;2122:34;2174:1;2184:140;2198:6;2195:1;2192:13;2184:140;;;2293:14;;;2289:23;;2283:30;2259:17;;;2278:2;2255:26;2248:66;2213:10;;2184:140;;;2188:3;2373:1;2368:2;2359:6;2348:9;2344:22;2340:31;2333:42;2443:2;2436;2432:7;2427:2;2419:6;2415:15;2411:29;2400:9;2396:45;2392:54;2384:62;;;;1906:546;;;;:::o;2457:388::-;2534:6;2542;2595:2;2583:9;2574:7;2570:23;2566:32;2563:52;;;2611:1;2608;2601:12;2563:52;2647:9;2634:23;2624:33;;2708:2;2697:9;2693:18;2680:32;2735:18;2727:6;2724:30;2721:50;;;2767:1;2764;2757:12;2721:50;2790:49;2831:7;2822:6;2811:9;2807:22;2790:49;:::i;:::-;2780:59;;;2457:388;;;;;:::o;2850:127::-;2911:10;2906:3;2902:20;2899:1;2892:31;2942:4;2939:1;2932:15;2966:4;2963:1;2956:15;2982:125;3047:9;;;3068:10;;;3065:36;;;3081:18;;:::i;:::-;2982:125;;;;:::o;3112:128::-;3179:9;;;3200:11;;;3197:37;;;3214:18;;:::i;3245:184::-;3315:6;3368:2;3356:9;3347:7;3343:23;3339:32;3336:52;;;3384:1;3381;3374:12;3336:52;-1:-1:-1;3407:16:103;;3245:184;-1:-1:-1;3245:184:103:o;3434:168::-;3507:9;;;3538;;3555:15;;;3549:22;;3535:37;3525:71;;3576:18;;:::i;3607:217::-;3647:1;3673;3663:132;;3717:10;3712:3;3708:20;3705:1;3698:31;3752:4;3749:1;3742:15;3780:4;3777:1;3770:15;3663:132;-1:-1:-1;3809:9:103;;3607:217::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "Q96()": "40792465",
+    "calcCurveParams(bytes)": "5d76bcc6",
+    "calcOutput(uint256,bytes)": "e4e82682",
+    "getOutput(uint256,uint256,uint256,bytes)": "193f63c1"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"remainingInput\",\"type\":\"uint256\"}],\"name\":\"MaxInputExceeded\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Q96\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"curvePriceData\",\"type\":\"bytes\"}],\"name\":\"calcCurveParams\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"curveParams\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"input\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"curveParams\",\"type\":\"bytes\"}],\"name\":\"calcOutput\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"output\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"totalInput\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"filledInput\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"input\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"curveParams\",\"type\":\"bytes\"}],\"name\":\"getOutput\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"output\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/PriceCurves/FlatPriceCurve.sol\":\"FlatPriceCurve\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[\":@openzeppelin/=node_modules/@openzeppelin/\",\":@uniswap/=node_modules/@uniswap/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\"]},\"sources\":{\"src/Interfaces/IPriceCurve.sol\":{\"keccak256\":\"0xdf95d83c0f67a500830afeb00f4f773b08163f25d7bdabb9cc5f3db38bcf12bc\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://3ceccddaac5cff4cb39d2c80914081ed5c027ab193eff131be6b6877b9c66527\",\"dweb:/ipfs/Qmcs8nKSZtR4fjY7zGVLGKv36jbmC9JYqtjdQitNWNoJ7t\"]},\"src/PriceCurves/FlatPriceCurve.sol\":{\"keccak256\":\"0xe150631eb21f9a4c2610a2385044592da25b1082fb5b4f7b9888675c2a518260\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://6abffc16f6f155306b319f30dde810ffeeaed09a7b27a7364210a210f1330593\",\"dweb:/ipfs/Qmf9PK3hKdhuZGqGt3iZz4dBej5qTVFFiRNCucB5i59krr\"]},\"src/PriceCurves/PriceCurveBase.sol\":{\"keccak256\":\"0x862e9f3ba08222f5b1912369b9c015ce3f2aff63859e0b3dcbebe356a59ada30\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://181aace5bedfa97df86a444300a9b76e3af514e9f72ef50b5dc1458110cdc96c\",\"dweb:/ipfs/QmaeuSiobSZquFMNBc6JTpxU1PzjSsLMGC88ct6XSR5fbF\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "remainingInput",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "MaxInputExceeded"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "Q96",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes",
+              "name": "curvePriceData",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "calcCurveParams",
+          "outputs": [
+            {
+              "internalType": "bytes",
+              "name": "curveParams",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "input",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "curveParams",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "calcOutput",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "output",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "totalInput",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "filledInput",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "input",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "curveParams",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "getOutput",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "output",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":@uniswap/=node_modules/@uniswap/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":forge-std/=lib/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 800
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "src/PriceCurves/FlatPriceCurve.sol": "FlatPriceCurve"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/Interfaces/IPriceCurve.sol": {
+        "keccak256": "0xdf95d83c0f67a500830afeb00f4f773b08163f25d7bdabb9cc5f3db38bcf12bc",
+        "urls": [
+          "bzz-raw://3ceccddaac5cff4cb39d2c80914081ed5c027ab193eff131be6b6877b9c66527",
+          "dweb:/ipfs/Qmcs8nKSZtR4fjY7zGVLGKv36jbmC9JYqtjdQitNWNoJ7t"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "src/PriceCurves/FlatPriceCurve.sol": {
+        "keccak256": "0xe150631eb21f9a4c2610a2385044592da25b1082fb5b4f7b9888675c2a518260",
+        "urls": [
+          "bzz-raw://6abffc16f6f155306b319f30dde810ffeeaed09a7b27a7364210a210f1330593",
+          "dweb:/ipfs/Qmf9PK3hKdhuZGqGt3iZz4dBej5qTVFFiRNCucB5i59krr"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "src/PriceCurves/PriceCurveBase.sol": {
+        "keccak256": "0x862e9f3ba08222f5b1912369b9c015ce3f2aff63859e0b3dcbebe356a59ada30",
+        "urls": [
+          "bzz-raw://181aace5bedfa97df86a444300a9b76e3af514e9f72ef50b5dc1458110cdc96c",
+          "dweb:/ipfs/QmaeuSiobSZquFMNBc6JTpxU1PzjSsLMGC88ct6XSR5fbF"
+        ],
+        "license": "GPL-3.0-or-later"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/PriceCurves/FlatPriceCurve.sol",
+    "id": 28480,
+    "exportedSymbols": {
+      "FlatPriceCurve": [
+        28479
+      ],
+      "IPriceCurve": [
+        27673
+      ],
+      "MaxInputExceeded": [
+        28628
+      ],
+      "PriceCurveBase": [
+        28717
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "45:548:46",
+    "nodes": [
+      {
+        "id": 28433,
+        "nodeType": "PragmaDirective",
+        "src": "45:24:46",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "=",
+          "0.8",
+          ".17"
+        ]
+      },
+      {
+        "id": 28434,
+        "nodeType": "ImportDirective",
+        "src": "71:30:46",
+        "nodes": [],
+        "absolutePath": "src/PriceCurves/PriceCurveBase.sol",
+        "file": "./PriceCurveBase.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 28480,
+        "sourceUnit": 28718,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 28479,
+        "nodeType": "ContractDefinition",
+        "src": "103:489:46",
+        "nodes": [
+          {
+            "id": 28465,
+            "nodeType": "FunctionDefinition",
+            "src": "150:205:46",
+            "nodes": [],
+            "body": {
+              "id": 28464,
+              "nodeType": "Block",
+              "src": "252:103:46",
+              "nodes": [],
+              "statements": [
+                {
+                  "assignments": [
+                    28447
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 28447,
+                      "mutability": "mutable",
+                      "name": "basePriceX96",
+                      "nameLocation": "263:12:46",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 28464,
+                      "src": "258:17:46",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 28446,
+                        "name": "uint",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "258:4:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 28455,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "id": 28450,
+                        "name": "curveParams",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 28440,
+                        "src": "289:11:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      },
+                      {
+                        "components": [
+                          {
+                            "id": 28452,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "lValueRequested": false,
+                            "nodeType": "ElementaryTypeNameExpression",
+                            "src": "303:4:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_uint256_$",
+                              "typeString": "type(uint256)"
+                            },
+                            "typeName": {
+                              "id": 28451,
+                              "name": "uint",
+                              "nodeType": "ElementaryTypeName",
+                              "src": "303:4:46",
+                              "typeDescriptions": {}
+                            }
+                          }
+                        ],
+                        "id": 28453,
+                        "isConstant": false,
+                        "isInlineArray": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "TupleExpression",
+                        "src": "302:6:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_uint256_$",
+                          "typeString": "type(uint256)"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        },
+                        {
+                          "typeIdentifier": "t_type$_t_uint256_$",
+                          "typeString": "type(uint256)"
+                        }
+                      ],
+                      "expression": {
+                        "id": 28448,
+                        "name": "abi",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": -1,
+                        "src": "278:3:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_magic_abi",
+                          "typeString": "abi"
+                        }
+                      },
+                      "id": 28449,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "memberLocation": "282:6:46",
+                      "memberName": "decode",
+                      "nodeType": "MemberAccess",
+                      "src": "278:10:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_abidecode_pure$__$returns$__$",
+                        "typeString": "function () pure"
+                      }
+                    },
+                    "id": 28454,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "278:31:46",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "258:51:46"
+                },
+                {
+                  "expression": {
+                    "id": 28462,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 28456,
+                      "name": "output",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 28444,
+                      "src": "315:6:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "commonType": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "id": 28461,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "leftExpression": {
+                        "commonType": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "id": 28459,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "id": 28457,
+                          "name": "input",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 28438,
+                          "src": "324:5:46",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "*",
+                        "rightExpression": {
+                          "id": 28458,
+                          "name": "basePriceX96",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 28447,
+                          "src": "332:12:46",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "src": "324:20:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "nodeType": "BinaryOperation",
+                      "operator": "/",
+                      "rightExpression": {
+                        "id": 28460,
+                        "name": "Q96",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 28633,
+                        "src": "347:3:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "src": "324:26:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "315:35:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 28463,
+                  "nodeType": "ExpressionStatement",
+                  "src": "315:35:46"
+                }
+              ]
+            },
+            "baseFunctions": [
+              28709
+            ],
+            "functionSelector": "e4e82682",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "calcOutput",
+            "nameLocation": "159:10:46",
+            "overrides": {
+              "id": 28442,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "221:8:46"
+            },
+            "parameters": {
+              "id": 28441,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28438,
+                  "mutability": "mutable",
+                  "name": "input",
+                  "nameLocation": "176:5:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28465,
+                  "src": "171:10:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28437,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "171:4:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28440,
+                  "mutability": "mutable",
+                  "name": "curveParams",
+                  "nameLocation": "196:11:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28465,
+                  "src": "183:24:46",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 28439,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "183:5:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "170:38:46"
+            },
+            "returnParameters": {
+              "id": 28445,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28444,
+                  "mutability": "mutable",
+                  "name": "output",
+                  "nameLocation": "244:6:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28465,
+                  "src": "239:11:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28443,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "239:4:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "238:13:46"
+            },
+            "scope": 28479,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 28478,
+            "nodeType": "FunctionDefinition",
+            "src": "439:150:46",
+            "nodes": [],
+            "body": {
+              "id": 28477,
+              "nodeType": "Block",
+              "src": "550:39:46",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 28475,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 28473,
+                      "name": "curveParams",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 28471,
+                      "src": "556:11:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_memory_ptr",
+                        "typeString": "bytes memory"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 28474,
+                      "name": "curvePriceData",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 28467,
+                      "src": "570:14:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_memory_ptr",
+                        "typeString": "bytes memory"
+                      }
+                    },
+                    "src": "556:28:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_memory_ptr",
+                      "typeString": "bytes memory"
+                    }
+                  },
+                  "id": 28476,
+                  "nodeType": "ExpressionStatement",
+                  "src": "556:28:46"
+                }
+              ]
+            },
+            "baseFunctions": [
+              28716
+            ],
+            "functionSelector": "5d76bcc6",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "calcCurveParams",
+            "nameLocation": "448:15:46",
+            "overrides": {
+              "id": 28469,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "506:8:46"
+            },
+            "parameters": {
+              "id": 28468,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28467,
+                  "mutability": "mutable",
+                  "name": "curvePriceData",
+                  "nameLocation": "478:14:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28478,
+                  "src": "465:27:46",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 28466,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "465:5:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "464:29:46"
+            },
+            "returnParameters": {
+              "id": 28472,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28471,
+                  "mutability": "mutable",
+                  "name": "curveParams",
+                  "nameLocation": "537:11:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28478,
+                  "src": "524:24:46",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 28470,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "524:5:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "523:26:46"
+            },
+            "scope": 28479,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 28435,
+              "name": "PriceCurveBase",
+              "nameLocations": [
+                "130:14:46"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 28717,
+              "src": "130:14:46"
+            },
+            "id": 28436,
+            "nodeType": "InheritanceSpecifier",
+            "src": "130:14:46"
+          }
+        ],
+        "canonicalName": "FlatPriceCurve",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          28479,
+          28717,
+          27673
+        ],
+        "name": "FlatPriceCurve",
+        "nameLocation": "112:14:46",
+        "scope": 28480,
+        "usedErrors": [
+          28628
+        ]
+      }
+    ],
+    "license": "GPL-3.0-or-later"
+  },
+  "id": 46
+}

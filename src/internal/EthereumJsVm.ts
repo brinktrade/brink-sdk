@@ -8,6 +8,9 @@ import config from '../Config'
 import StrategyBuilder01 from './contracts/StrategyBuilder01.json'
 import PrimitiveBuilder01 from './contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from './contracts/UnsignedDataBuilder01.json'
+import FlatPriceCurve from './contracts/FlatPriceCurve.json'
+import LinearPriceCurve from './contracts/LinearPriceCurve.json'
+import QuadraticPriceCurve from './contracts/QuadraticPriceCurve.json'
 import SwapIO from './contracts/SwapIO.json'
 import IdsProof from '../strategies/IdsProof'
 import {
@@ -44,6 +47,9 @@ export class EthereumJsVm {
   StrategyBuilder!: ethers.Contract
   PrimitiveBuilder!: ethers.Contract
   UnsignedDataBuilder!: ethers.Contract
+  FlatPriceCurve!: ethers.Contract
+  LinearPriceCurve!: ethers.Contract
+  QuadraticPriceCurve!: ethers.Contract
   SwapIO!: ethers.Contract
 
   constructor (
@@ -65,6 +71,9 @@ export class EthereumJsVm {
       this.StrategyBuilder = await this.deployContract(StrategyBuilder01, this._strategyContractAddress, this._primitivesContractAddress)
       this.PrimitiveBuilder = await this.deployContract(PrimitiveBuilder01)
       this.UnsignedDataBuilder = await this.deployContract(UnsignedDataBuilder01)
+      this.FlatPriceCurve = await this.deployContract(FlatPriceCurve)
+      this.LinearPriceCurve = await this.deployContract(LinearPriceCurve)
+      this.QuadraticPriceCurve = await this.deployContract(QuadraticPriceCurve)
       this.SwapIO = await this.deployContract(SwapIO)
 
       this._vmInitializing = false
