@@ -24,7 +24,7 @@ export default async function marketSwapExactOutput_getInput ({
   feeMin
 }: marketSwapExactOutput_getInputArgs): Promise<marketSwapExactOutput_getInputResult> {
   const result = await evm.callContractFn(
-    evm.SwapIO,
+    'SwapIO',
     'marketSwapExactOutput_getInput',
     BigInt(output),
     BigInt(priceX96),
