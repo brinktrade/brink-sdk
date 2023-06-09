@@ -17,7 +17,7 @@ export default async function getLimitSwapUnfilledAmount ({
   let result
   try {
     result = await evm.callContractFn(
-      evm.SwapIO,
+      'SwapIO',
       'getUnfilledAmount',
       {
         id: BigInt(0), // SwapIO call for getUnfilledAmount doesn't use id

@@ -26,7 +26,7 @@ export default async function limitSwapExactInput_getOutput ({
   let result
   try {
     result = await evm.callContractFn(
-      evm.SwapIO,
+      'SwapIO',
       'limitSwapExactInput_getOutput',
       BigInt(output),
       BigInt(filledOutput),

@@ -28,6 +28,15 @@ export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
   EIP1271: SignatureTypeEnum.EIP1271
 }
 
+type EvmContractName =
+  'StrategyBuilder' |
+  'PrimitiveBuilder' |
+  'UnsignedDataBuilder' |
+  'FlatPriceCurve' |
+  'LinearPriceCurve' |
+  'QuadraticPriceCurve' |
+  'SwapIO'
+
 // use this randomly generated private key to sign transactions the the VM running in SDK
 const caller = Address.fromString('0x21753FDE2F04Ad242cf3DE684129BE7B11817F09')
 const privateKey = '0xb52943248cc157950f600feb24b2a5949b3ee818395b6525dd0ed5e6b6ccf289'
@@ -111,7 +120,7 @@ export class EthereumJsVm {
   }
 
   async primitiveData (functionName: PrimitiveFunctionName, ...args: ContractCallParam[]): Promise<string> {
-    const primitiveData = await this.callContractFn(this.PrimitiveBuilder, functionName as unknown as string, ...args)
+    const primitiveData = await this.callContractFn('PrimitiveBuilder', functionName as unknown as string, ...args)
     return `0x${cleanDynamicBytes(primitiveData)}`
   }
 
@@ -125,7 +134,7 @@ export class EthereumJsVm {
     )
 
     const strategyData: string = await this.callContractFn(
-      this.StrategyBuilder,
+      'StrategyBuilder',
       'strategyData(bytes[][],(address,bytes)[],(address,bytes)[])',
       ordersBytesArray,
       beforeCalls,
@@ -147,7 +156,7 @@ export class EthereumJsVm {
     chainId: BigIntish
   ): Promise<string> {
     const messageHash: string = await this.callContractFn(
-      this.StrategyBuilder,
+      'StrategyBuilder',
       `getMessageHash`,
       signatureTypeMap[signatureType],
       data,
@@ -164,7 +173,7 @@ export class EthereumJsVm {
     callData: CallStruct
   ): Promise<string> {
     const unsignedMarketSwapData: string = await this.callContractFn(
-      this.UnsignedDataBuilder,
+      'UnsignedDataBuilder',
       'unsignedMarketSwapData',
       recipient,
       tokenInIdsProof.toStruct(),
@@ -183,7 +192,7 @@ export class EthereumJsVm {
     }
 
     const unsignedData: string = await this.callContractFn(
-      this.UnsignedDataBuilder,
+      'UnsignedDataBuilder',
       `unsignedData(uint8,${'bytes,'.repeat(unsignedCalls.length).slice(0, -1)})`,
       orderIndex,
       ...unsignedCalls
@@ -191,9 +200,10 @@ export class EthereumJsVm {
     return `0x${cleanDynamicBytes(unsignedData)}`
   }
 
-  async callContractFn (contract: ethers.Contract, fnName: string, ...args: ContractCallParam[]): Promise<any> {
+  async callContractFn (contractName: EvmContractName, fnName: string, ...args: ContractCallParam[]): Promise<any> {
     await this._initVM()
 
+    const contract = this[contractName]
     const tx = await contract.populateTransaction[fnName](...args)
 
     const result = await this._vm.evm.runCall({

@@ -29,7 +29,7 @@ export default async function marketSwapExactInput_getOutput ({
   let result
   try {
     result = await evm.callContractFn(
-      evm.SwapIO,
+      'SwapIO',
       'marketSwapExactInput_getOutput',
       BigInt(input),
       BigInt(priceX96),
