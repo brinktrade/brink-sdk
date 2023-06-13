@@ -51,6 +51,7 @@ export class EthereumJsVm {
   _common: Common
   _vm!: VM
   _vmInitializing: boolean = false
+  _vmInitialized: boolean = false
 
   _nonce: number = 0
   StrategyBuilder!: ethers.Contract
@@ -69,29 +70,34 @@ export class EthereumJsVm {
     this._primitivesContractAddress = primitivesContractAddress
 
     this._common = new Common({ chain: Chain.Mainnet })
-    this._initVM()
   }
 
   async _initVM () {
-    if (!this._vm && !this._vmInitializing) {
+    if (this._vmInitializing) {
+      // waiting for vm to initialize
+      while (!this._vmInitialized) {
+        // wait for 500 ms
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+    } else if (!this._vmInitializing && !this._vmInitialized) {
+      // initialize the vm
       this._vmInitializing = true
       this._vm = await VM.create({ common: this._common })
       
-      this.StrategyBuilder = await this.deployContract(StrategyBuilder01, this._strategyContractAddress, this._primitivesContractAddress)
-      this.PrimitiveBuilder = await this.deployContract(PrimitiveBuilder01)
-      this.UnsignedDataBuilder = await this.deployContract(UnsignedDataBuilder01)
-      this.FlatPriceCurve = await this.deployContract(FlatPriceCurve)
-      this.LinearPriceCurve = await this.deployContract(LinearPriceCurve)
-      this.QuadraticPriceCurve = await this.deployContract(QuadraticPriceCurve)
-      this.SwapIO = await this.deployContract(SwapIO)
+      this.StrategyBuilder = await this._deployContract(StrategyBuilder01, this._strategyContractAddress, this._primitivesContractAddress)
+      this.PrimitiveBuilder = await this._deployContract(PrimitiveBuilder01)
+      this.UnsignedDataBuilder = await this._deployContract(UnsignedDataBuilder01)
+      this.FlatPriceCurve = await this._deployContract(FlatPriceCurve)
+      this.LinearPriceCurve = await this._deployContract(LinearPriceCurve)
+      this.QuadraticPriceCurve = await this._deployContract(QuadraticPriceCurve)
+      this.SwapIO = await this._deployContract(SwapIO)
 
       this._vmInitializing = false
+      this._vmInitialized = true
     }
   }
 
-  async deployContract (contractJSON: any, ...contractDeployParams: any[]): Promise<ethers.Contract> {
-    await this._initVM()
-
+  async _deployContract (contractJSON: any, ...contractDeployParams: any[]): Promise<ethers.Contract> {
     const factory = new ethers.ContractFactory(contractJSON.abi, contractJSON.bytecode.object)
     const { data } = factory.getDeployTransaction(...contractDeployParams)
     const parsedTx = ethers.utils.parseTransaction(await signer.signTransaction({ data }))
