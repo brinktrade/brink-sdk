@@ -1,5 +1,5 @@
 import Config from '../Config'
-import { StrategyArgs, StrategyJSON, ValidationResult, TokenAmount } from '@brinkninja/types'
+import { StrategyArgs, StrategyJSON, ValidationResult, TokenAmount, Bit } from '@brinkninja/types'
 import Order from './Order'
 import { EthereumJsVm as evm, invalidResult, validResult, groupAndSumTokenAmounts } from '../internal'
 
@@ -50,6 +50,21 @@ class Strategy {
       })
     })
     return groupAndSumTokenAmounts(tokenInputs)
+  }
+
+  bits (): Bit[] {
+    const bits: Bit[] = []
+    this.orders.forEach(order => {
+      order.bits().forEach(bit => {
+        if (!bits.find(existingBit => (     
+          existingBit.bitmapIndex == bit.bitmapIndex &&
+          existingBit.bit == bit.bit
+        ))) {
+          bits.push(bit)
+        }
+      })
+    })
+    return bits
   }
 
   validate (): ValidationResult {
