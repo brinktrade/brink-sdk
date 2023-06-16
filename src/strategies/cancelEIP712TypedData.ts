@@ -2,7 +2,7 @@ import { EIP712TypedData, BigIntish } from '@brinkninja/types'
 import Config from '../Config'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 import { getSignerAccount } from '../core'
-import encodeFunctionCall from '../internal/encodeFunctionCall'
+import encodeFunctionCall from '../utils/encodeFunctionCall'
 
 const  { getTypedData } = require('@brinkninja/utils/src/typedData')
 

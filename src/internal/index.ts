@@ -5,7 +5,7 @@ export * from './constants'
 export * from './createPrimitive'
 export { default as createPrimitive } from './createPrimitive'
 
-export { default as encodeFunctionCall } from './encodeFunctionCall'
+export { default as encodeFunctionCall } from '../utils/encodeFunctionCall'
 
 export { default as EthereumJsVm } from './EthereumJsVm'
 

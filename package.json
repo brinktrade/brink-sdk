@@ -67,6 +67,10 @@
     "./swaps": {
       "types": "./dist/swaps/index.d.ts",
       "default": "./dist/swaps/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "default": "./dist/utils/index.js"
     }
   },
   "scripts": {
