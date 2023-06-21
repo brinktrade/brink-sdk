@@ -1,5 +1,7 @@
 export { default as bigIntToBinaryString } from './bigIntToBinaryString'
 
+export { default as bitJSONToBit } from './bitJSONToBit'
+
 export * from './constants'
 
 export * from './createPrimitive'

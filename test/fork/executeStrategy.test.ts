@@ -97,7 +97,7 @@ async function successfulExecuteStrategy (this: TestContext): Promise<{
   // build the market swap strategy
   const strategy = new Strategy()
   strategy.orders[0] = new Order()
-  strategy.orders[0].primitives[0] = new UseBit({ bitmapIndex: BigInt(0), bit: BigInt(2**0) })
+  strategy.orders[0].primitives[0] = new UseBit({ index: BigInt(0), value: BigInt(2**0) })
   strategy.orders[0].primitives[1] = new MarketSwapExactInput({
     oracle: priceOracle,
     signer: this.signerAddress,

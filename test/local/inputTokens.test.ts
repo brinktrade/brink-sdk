@@ -34,7 +34,7 @@ const strategyForTokenInputs1 = {
   orders: [
     {
       primitives: [
-        { functionName: 'useBit', params: { bitmapIndex: BigInt(0), bit: BigInt(1) } } as PrimitiveArgs,
+        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(1) } } as PrimitiveArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -54,7 +54,7 @@ const strategyForTokenInputs1 = {
     },
     {
       primitives: [
-        { functionName: 'useBit', params: { bitmapIndex: BigInt(1), bit: BigInt(1) } } as PrimitiveArgs,
+        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as PrimitiveArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -74,7 +74,7 @@ const strategyForTokenInputs1 = {
     },
     {
       primitives: [
-        { functionName: 'useBit', params: { bitmapIndex: BigInt(1), bit: BigInt(1) } } as PrimitiveArgs,
+        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as PrimitiveArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {

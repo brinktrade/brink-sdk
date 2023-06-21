@@ -13,8 +13,8 @@ describe('Order.bits()', function () {
     const strategy1 = new Strategy(strategyWithBits)
     const bits = strategy1.orders[1].bits()
     expect(bits.length).to.equal(1)
-    expect(bits[0].bitmapIndex).to.equal(1n)
-    expect(bits[0].bit).to.equal(1n)
+    expect(bits[0].index).to.equal(1n)
+    expect(bits[0].value).to.equal(1n)
   })
 })
 
@@ -23,10 +23,10 @@ describe('Strategy.bits()', function () {
     const strategy1 = new Strategy(strategyWithBits)
     const bits = strategy1.bits()
     expect(bits.length).to.equal(2)
-    expect(bits[0].bitmapIndex).to.equal(0n)
-    expect(bits[0].bit).to.equal(1n)
-    expect(bits[1].bitmapIndex).to.equal(1n)
-    expect(bits[1].bit).to.equal(1n)
+    expect(bits[0].index).to.equal(0n)
+    expect(bits[0].value).to.equal(1n)
+    expect(bits[1].index).to.equal(1n)
+    expect(bits[1].value).to.equal(1n)
   })
 
   it('should return empty array with strategy has no bits', async function () {
@@ -40,7 +40,7 @@ const strategyWithBits = {
   orders: [
     {
       primitives: [
-        { functionName: 'useBit', params: { bitmapIndex: BigInt(0), bit: BigInt(1) } } as PrimitiveArgs,
+        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(1) } } as PrimitiveArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -60,7 +60,7 @@ const strategyWithBits = {
     },
     {
       primitives: [
-        { functionName: 'useBit', params: { bitmapIndex: BigInt(1), bit: BigInt(1) } } as PrimitiveArgs,
+        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as PrimitiveArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -80,7 +80,7 @@ const strategyWithBits = {
     },
     {
       primitives: [
-        { functionName: 'useBit', params: { bitmapIndex: BigInt(1), bit: BigInt(1) } } as PrimitiveArgs,
+        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as PrimitiveArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {

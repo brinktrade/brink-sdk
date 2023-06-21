@@ -1,7 +1,17 @@
-import { OrderArgs, OrderJSON, ValidationResult, PrimitiveFunctionName, PrimitiveParamValue, PrimitiveJSON, TokenAmount, Bit } from '@brinkninja/types'
+import {
+  OrderArgs,
+  OrderJSON,
+  ValidationResult,
+  PrimitiveFunctionName,
+  PrimitiveParamValue,
+  PrimitiveJSON,
+  TokenAmount,
+  Bit,
+  BitJSON
+} from '@brinkninja/types'
 import Primitive from './Primitives/Primitive'
 import InputTokenPrimitive from './Primitives/InputTokenPrimitive'
-import { createPrimitive, invalidResult, validResult, groupAndSumTokenAmounts } from '../internal'
+import { createPrimitive, invalidResult, validResult, groupAndSumTokenAmounts, bitJSONToBit } from '../internal'
 
 export type OrderConstructorArgs = {
   primitives: PrimitiveJSON[]
@@ -44,13 +54,10 @@ class Order {
     const bits: Bit[] = []
     this.primitives.forEach(primitive => {
       if (primitiveHasBitData(primitive)) {
-        const bit: Bit = {
-          bitmapIndex: BigInt(primitive.paramsJSON.bitmapIndex.toString()),
-          bit: BigInt(primitive.paramsJSON.bit.toString())
-        }
+        const bit = bitJSONToBit(primitive.paramsJSON as BitJSON)
         if(!bits.find(existingBit => (     
-          existingBit.bitmapIndex == bit.bitmapIndex &&
-          existingBit.bit == bit.bit
+          existingBit.index == bit.index &&
+          existingBit.value == bit.value
         ))) {
           bits.push(bit)
         }
@@ -83,7 +90,7 @@ class Order {
 }
 
 const primitiveHasBitData = (primitive: Primitive): boolean => (
-  primitive.paramsJSON.hasOwnProperty('bitmapIndex') && primitive.paramsJSON.hasOwnProperty('bit')
+  primitive.paramsJSON.hasOwnProperty('index') && primitive.paramsJSON.hasOwnProperty('value')
 )
 
 export default Order
