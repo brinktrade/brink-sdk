@@ -5,18 +5,18 @@ describe('nextBit()', function () {
   describe('when bitmap is empty', function () {
     it('should return the first bit', function () {
       const bitmaps = { 0: binaryToHex('0') }
-      const { bitmapIndex, bit } = nextBit({ bitmaps })
-      expectBigIntEqual(bitmapIndex, BigInt(0))
-      expectBigIntEqual(bit, BigInt(1))
+      const { index, value } = nextBit({ bitmaps })
+      expectBigIntEqual(index, BigInt(0))
+      expectBigIntEqual(value, BigInt(1))
     })
   })
 
   describe('when bits have been stored consecutively', function () {
     it('should return first available bit after stored bits', function () {
       const bitmaps = { 0: binaryToHex('111') }
-      const { bitmapIndex, bit } = nextBit({ bitmaps })
-      expectBigIntEqual(bitmapIndex, BigInt(0))
-      expectBigIntEqual(bit, BigInt(2**3))
+      const { index, value } = nextBit({ bitmaps })
+      expectBigIntEqual(index, BigInt(0))
+      expectBigIntEqual(value, BigInt(2**3))
     })
   })
 
@@ -24,9 +24,9 @@ describe('nextBit()', function () {
     it('should return first available bit', function () {
       // first 4 bits flipped, 5th unflipped, 6 and 7th flipped
       const bitmaps = { 0: binaryToHex(reverseBinStr('1111011')) }
-      const { bitmapIndex, bit } = nextBit({ bitmaps })
-      expectBigIntEqual(bitmapIndex, BigInt(0))
-      expectBigIntEqual(bit, BigInt(2**4))
+      const { index, value } = nextBit({ bitmaps })
+      expectBigIntEqual(index, BigInt(0))
+      expectBigIntEqual(value, BigInt(2**4))
     })
   })
 
@@ -37,9 +37,9 @@ describe('nextBit()', function () {
         0: binaryToHex('1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111'),
         1: '0x00'
       }
-      const { bitmapIndex, bit } = nextBit({ bitmaps })
-      expectBigIntEqual(bitmapIndex, BigInt(1))
-      expectBigIntEqual(bit, BigInt(2**0))
+      const { index, value } = nextBit({ bitmaps })
+      expectBigIntEqual(index, BigInt(1))
+      expectBigIntEqual(value, BigInt(2**0))
     })
   })
 })
