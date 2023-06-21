@@ -14,7 +14,7 @@ describe('cancel', function () {
     await this.deployAccount()
 
     const eip712Data = await cancelEIP712TypedData({
-      signer: this.signerAddress, chainId: 31337, bitmapIndex: BigInt(0), bit: BigInt(1)
+      signer: this.signerAddress, chainId: 31337, bit: { index: BigInt(0), value: BigInt(1) }
     })
 
     const signature = await this.ethersAccountSigner._signTypedData(
@@ -25,8 +25,10 @@ describe('cancel', function () {
 
     const txData = await cancelWithSignature({
       signer: this.signerAddress,
-      bitmapIndex: BigInt(0),
-      bit: BigInt(1),
+      bit: {
+        index: BigInt(0),
+        value: BigInt(1)
+      },
       signature
     })
 
@@ -37,7 +39,7 @@ describe('cancel', function () {
 
   it('cancel with signature when account is not deployed', async function () {
     const eip712Data = await cancelEIP712TypedData({
-      signer: this.signerAddress, chainId: 31337, bitmapIndex: BigInt(0), bit: BigInt(1)
+      signer: this.signerAddress, chainId: 31337, bit: { index: BigInt(0), value: BigInt(1) }
     })
 
     const signature = await this.ethersAccountSigner._signTypedData(
@@ -48,8 +50,10 @@ describe('cancel', function () {
 
     const txData = await cancelWithSignature({
       signer: this.signerAddress,
-      bitmapIndex: BigInt(0),
-      bit: BigInt(1),
+      bit: {
+        index: BigInt(0),
+        value: BigInt(1)
+      },
       signature,
       deployAccount: true
     })
@@ -63,8 +67,10 @@ describe('cancel', function () {
     await this.deployAccount()
     const txData = await cancel({
       signer: this.signerAddress,
-      bitmapIndex: BigInt(0),
-      bit: BigInt(1)
+      bit: {
+        index: BigInt(0),
+        value: BigInt(1)
+      }
     })
 
     expect(await this.loadBitmap(BigInt(0))).to.equal(BMP_0)
