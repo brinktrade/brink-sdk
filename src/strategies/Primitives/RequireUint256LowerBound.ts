@@ -35,13 +35,13 @@ export default class RequireUint256LowerBound extends Primitive {
       requiresUnsignedCall: false,
       paramsJSON: {
         oracle,
-        lowerBound: lowerBound.toString()
+        lowerBound: lowerBound?.toString()
       },
       paramTypes: RequireUint256LowerBoundFunctionParams,
       paramValues: [
         oracle?.address,
         oracle?.params,
-        lowerBound.toString()
+        lowerBound?.toString()
       ]
     })
   }

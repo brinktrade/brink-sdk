@@ -82,9 +82,9 @@ export default class MarketSwapExactInput extends InputTokenPrimitive {
         signer,
         tokenIn: (new Token(tokenIn)).toJSON(),
         tokenOut: (new Token(tokenOut)).toJSON(),
-        tokenInAmount: tokenInAmount.toString(),
-        feePercent: feePercent.toString(),
-        feeMin: feeMin.toString()
+        tokenInAmount: tokenInAmount?.toString(),
+        feePercent: feePercent?.toString(),
+        feeMin: feeMin?.toString()
       },
       paramTypes: MarketSwapExactInputFunctionParams,
       paramValues: [
