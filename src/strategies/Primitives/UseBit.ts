@@ -1,10 +1,7 @@
-import { BigIntish, PrimitiveParamType } from '@brinkninja/types'
+import { BitArgs, PrimitiveParamType } from '@brinkninja/types'
 import Primitive from './Primitive'
 
-export type UseBitArgs = {
-  bitmapIndex: BigIntish
-  bit: BigIntish
-}
+export type UseBitArgs = BitArgs
 
 export const UseBitFunctionParams: PrimitiveParamType[] = [
   {
@@ -20,22 +17,19 @@ export const UseBitFunctionParams: PrimitiveParamType[] = [
 ]
 
 export default class UseBit extends Primitive {
-  public constructor ({
-    bitmapIndex,
-    bit
-  }: UseBitArgs) {
+  public constructor ({ index, value }: UseBitArgs) {
     super({
       functionName: 'useBit',
       type: 'require',
       requiresUnsignedCall: false,
       paramsJSON: {
-        bitmapIndex: bitmapIndex.toString(),
-        bit: bit.toString()
+        index: index?.toString(),
+        value: value?.toString()
       },
       paramTypes: UseBitFunctionParams,
       paramValues: [
-        bitmapIndex,
-        bit
+        index?.toString(),
+        value?.toString()
       ]
     })
   }

@@ -29,8 +29,8 @@ async function buildStrategy () {
             {
               functionName: 'useBit',
               params: {
-                bitmapIndex: BigInt(0),
-                bit: BigInt(1)
+                index: BigInt(0),
+                value: BigInt(1)
               }
             } as PrimitiveArgs,
             {

@@ -20,11 +20,11 @@ export default class RequireBlockNotMined extends Primitive {
       type: 'require',
       requiresUnsignedCall: false,
       paramsJSON: {
-        blockNumber: blockNumber.toString()
+        blockNumber: blockNumber?.toString()
       },
       paramTypes: RequireBlockNotMinedFunctionParams,
       paramValues: [
-        blockNumber.toString()
+        blockNumber?.toString()
       ]
     })
   }

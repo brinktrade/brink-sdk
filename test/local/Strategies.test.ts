@@ -55,8 +55,8 @@ describe('Strategies', function () {
 
     strategy1.orders[0] = new Order()
     strategy1.orders[0].primitives[0] = new UseBit({
-      bitmapIndex: BigInt(0),
-      bit: BigInt(1)
+      index: BigInt(0),
+      value: BigInt(1)
     })
     strategy1.orders[0].primitives[1] = new RequireUint256LowerBound({
       oracle: usdc_weth_500_twap,
@@ -122,7 +122,7 @@ describe('Strategies', function () {
     it('order with zero swaps should be invalid', function () {
       const strategy = new Strategy()
       strategy.orders[0] = new Order()
-      strategy.orders[0].primitives[0] = new UseBit({ bitmapIndex: BigInt(0), bit: BigInt(1) })
+      strategy.orders[0].primitives[0] = new UseBit({ index: BigInt(0), value: BigInt(1) })
       expect(strategy.validate().valid).to.be.false
       expect(strategy.validate().reason).to.equal('WRONG_NUMBER_OF_SWAPS')
     })
@@ -136,8 +136,8 @@ const validStrategy1 = {
         {
           functionName: 'useBit',
           params: {
-            bitmapIndex: BigInt(0),
-            bit: BigInt(1)
+            index: BigInt(0),
+            value: BigInt(1)
           }
         } as PrimitiveArgs,
         {

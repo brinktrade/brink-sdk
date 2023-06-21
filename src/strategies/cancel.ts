@@ -1,5 +1,5 @@
 import config from '../Config'
-import { TransactionData, BigIntish } from '@brinkninja/types'
+import { TransactionData, BitArgs } from '@brinkninja/types'
 import { delegateCall } from '../core'
 import encodeFunctionCall from '../utils/encodeFunctionCall'
 
@@ -7,21 +7,19 @@ const { CANCEL_VERIFIER } = config
 
 export type CancelArgs = {
   signer: string
-  bitmapIndex: BigIntish
-  bit: BigIntish
+  bit: BitArgs
 }
 
 async function cancel ({
   signer,
-  bitmapIndex,
   bit
 }: CancelArgs): Promise<TransactionData> {
   const cancelFnCallData = encodeFunctionCall({
     functionName: 'cancel',
     paramTypes: ['uint256', 'uint256'],
     params: [
-      BigInt(bitmapIndex),
-      BigInt(bit)
+      BigInt(bit.index),
+      BigInt(bit.value)
     ]
   })
 

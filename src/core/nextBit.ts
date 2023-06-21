@@ -1,3 +1,4 @@
+import { Bit } from '@brinkninja/types'
 import { bigIntToBinaryString } from '../internal'
 
 export type NextBitArgs = {
@@ -6,7 +7,7 @@ export type NextBitArgs = {
 
 function nextBit ({
   bitmaps
-}: NextBitArgs): { bitmapIndex: BigInt, bit: BigInt } {
+}: NextBitArgs): Bit {
   let bitmapIndex = BigInt(0)
   let bit = BigInt(1)
 
@@ -36,7 +37,10 @@ function nextBit ({
   bitmapIndex = BigInt(curBitmapIndex)
   bit = BigInt(2)**BigInt(nextBitIndex)
 
-  return { bitmapIndex, bit }
+  return { 
+    index: bitmapIndex,
+    value: bit
+  }
 }
 
 export default nextBit

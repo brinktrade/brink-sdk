@@ -57,8 +57,8 @@ class Strategy {
     this.orders.forEach(order => {
       order.bits().forEach(bit => {
         if (!bits.find(existingBit => (     
-          existingBit.bitmapIndex == bit.bitmapIndex &&
-          existingBit.bit == bit.bit
+          existingBit.index == bit.index &&
+          existingBit.value == bit.value
         ))) {
           bits.push(bit)
         }
