@@ -6,7 +6,7 @@ export type twapValueToPriceArgs = {
   tokenB_decimals: BigIntish
 }
 
-// converts a price decimal number (e.g. 0.0006) to a TWAP value
+// converts a TWAP value to a price decimal number (e.g. 0.0006)
 export default function twapValueToPrice ({
   twapValue,
   tokenA_decimals,
