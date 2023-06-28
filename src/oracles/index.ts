@@ -7,8 +7,8 @@ export { default as readUint256Oracle } from './readUint256Oracle'
 export * from './TokenPairOracle'
 export { default as TokenPairOracle } from './TokenPairOracle'
 
-export * from './twapPriceX96'
-export { default as twapPriceX96 } from './twapPriceX96'
+export * from './priceToTwapValue'
+export { default as priceToTwapValue } from './priceToTwapValue'
 
 export * from './Uint256Oracle'
 export { default as Uint256Oracle } from './Uint256Oracle'

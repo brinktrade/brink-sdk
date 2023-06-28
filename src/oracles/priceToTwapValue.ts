@@ -1,16 +1,17 @@
 import { BigIntish } from "@brinkninja/types"
 
-export type twapPriceX96Args = {
+export type priceToTwapValueArgs = {
   price: number
   tokenA_decimals: BigIntish
   tokenB_decimals: BigIntish
 }
 
-export default function twapPriceX96 ({
+// converts a price decimal number (e.g. 0.0006) to a TWAP value
+export default function priceToTwapValue ({
   price,
   tokenA_decimals,
   tokenB_decimals
-}: twapPriceX96Args): bigint {
-  // twapPriceX96 = price * 2**96 * 10**(tokenB_decimals - tokenA_decimals)
+}: priceToTwapValueArgs): bigint {
+  // priceToTwapValue = price * 2**96 * 10**(tokenB_decimals - tokenA_decimals)
   return BigInt(price * 2**96 * 10**(Number(tokenB_decimals) - Number(tokenA_decimals)))
 }
