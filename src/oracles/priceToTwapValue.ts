@@ -12,6 +12,6 @@ export default function priceToTwapValue ({
   tokenA_decimals,
   tokenB_decimals
 }: priceToTwapValueArgs): bigint {
-  // priceToTwapValue = price * 2**96 * 10**(tokenB_decimals - tokenA_decimals)
+  // twapValue = price * 2**96 * 10**(tokenB_decimals - tokenA_decimals)
   return BigInt(price * 2**96 * 10**(Number(tokenB_decimals) - Number(tokenA_decimals)))
 }
