@@ -1,5 +1,6 @@
 import { utils } from 'ethers'
 import { FeeAmount } from '@uniswap/v3-sdk'
+import { TokenArgs } from '@brinkninja/types'
 import { Token } from '../strategies'
 import Config from '../Config'
 import { BigIntish } from '@brinkninja/types'
@@ -9,8 +10,8 @@ import TokenPairOracle from './TokenPairOracle'
 const abiCoder = utils.defaultAbiCoder
 
 export type UniV3TwapConstructorArgs = {
-  tokenA: Token
-  tokenB: Token
+  tokenA: TokenArgs
+  tokenB: TokenArgs
   interval: BigIntish
   fee?: FeeAmount
   initCodeHashManualOverride?: string
