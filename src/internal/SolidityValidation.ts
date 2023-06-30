@@ -1,3 +1,5 @@
+import { BigIntish } from '@brinkninja/types'
+
 export function validateBytes(paramName: string, input: string): void {
   const validHexPattern = /^0x([0-9a-fA-F][0-9a-fA-F])*$/;
   if (!validHexPattern.test(input)) {
@@ -5,14 +7,14 @@ export function validateBytes(paramName: string, input: string): void {
   }
 }
 
-export function validateUint(paramName: string, input: BigInt, size: number = 256): void {
+export function validateUint(paramName: string, input: BigIntish, size: number = 256): void {
   if (size <= 0 || size > 256 || !Number.isInteger(size)) {
     throw new Error(`${paramName}: Invalid uint size: ${size}`);
   }
 
-  const maxValue = BigInt(2 ** size) - 1n;
+  const maxValue = BigInt(2)**BigInt(size) - 1n;
 
-  if (input < 0n || input > maxValue) {
+  if (BigInt(input) < 0n || BigInt(input) > maxValue) {
     throw new Error(`${paramName}: Value ${input} out of range for Solidity uint${size}`);
   }
 }

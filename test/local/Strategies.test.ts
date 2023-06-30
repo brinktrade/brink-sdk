@@ -15,6 +15,8 @@ import {
   StrategyArgs
 } from '@brink-sdk'
 
+const { MAX_UINT256 } = require('@brinkninja/utils').constants
+
 const { TWAP_ADAPTER } = Config
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
@@ -125,6 +127,48 @@ describe('Strategies', function () {
       strategy.orders[0].primitives[0] = new UseBit({ index: BigInt(0), value: BigInt(1) })
       expect(strategy.validate().valid).to.be.false
       expect(strategy.validate().reason).to.equal('WRONG_NUMBER_OF_SWAPS')
+    })
+
+    it('uint overflow should throw an error', function () {
+      const strategy = new Strategy()
+      strategy.orders[0] = new Order()
+      expect(createSwapStrategyWithUintOverflow.bind(this)).to.throw('out of range for Solidity uint256')  
+      
+      function createSwapStrategyWithUintOverflow () {
+        new MarketSwapExactInput({
+          oracle: {
+            address: '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
+            params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
+          },
+          signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+          tokenIn: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' } as TokenArgs,
+          tokenOut: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' } as TokenArgs,
+          tokenInAmount: BigInt(MAX_UINT256) + BigInt(1), // uint overflow
+          feePercent: BigInt(10000),
+          feeMin: BigInt(0)
+        })
+      }
+    })
+
+    it('uint under 0 should throw an error', function () {
+      const strategy = new Strategy()
+      strategy.orders[0] = new Order()
+      expect(createSwapStrategyWithUintOverflow.bind(this)).to.throw('out of range for Solidity uint256')  
+      
+      function createSwapStrategyWithUintOverflow () {
+        new MarketSwapExactInput({
+          oracle: {
+            address: '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
+            params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
+          },
+          signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+          tokenIn: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' } as TokenArgs,
+          tokenOut: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' } as TokenArgs,
+          tokenInAmount: -BigInt(10**18),
+          feePercent: BigInt(10000),
+          feeMin: BigInt(0)
+        })
+      }
     })
   })
 })

@@ -31,7 +31,7 @@ export default function verifyParams ({
       validateAddress(t.name, v.toString())
     } else if (t.type === 'bytes') {
       validateBytes(t.name, v.toString())
-    } else if (t.type.slice(4) === 'uint') {
+    } else if (t.type.slice(0, 4) === 'uint') {
       validateUint(t.name, BigInt(v.toString()), parseInt(t.type.slice(4)))
     }
   }
