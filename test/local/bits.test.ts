@@ -36,6 +36,13 @@ describe('Strategy.bits()', function () {
   })
 })
 
+describe('useBit with invalid bit', function () {
+  it('should throw error', async function () {
+    const createStrategyWithInvalidBit = () => { new Strategy(strategyWithInvalidBit) }
+    expect(createStrategyWithInvalidBit).to.throw('invalid bit')
+  })
+})
+
 const strategyWithBits = {
   orders: [
     {
@@ -122,5 +129,31 @@ const strategyWithoutBits = {
         } as PrimitiveArgs
       ]
     },
+  ]
+}
+
+const strategyWithInvalidBit = {
+  orders: [
+    {
+      primitives: [
+        // 3 is invalid, 2**0, 2**1, and 2**2 are valid individual bits, but 3 is 2**0 | 2**1
+        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(3) } } as PrimitiveArgs,
+        {
+          functionName: 'marketSwapExactInput',
+          params: {
+            oracle: {
+              address: '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
+              params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
+            },
+            signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+            tokenIn: { address: USDC_ADDRESS } as TokenArgs,
+            tokenOut: { address: WETH_ADDRESS } as TokenArgs,
+            tokenInAmount: BigInt(1450000000),
+            feePercent: BigInt(10000),
+            feeMin: BigInt(0)
+          }
+        } as PrimitiveArgs
+      ]
+    }
   ]
 }

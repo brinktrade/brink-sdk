@@ -1,5 +1,6 @@
 import { BitArgs, PrimitiveParamType } from '@brinkninja/types'
 import Primitive from './Primitive'
+import { bitIsValid } from '../../core'
 
 export type UseBitArgs = BitArgs
 
@@ -18,6 +19,9 @@ export const UseBitFunctionParams: PrimitiveParamType[] = [
 
 export default class UseBit extends Primitive {
   public constructor ({ index, value }: UseBitArgs) {
+    if (!bitIsValid({ bit: value })) {
+      throw new Error('invalid bit')
+    }
     super({
       functionName: 'useBit',
       type: 'require',
