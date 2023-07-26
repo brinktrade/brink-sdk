@@ -7,6 +7,9 @@ export { default as accountCode } from './accountCode'
 export * from './getSignerAccount'
 export { default as getSignerAccount } from './getSignerAccount'
 
+export * from './bitIsValid'
+export { default as bitIsValid } from './bitIsValid'
+
 export * from './bitmapPointer'
 export { default as bitmapPointer } from './bitmapPointer'
 
