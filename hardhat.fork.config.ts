@@ -13,7 +13,7 @@ const config = {
       allowUnlimitedContractSize: true,
       forking: {
         url: process.env.MAINNET_RPC_URL,
-        blockNumber: 17098427
+        blockNumber: 17923800
       }
     }
   },

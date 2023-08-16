@@ -16,7 +16,7 @@ describe('UniV3Twap', function () {
       tokenB: weth,
       interval: BigInt(1000)
     })
-    expect(uniV3Twap.address).to.equal(Config['TWAP_ADAPTER'])
+    expect(uniV3Twap.address).to.equal(Config['TWAP_ADAPTER_02'])
   })
 
   it('should return inverse TWAP adapter data from token pair input where B < A', async function () {
@@ -25,6 +25,6 @@ describe('UniV3Twap', function () {
       tokenB: dai,
       interval: BigInt(1000)
     })
-    expect(uniV3Twap.address).to.equal(Config['TWAP_INVERSE_ADAPTER'])
+    expect(uniV3Twap.address).to.equal(Config['TWAP_INVERSE_ADAPTER_02'])
   })
 })
