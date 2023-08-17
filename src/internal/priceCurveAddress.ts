@@ -1,7 +1,8 @@
 import { PriceCurveType } from '@brinkninja/types'
 import { EthereumJsVm as evm } from '.'
 
-export default function priceCurveAddress (priceCurve: PriceCurveType): string {
+export default async function priceCurveAddress (priceCurve: PriceCurveType): Promise<string> {
+  await evm._initVM()
   switch (priceCurve) {
     case 'flat':
       return evm.FlatPriceCurve.address

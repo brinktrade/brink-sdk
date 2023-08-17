@@ -31,7 +31,7 @@ export default async function limitSwapExactInput_getOutput ({
       BigInt(output),
       BigInt(filledOutput),
       BigInt(totalOutput),
-      priceCurveAddress(priceCurve),
+      await priceCurveAddress(priceCurve),
       priceCurveParams
     )
   } catch (err: any) {
