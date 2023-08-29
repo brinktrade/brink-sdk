@@ -1,14 +1,18 @@
 import { FillStateParamsJSON, FillStateParamsArgs, BigIntish, FillStateParamsStruct } from '@brinkninja/types'
+import { JsonStructBuilder } from './JsonStructBuilder'
 
-class FillStateParams {
+class FillStateParams implements JsonStructBuilder<FillStateParamsStruct, FillStateParamsJSON> {
   id: BigIntish
   sign: boolean
   startX96: BigIntish
 
   public constructor (args: FillStateParamsArgs) {
+    if (!args.id) {
+      throw new Error(`id is required for FillStateParams`)
+    }
     this.id = args.id
-    this.sign = args.sign
-    this.startX96 = args.startX96
+    this.sign = args.sign || true
+    this.startX96 = args.startX96 || 0
   }
 
   public toStruct(): FillStateParamsStruct {

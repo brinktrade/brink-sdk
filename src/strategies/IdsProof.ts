@@ -1,6 +1,7 @@
 import { IdsProofStruct, IdsProofArgs, IdsProofJSON, BigIntish } from '@brinkninja/types'
+import { JsonStructBuilder } from './JsonStructBuilder'
 
-class IdsProof {
+class IdsProof implements JsonStructBuilder<IdsProofStruct, IdsProofJSON> {
   ids: BigInt[]
   merkleProof_hashes: string[]
   merkleProof_flags: boolean[]

@@ -1,6 +1,7 @@
 import { TokenArgs, TokenStandard, TokenStruct, TokenJSON } from '@brinkninja/types'
+import { JsonStructBuilder } from './JsonStructBuilder'
 
-class Token {
+class Token implements JsonStructBuilder<TokenStruct, TokenJSON> {
   address: string
   standard: TokenStandard
   idsMerkleRoot: string
