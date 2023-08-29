@@ -4,6 +4,7 @@ import RequireBlockNotMined from '../strategies/Primitives/RequireBlockNotMined'
 import RequireUint256LowerBound from '../strategies/Primitives/RequireUint256LowerBound'
 import UseBit from '../strategies/Primitives/UseBit'
 import { PrimitiveParamValue, PrimitiveFunctionName } from '@brinkninja/types'
+import LimitSwapExactInput from '../strategies/Primitives/LimitSwapExactInput'
 
 type PrimitiveMapping = {
   [key in PrimitiveFunctionName]: typeof Primitive
@@ -17,6 +18,7 @@ function createMappingObject(mapping: Record<string, Function>): PrimitiveMappin
 }
 
 const primitiveMapping: PrimitiveMapping = createMappingObject({
+  limitSwapExactInput: LimitSwapExactInput,
   marketSwapExactInput: MarketSwapExactInput,
   requireBlockNotMined: RequireBlockNotMined,
   requireUint256LowerBound: RequireUint256LowerBound,

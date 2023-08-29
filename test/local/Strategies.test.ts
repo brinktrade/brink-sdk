@@ -12,7 +12,8 @@ import {
   Config,
   PrimitiveArgs,
   OracleJSON,
-  StrategyArgs
+  StrategyArgs,
+  FillStateParams
 } from '@brink-sdk'
 
 const { MAX_UINT256 } = require('@brinkninja/utils').constants
@@ -21,9 +22,15 @@ const { TWAP_ADAPTER_02 } = Config
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f'
+
 
 const USDC_TOKEN = new Token({ address: USDC_ADDRESS })
 const WETH_TOKEN = new Token({ address: WETH_ADDRESS })
+const DAI_TOKEN =  new Token({ address: DAI_ADDRESS })
+
+const FLAT_PRICE_CURVE_ADDRESS = '0xc509733b8dddbab9369a96f6f216d6e59db3900f'
+const PRICE_CURVE_PARAMS = '0x0000000000000000000000000000000000000000000d1b71758e219680000000' //hex representation of a DAI/WETH price, 0.0002 WETH as x96, x96 price = 0.0002 * 2**96 = 15845632502852868278059008
 
 describe('Strategies', function () {
   it('should build basic strategy and convert to JSON', async function () {
@@ -31,6 +38,13 @@ describe('Strategies', function () {
     const strategyJSON = await strategy1.toJSON()
     expect(strategyJSON.orders.length).to.equal(1)
     expect(strategyJSON.orders[0].primitives.length).to.equal(4)
+  })
+
+  it('should build basic limitSwapExactInput and convert to JSON', async function () {
+    const strategy1 = new Strategy(validLimitSwapExactInput)
+    const strategyJSON = await strategy1.toJSON()
+    expect(strategyJSON.orders.length).to.equal(1)
+    expect(strategyJSON.orders[0].primitives.length).to.equal(3)
   })
 
   it('strategy JSON serialize/deserialize should succeed', async function () {
@@ -213,6 +227,46 @@ const validStrategy1 = {
             tokenInAmount: BigInt(1450000000),
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
+          }
+        } as PrimitiveArgs
+      ]
+    }
+  ]
+}
+
+const validLimitSwapExactInput = {
+  orders: [
+    {
+      primitives: [
+        {
+          functionName: 'useBit',
+          params: {
+            index: BigInt(0),
+            value: BigInt(1)
+          }
+        } as PrimitiveArgs,
+        {
+          functionName: 'requireBlockNotMined',
+          params: {
+            blockNumber: BigInt(169832100000000)
+          }
+        } as PrimitiveArgs,
+        {
+          functionName: 'limitSwapExactInput',
+          params: {
+            priceCurve: {
+              address: FLAT_PRICE_CURVE_ADDRESS,
+              params: PRICE_CURVE_PARAMS
+            },
+            signer: '0x8EB8a3b98659Cce290402893d0123abb75E3ab28',
+            tokenIn: { address: '0x6b175474e89094c44da98b954eedeac495271d0f' } as TokenArgs,
+            tokenOut: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' } as TokenArgs,
+            tokenInAmount: BigInt(1000_000000000000000000),
+            fillStateParams: {
+              id: BigInt(1),
+              sign: true,
+              startX96: BigInt(0)
+            } as FillStateParams
           }
         } as PrimitiveArgs
       ]

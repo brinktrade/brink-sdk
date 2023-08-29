@@ -1,3 +1,6 @@
+export * from './LimitSwapExactInput'
+export { default as LimitSwapExactInput } from './LimitSwapExactInput'
+
 export * from './MarketSwapExactInput'
 export { default as MarketSwapExactInput } from './MarketSwapExactInput'
 
