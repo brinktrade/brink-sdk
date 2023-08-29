@@ -30,5 +30,8 @@ export { default as strategyEIP712TypedData } from './strategyEIP712TypedData'
 export * from './Token'
 export { default as Token } from './Token'
 
+export * from './FillStateParams'
+export { default as FillStateParams } from './FillStateParams'
+
 export * from './unsignedMarketSwapData'
 export { default as unsignedMarketSwapData } from './unsignedMarketSwapData'

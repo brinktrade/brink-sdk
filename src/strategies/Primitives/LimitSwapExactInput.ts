@@ -1,21 +1,15 @@
-import { TokenArgs, PrimitiveParamType, BigIntish } from '@brinkninja/types'
+import { TokenArgs, PrimitiveParamType, BigIntish, PriceCurveJSON, FillStateParamsArgs } from '@brinkninja/types'
+import { FillStateParams } from '..'
 import Token from '../Token'
 import InputTokenPrimitive from './InputTokenPrimitive'
 
 export type LimitSwapExactInputArgs = {
-  priceCurveAddress: string
-  priceCurveParams: string
+  priceCurve: PriceCurveJSON
   signer: string
   tokenIn: TokenArgs
   tokenOut: TokenArgs
   tokenInAmount: BigIntish,
-  fillStateParams: FillStateParamsJSON
-}
-
-export type FillStateParamsJSON = {
-  id: BigIntish
-  startX96: BigIntish
-  sign: boolean
+  fillStateParams: FillStateParamsArgs
 }
 
 export const LimitSwapExactInputFunctionParams: PrimitiveParamType[] = [
@@ -49,20 +43,9 @@ export const LimitSwapExactInputFunctionParams: PrimitiveParamType[] = [
     type: 'uint256',
     signed: true
   },
-  {
-    name: 'fillStateId',
-    type: 'uint64',
-    signed: true
-  },
-  {
-    name: 'fillStateStartX96',
-    type: 'uint128',
-    signed: true
-  },
-  {
-    name: 'fillStateSign',
-    type: 'boolean',
-    signed: true
+  { name: 'fillStateParams', 
+    type: 'FillStateParams', 
+    signed: true 
   },
   {
     name: 'data',
@@ -73,8 +56,7 @@ export const LimitSwapExactInputFunctionParams: PrimitiveParamType[] = [
 
 export default class LimitSwapExactInput extends InputTokenPrimitive {
   public constructor ({
-    priceCurveAddress,
-    priceCurveParams,
+    priceCurve,
     signer,
     tokenIn,
     tokenOut,
@@ -87,26 +69,24 @@ export default class LimitSwapExactInput extends InputTokenPrimitive {
       requiresUnsignedCall: true,
       paramsJSON: {
         priceCurve: {
-          address: priceCurveAddress,
-          params: priceCurveParams
+          address: priceCurve.address,
+          params: priceCurve.params
         },
         signer,
         tokenIn: (new Token(tokenIn)).toJSON(),
         tokenOut: (new Token(tokenOut)).toJSON(),
         tokenInAmount: tokenInAmount?.toString(),
-        fillStateParams
+        fillStateParams: (new FillStateParams(fillStateParams)).toJSON()
       },
       paramTypes: LimitSwapExactInputFunctionParams,
       paramValues: [
-        priceCurveAddress,
-        priceCurveParams,
+        priceCurve.address,
+        priceCurve.params,
         signer,
         (new Token(tokenIn)).toStruct(),
         (new Token(tokenOut)).toStruct(),
         tokenInAmount,
-        fillStateParams.id,
-        fillStateParams.startX96,
-        fillStateParams.sign
+        (new FillStateParams(fillStateParams)).toStruct()
       ],
       inputTokenParam: 'tokenIn',
       inputAmountParam: 'tokenInAmount'
