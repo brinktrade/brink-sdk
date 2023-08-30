@@ -13,7 +13,7 @@ import {
   PrimitiveArgs,
   OracleJSON,
   StrategyArgs,
-  FillStateParams
+  FillStateParamsArgs
 } from '@brink-sdk'
 
 const { MAX_UINT256 } = require('@brinkninja/utils').constants
@@ -266,7 +266,7 @@ const validLimitSwapExactInput = {
               id: BigInt(1),
               sign: true,
               startX96: BigInt(0)
-            } as FillStateParams
+            } as FillStateParamsArgs
           }
         } as PrimitiveArgs
       ]
