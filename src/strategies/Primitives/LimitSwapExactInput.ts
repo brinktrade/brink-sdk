@@ -14,16 +14,6 @@ export type LimitSwapExactInputArgs = {
 
 export const LimitSwapExactInputFunctionParams: PrimitiveParamType[] = [
   {
-    name: 'priceCurveAddress',
-    type: 'address',
-    signed: true
-  },
-  {
-    name: 'priceCurveParams',
-    type: 'bytes',
-    signed: true
-  },
-  {
     name: 'owner',
     type: 'address',
     signed: true
@@ -41,6 +31,16 @@ export const LimitSwapExactInputFunctionParams: PrimitiveParamType[] = [
   {
     name: 'tokenInAmount',
     type: 'uint256',
+    signed: true
+  },
+  {
+    name: 'priceCurveAddress',
+    type: 'address',
+    signed: true
+  },
+  {
+    name: 'priceCurveParams',
+    type: 'bytes',
     signed: true
   },
   { name: 'fillStateParams', 
@@ -80,12 +80,12 @@ export default class LimitSwapExactInput extends InputTokenPrimitive {
       },
       paramTypes: LimitSwapExactInputFunctionParams,
       paramValues: [
-        priceCurve.address,
-        priceCurve.params,
         signer,
         (new Token(tokenIn)).toStruct(),
         (new Token(tokenOut)).toStruct(),
         tokenInAmount,
+        priceCurve.address,
+        priceCurve.params,
         (new FillStateParams(fillStateParams)).toStruct()
       ],
       inputTokenParam: 'tokenIn',
