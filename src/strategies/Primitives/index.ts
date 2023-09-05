@@ -1,3 +1,6 @@
+export * from './BlockInterval'
+export { default as BlockInterval } from './BlockInterval'
+
 export * from './LimitSwapExactInput'
 export { default as LimitSwapExactInput } from './LimitSwapExactInput'
 

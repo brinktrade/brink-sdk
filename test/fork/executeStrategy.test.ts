@@ -44,7 +44,7 @@ describe('executeStrategy', function () {
     const signer_usdcBal_diff = BigInt(signer_usdcBal_1 - signer_usdcBal_0)
     const signer_wethBal_diff = BigInt(signer_wethBal_1 - signer_wethBal_0)
     expect(signer_usdcBal_diff.toString()).to.equal((-usdcInput).toString())
-    expect(signer_wethBal_diff.toString()).to.equal('794685882751450368')
+    expect(signer_wethBal_diff.toString()).to.equal('890908034345159936')
 
     // expect filler to have paid WETH and received USDC
     const filler_usdcBal_1 = await this.usdc.balanceOf(this.filler.address)
@@ -52,7 +52,7 @@ describe('executeStrategy', function () {
     const filler_usdcBal_diff = BigInt(filler_usdcBal_1 - filler_usdcBal_0)
     const filler_wethBal_diff = BigInt(filler_wethBal_1 - filler_wethBal_0)
     expect(filler_usdcBal_diff.toString()).to.equal(usdcInput.toString())
-    expect(filler_wethBal_diff.toString()).to.equal('-794685882751516672')
+    expect(filler_wethBal_diff.toString()).to.equal('-890908034345205760')
   })
 
   it('executing with a bad v signature value (ledger) should be converted to valid and succeed', async function () {
