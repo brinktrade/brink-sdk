@@ -54,6 +54,11 @@
   resolved "https://registry.yarnpkg.com/@brinkninja/strategies/-/strategies-0.3.4.tgz#201c42b1ec10d2600fc0dc6c602d050ae2e79db4"
   integrity sha512-ypUQgv6nhvw7+cuIedlo/WwvwPDM6xSdsz8IWMvivjzaJu7NGnsKoMmG7b9v9nb6zYuNeIHVBlChdiuMRsd75w==
 
+"@brinkninja/strategies@^0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@brinkninja/strategies/-/strategies-0.3.5.tgz#9c730bf0bdab392973bbe525453e7d55ebe7ff02"
+  integrity sha512-SimvG7mr2Lqs1SedzM6BnNAheiIjuCPsXOaXZnMuECQCCjBweTp7yzBNvm/S+wh8YpH5JJQkid8B1riftsDPyQ==
+
 "@brinkninja/strategy-adapters@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@brinkninja/strategy-adapters/-/strategy-adapters-0.1.0.tgz#145a64d07b00f9a6ba88dffca569641fce45bbff"
@@ -63,10 +68,10 @@
     axios "^0.25.0"
     chai "^4.3.4"
 
-"@brinkninja/types@~0.9.7":
-  version "0.9.7"
-  resolved "https://registry.yarnpkg.com/@brinkninja/types/-/types-0.9.7.tgz#9f416a7f492e9d6d113ac4e2167d939b9b2758f2"
-  integrity sha512-9IjcHTbFoIHWBe5jB0kBUAeRY6A3Owqox1YKCtAgo3rIYkNBpVOEruNLa6sSx9sL98bvBtqOTo6ppv/7igqpBw==
+"@brinkninja/types@~0.9.8":
+  version "0.9.8"
+  resolved "https://registry.yarnpkg.com/@brinkninja/types/-/types-0.9.8.tgz#327485c335e766e7b95b438b9437523f9a6c665b"
+  integrity sha512-ltH8dzTFacs6WDpqAvNuueXxsMUxws7i/ItcwhAWKo8eYrFAvnrvHHiEzYBoHY0Wwijup64aOq9rc/BzQa89vg==
   dependencies:
     typescript "^5.0.4"
 

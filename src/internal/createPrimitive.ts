@@ -2,6 +2,7 @@ import Primitive from '../strategies/Primitives/Primitive'
 import MarketSwapExactInput from '../strategies/Primitives/MarketSwapExactInput'
 import RequireBlockNotMined from '../strategies/Primitives/RequireBlockNotMined'
 import RequireUint256LowerBound from '../strategies/Primitives/RequireUint256LowerBound'
+import BlockInterval from '../strategies/Primitives/BlockInterval'
 import UseBit from '../strategies/Primitives/UseBit'
 import { PrimitiveParamValue, PrimitiveFunctionName } from '@brinkninja/types'
 import LimitSwapExactInput from '../strategies/Primitives/LimitSwapExactInput'
@@ -22,6 +23,7 @@ const primitiveMapping: PrimitiveMapping = createMappingObject({
   marketSwapExactInput: MarketSwapExactInput,
   requireBlockNotMined: RequireBlockNotMined,
   requireUint256LowerBound: RequireUint256LowerBound,
+  blockInterval: BlockInterval,
   useBit: UseBit
 })
 
