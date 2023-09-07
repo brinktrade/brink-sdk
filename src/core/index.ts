@@ -42,3 +42,9 @@ export { default as saltedDeployerAddress } from './saltedDeployerAddress'
 
 export * from './storageLoad'
 export { default as storageLoad } from './storageLoad'
+
+export * from './blockIntervalPointer'
+export { default as blockIntervalPointer } from './blockIntervalPointer'
+
+export * from './loadBlockInterval'
+export { default as loadBlockInterval } from './loadBlockInterval'
