@@ -13,7 +13,7 @@ function loadBlockInterval ({
   id
 }: loadBlockIntervalArgs): RpcMethodCall {
 
-  const pointer  = blockIntervalPointer({ id });
+  const pointer = blockIntervalPointer({ id });
   if(!pointer) throw new Error(`Invalid pointer for block interval ${id}`)
 
   return storageLoad({ signer, pointer })

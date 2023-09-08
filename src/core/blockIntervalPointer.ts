@@ -10,7 +10,7 @@ const blockIntervalPointer = ({
 }: blockIntervalPointerArgs): string | null => {
   return soliditySha3(
     { type: 'uint64', value: id.toString() },
-    { type: 'string', value: "blockInterval" }
+    { type: 'string', value: 'blockInterval' }
   )
 }
 
