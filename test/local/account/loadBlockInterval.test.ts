@@ -12,4 +12,14 @@ describe('loadBlockInterval()', function () {
     const val = await ethers.provider.send(rpcCall.method, rpcCall.params)
     expect(val).to.equal(EMPTY_INTERVAL_0)
   })
+  it('when using invalid id, should thrown invalid', async function () {
+    await this.deployAccount()
+    const id = undefined
+    try {
+      loadBlockInterval({ signer: this.signerAddress, id: id as any })
+      expect.fail('Should have thrown')
+    } catch (e: any) {
+      expect(e.message).to.equal('Interval id is required')
+    }
+  })
 })
