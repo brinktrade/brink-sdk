@@ -35,3 +35,6 @@ export { default as FillStateParams } from './FillStateParams'
 
 export * from './unsignedMarketSwapData'
 export { default as unsignedMarketSwapData } from './unsignedMarketSwapData'
+
+export * from './getBlockIntervalState'
+export { default as getBlockIntervalState } from './getBlockIntervalState'
