@@ -41,12 +41,12 @@ describe('executeStrategy with limitSwapExactInput', function () {
     })
     await this.defaultSigner.sendTransaction(tx)
 
-    // expect signer to have paid USDC and received WETH
+    // expect signer to have paid DAI and received WETH
     const signer_daiBal_1 = await this.dai.balanceOf(this.ethersAccountSigner.address)
     const signer_daiBal_diff = BigInt(signer_daiBal_1 - signer_daiBal_0)
     expect(signer_daiBal_diff.toString()).to.equal((-daiInput).toString())
 
-    // expect filler to have paid WETH and received USDC
+    // expect filler to have paid WETH and received DAI
     const filler_daiBal_1 = await this.dai.balanceOf(this.filler.address)
     const filler_daiBal_diff = BigInt(filler_daiBal_1 - filler_daiBal_0)
     expect(filler_daiBal_diff.toString()).to.equal(daiInput.toString())
@@ -108,11 +108,11 @@ async function successfulExecuteStrategy (this: TestContext): Promise<{
     signer: this.ethersAccountSigner.address
   })
 
-  // fund and approve USDC
+  // fund and approve DAI
   await fundWithERC20(this.whale, this.DAI_ADDRESS, this.ethersAccountSigner.address, daiInput)
   await this.dai.connect(this.ethersAccountSigner).approve(this.accountAddress, daiInput)
 
-  // use the USDC/WETH price oracle to get the exact expected WETH output
+  // use the DAI/WETH price oracle to get the exact expected WETH output
   const wethOutput: bigint = await limitSwapExactInput_getOutput({ input: daiInput, filledInput: BigInt(0), totalInput: daiInput, priceCurve: `flat`, priceCurveParams: priceCurve.params })
 
   // get call data to fill the swap
