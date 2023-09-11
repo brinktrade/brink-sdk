@@ -54,10 +54,10 @@
   resolved "https://registry.yarnpkg.com/@brinkninja/strategies/-/strategies-0.3.4.tgz#201c42b1ec10d2600fc0dc6c602d050ae2e79db4"
   integrity sha512-ypUQgv6nhvw7+cuIedlo/WwvwPDM6xSdsz8IWMvivjzaJu7NGnsKoMmG7b9v9nb6zYuNeIHVBlChdiuMRsd75w==
 
-"@brinkninja/strategies@^0.3.5":
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/@brinkninja/strategies/-/strategies-0.3.5.tgz#9c730bf0bdab392973bbe525453e7d55ebe7ff02"
-  integrity sha512-SimvG7mr2Lqs1SedzM6BnNAheiIjuCPsXOaXZnMuECQCCjBweTp7yzBNvm/S+wh8YpH5JJQkid8B1riftsDPyQ==
+"@brinkninja/strategies@^0.3.6":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@brinkninja/strategies/-/strategies-0.3.6.tgz#4bbf606cc5f37e16cbcef9b352b0682d167344e0"
+  integrity sha512-zY6Cihl8mB4q181ub3ic4r8Tqk9vHFMp+G8ThZvxY6tVoy5vtR63kKl9vKhoT2z5KQ7Vf1j+WYaxUJRXYnVi2A==
 
 "@brinkninja/strategy-adapters@^0.1.0":
   version "0.1.0"
