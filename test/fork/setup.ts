@@ -11,10 +11,12 @@ import { getSignerAccount } from '@brink-sdk'
 export interface TestContext {
   WHALE: string
   USDC_ADDRESS: string
-  WETH_ADDRESS: string
+  WETH_ADDRESS: string,
+  DAI_ADDRESS: string,
   defaultSigner: SignerWithAddress
   weth: Contract
   usdc: Contract
+  dai: Contract
   ethersAccountSigner: Wallet
   signerAddress: string
   accountAddress: string
@@ -35,12 +37,14 @@ beforeEach(async function () {
 
   this.USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
   this.WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+  this.DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f'
 
   const signers = await ethers.getSigners()
   this.defaultSigner = signers[0]
 
   this.weth = new ethers.Contract(this.WETH_ADDRESS, ERC20_abi, this.defaultSigner)
   this.usdc = new ethers.Contract(this.USDC_ADDRESS, ERC20_abi, this.defaultSigner)
+  this.dai = new ethers.Contract(this.DAI_ADDRESS, ERC20_abi, this.defaultSigner)
 
   this.ethersAccountSigner = await randomSigner()
   this.signerAddress = this.ethersAccountSigner.address
