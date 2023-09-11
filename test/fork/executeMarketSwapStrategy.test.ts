@@ -17,7 +17,7 @@ import {
 } from '@brink-sdk'
 import fundWithERC20 from '../helpers/fundWithERC20'
 
-describe('executeStrategy', function () {
+describe('executeStrategy with marketSwapExactInput', function () {
   it('should execute a simple market swap strategy', async function () {
     const deployTx = await deployAccount({ signer: this.signerAddress })
     await this.defaultSigner.sendTransaction(deployTx)

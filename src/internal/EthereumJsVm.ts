@@ -189,6 +189,25 @@ export class EthereumJsVm {
     return `0x${cleanDynamicBytes(unsignedMarketSwapData)}`
   }
 
+  async unsignedLimitSwapData (
+    recipient: string,
+    amount: BigIntish,
+    tokenInIdsProof: IdsProof,
+    tokenOutIdsProof: IdsProof,
+    callData: CallStruct
+  ): Promise<string> {
+    const unsignedLimitSwapData: string = await this.callContractFn(
+      'UnsignedDataBuilder',
+      'unsignedLimitSwapData',
+      recipient,
+      amount,
+      tokenInIdsProof.toStruct(),
+      tokenOutIdsProof.toStruct(),
+      callData
+    )
+    return `0x${cleanDynamicBytes(unsignedLimitSwapData)}`
+  }
+
   async unsignedData (orderIndex: number, unsignedCalls: string[]): Promise<string> {
     if (unsignedCalls.length === 0) {
       throw new Error(`unsignedData needs at least 1 unsignedCall`)

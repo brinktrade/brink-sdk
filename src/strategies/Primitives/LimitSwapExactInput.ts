@@ -49,7 +49,7 @@ export const LimitSwapExactInputFunctionParams: PrimitiveParamType[] = [
   },
   {
     name: 'data',
-    type: 'UnsignedMarketSwapData',
+    type: 'UnsignedLimitSwapData',
     signed: false
   }
 ]
