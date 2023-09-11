@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { getBlockIntervalState } from '@brink-sdk'
 
-describe('getBolckIntervalState()', function () {
+describe('getBlockIntervalState()', function () {
   it('when slot is empty, should return 0 for start and counter', function () {
     const slot = 0
     const { counter, start } = getBlockIntervalState({ slot })
