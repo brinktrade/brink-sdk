@@ -33,6 +33,9 @@ export { default as Token } from './Token'
 export * from './FillStateParams'
 export { default as FillStateParams } from './FillStateParams'
 
+export * from './unsignedLimitSwapData'
+export { default as unsignedLimitSwapData } from './unsignedLimitSwapData'
+
 export * from './unsignedMarketSwapData'
 export { default as unsignedMarketSwapData } from './unsignedMarketSwapData'
 
