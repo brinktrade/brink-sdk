@@ -19,11 +19,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Authenticate with private NPM package
-      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
     - name: Set yarn registry
       run: yarn config set registry https://registry.npmjs.org
+
+    - name: Authenticate with private NPM package
+      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
     - name: Install dependencies
       run: yarn install
