@@ -26,7 +26,7 @@ jobs:
       run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
     - name: Install dependencies
-      run: yarn install
+      run: yarn install --registry https://registry.npmjs.org/
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
