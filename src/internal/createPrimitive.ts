@@ -1,5 +1,6 @@
 import Primitive from '../strategies/Primitives/Primitive'
 import MarketSwapExactInput from '../strategies/Primitives/MarketSwapExactInput'
+import RequireBlockMined from '../strategies/Primitives/RequireBlockMined'
 import RequireBlockNotMined from '../strategies/Primitives/RequireBlockNotMined'
 import RequireUint256LowerBound from '../strategies/Primitives/RequireUint256LowerBound'
 import BlockInterval from '../strategies/Primitives/BlockInterval'
@@ -21,6 +22,7 @@ function createMappingObject(mapping: Record<string, Function>): PrimitiveMappin
 const primitiveMapping: PrimitiveMapping = createMappingObject({
   limitSwapExactInput: LimitSwapExactInput,
   marketSwapExactInput: MarketSwapExactInput,
+  requireBlockMined: RequireBlockMined,
   requireBlockNotMined: RequireBlockNotMined,
   requireUint256LowerBound: RequireUint256LowerBound,
   blockInterval: BlockInterval,
