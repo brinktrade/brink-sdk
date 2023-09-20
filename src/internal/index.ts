@@ -15,6 +15,10 @@ export { default as getUniV3Pool } from './getUniV3Pool'
 
 export { default as groupAndSumTokenAmounts } from './groupAndSumTokenAmounts'
 
+export { default as intentArgsToStrategyArgs } from './intentArgsToStrategyArgs'
+
+export { default as intentSegmentArgsToOrderArgs } from './intentSegmentArgsToOrderArgs'
+
 export { default as priceCurveAddress } from './priceCurveAddress'
 
 export { default as sigToValidECDSA } from './sigToValidECDSA'

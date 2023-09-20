@@ -7,6 +7,9 @@ export { default as LimitSwapExactInput } from './LimitSwapExactInput'
 export * from './MarketSwapExactInput'
 export { default as MarketSwapExactInput } from './MarketSwapExactInput'
 
+export * from './RequireBlockMined'
+export { default as RequireBlockMined } from './RequireBlockMined'
+
 export * from './RequireBlockNotMined'
 export { default as RequireBlockNotMined } from './RequireBlockNotMined'
 
