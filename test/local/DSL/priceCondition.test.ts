@@ -2,16 +2,15 @@ import { expect } from 'chai'
 import { priceCondition, Token, UniV3Twap } from '@brink-sdk'
 
 describe('priceCondition', function () {
-
   const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
   const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f'
 
-  it('should return requireUint256LowerBound primitive when operator is <', function () {
+  it('should return requireUint256LowerBound primitive when operator is lt', function () {
     const primitives = priceCondition({
       type: 'price',
-      operator: '<',
-      tokenAddressA: USDC_ADDRESS,
-      tokenAddressB: DAI_ADDRESS,
+      operator: 'lt',
+      tokenA: USDC_ADDRESS,
+      tokenB: DAI_ADDRESS,
       price: 1000
     })
 
@@ -28,12 +27,12 @@ describe('priceCondition', function () {
     expect(primitives[0].params.oracle).to.deep.equal({ address: twap.address, params: twap.params })
   })
 
-  it('should return requireUint256UpperBound primitive when operator is >', function () {
+  it('should return requireUint256UpperBound primitive when operator is gt', function () {
     const primitives = priceCondition({
       type: 'price',
-      operator: '>',
-      tokenAddressA: USDC_ADDRESS,
-      tokenAddressB: DAI_ADDRESS,
+      operator: 'gt',
+      tokenA: USDC_ADDRESS,
+      tokenB: DAI_ADDRESS,
       price: 2000
     })
 
