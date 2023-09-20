@@ -1,11 +1,45 @@
 import { PrimitiveArgs } from '@brinkninja/types'
-import { PriceConditionArgs } from '@brink-sdk'
+import { PriceConditionArgs, UniV3Twap, Token } from '@brink-sdk'
 
-function priceCondition (def: PriceConditionArgs): PrimitiveArgs[] {
+const TIME_INTERVAL = BigInt(1000)
 
-  // TODO: implement
+function priceCondition ({
+  operator,
+  tokenAddressA,
+  tokenAddressB,
+  price
+}: PriceConditionArgs): PrimitiveArgs[] {
+  const twap = new UniV3Twap({
+    tokenA: new Token({address: tokenAddressA}),
+    tokenB: new Token({address: tokenAddressB}),
+    interval: TIME_INTERVAL,
+  })
 
-  return []
+  const oracle = {
+    address: twap.address,
+    params: twap.params,
+  }
+
+  switch (operator) {
+    case '<':
+    return [{
+      functionName: 'requireUint256LowerBound', 
+      params: {
+        oracle: oracle,
+        lowerBound: price,
+      }
+    }]
+    case '>':
+      [{
+        functionName: 'requireUint256UpperBound',
+        params: {
+          oracle: oracle,
+          upperBound: price,
+        }
+      }]
+    default:
+      throw new Error(`Operator ${operator} is not valid`)
+  }
 }
 
 export default priceCondition
