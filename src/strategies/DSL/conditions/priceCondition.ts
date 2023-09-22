@@ -1,10 +1,8 @@
-import { PrimitiveArgs } from '@brinkninja/types'
+import { PrimitiveArgs, GREATER_THAN_OPERATOR, LESS_THAN_OPERATOR } from '@brinkninja/types'
 import { PriceConditionArgs, UniV3Twap, Token } from '@brink-sdk'
 import { toTokenArgs } from '@brink-sdk/internal/toTokenArgs';
 
 const TIME_INTERVAL = BigInt(1000)
-const OPERATOR_LT = 'lt';
-const OPERATOR_GT = 'gt';
 
 function priceCondition ({
   operator,
@@ -24,7 +22,7 @@ function priceCondition ({
   }
 
   switch (operator) {
-    case OPERATOR_LT:
+    case LESS_THAN_OPERATOR:
     return [{
       functionName: 'requireUint256LowerBound', 
       params: {
@@ -32,7 +30,7 @@ function priceCondition ({
         lowerBound: price,
       }
     }]
-    case OPERATOR_GT:
+    case GREATER_THAN_OPERATOR:
       return [{
         functionName: 'requireUint256UpperBound',
         params: {
