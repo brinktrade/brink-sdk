@@ -19,7 +19,7 @@
   "dependencies": {
     "@brinkninja/config": "^2.11.0",
     "@brinkninja/core": "^1.0.0",
-    "@brinkninja/types": "~0.9.9",
+    "@brinkninja/types": "~0.9.10",
     "@brinkninja/strategies": "^0.3.6",
     "@brinkninja/utils": "^0.5.2",
     "@brinkninja/verifiers": "^1.4.0",
