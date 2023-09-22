@@ -7,6 +7,12 @@ export { default as LimitSwapExactInput } from './LimitSwapExactInput'
 export * from './MarketSwapExactInput'
 export { default as MarketSwapExactInput } from './MarketSwapExactInput'
 
+export * from './RequireBitUsed'
+export { default as RequireBitUsed } from './RequireBitUsed'
+
+export * from './RequireBitNotUsed'
+export { default as RequireBitNotUsed } from './RequireBitNotUsed'
+
 export * from './RequireBlockMined'
 export { default as RequireBlockMined } from './RequireBlockMined'
 
