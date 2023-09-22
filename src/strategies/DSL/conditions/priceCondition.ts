@@ -1,5 +1,6 @@
-import { PrimitiveArgs, TokenArgs } from '@brinkninja/types'
+import { PrimitiveArgs } from '@brinkninja/types'
 import { PriceConditionArgs, UniV3Twap, Token } from '@brink-sdk'
+import { toTokenArgs } from '@brink-sdk/internal/toTokenArgs';
 
 const TIME_INTERVAL = BigInt(1000)
 const OPERATOR_LT = 'lt';
@@ -42,10 +43,6 @@ function priceCondition ({
     default:
       throw new Error(`Operator ${operator} is not valid`)
   }
-}
-
-function toTokenArgs(token: string | TokenArgs ) : TokenArgs {
-  return typeof token === 'string' ? {address: token} : token
 }
 
 export default priceCondition
