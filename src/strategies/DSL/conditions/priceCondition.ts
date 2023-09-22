@@ -1,19 +1,24 @@
 import { PrimitiveArgs, GREATER_THAN_OPERATOR, LESS_THAN_OPERATOR } from '@brinkninja/types'
 import { PriceConditionArgs, UniV3Twap, Token } from '@brink-sdk'
 import { toTokenArgs } from '@brink-sdk/internal/toTokenArgs';
+import { FeeAmount } from '@uniswap/v3-sdk'
 
-const TIME_INTERVAL = BigInt(1000)
+
+const DEFAULT_TIME_INTERVAL = BigInt(1000)
 
 function priceCondition ({
   operator,
   tokenA,
   tokenB,
-  price
+  price,
+  twapInterval,
+  twapFeePool
 }: PriceConditionArgs): PrimitiveArgs[] {
   const twap = new UniV3Twap({
     tokenA: new Token(toTokenArgs(tokenA)),
     tokenB: new Token(toTokenArgs(tokenB)),
-    interval: TIME_INTERVAL,
+    interval: twapInterval || DEFAULT_TIME_INTERVAL,
+    fee: twapFeePool as FeeAmount
   })
 
   const oracle = {
