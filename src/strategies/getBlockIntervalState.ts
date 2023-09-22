@@ -5,16 +5,16 @@ export type GetBlockIntervalStateArgs = {
 }
 
 export type BlockIntervalState = {
-  counter: BigIntish,
-  start: BigIntish,
+  counter: BigInt,
+  start: BigInt,
 }
 
 function getBlockIntervalState ({
   slot,
 }: GetBlockIntervalStateArgs): BlockIntervalState {
   
-  const start = Number(BigInt(slot) & BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'));
-  const counter = Number((BigInt(slot) >> BigInt(128)) & BigInt('0xFFFF'));
+  const start = BigInt(Number(BigInt(slot) & BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')));
+  const counter = BigInt(Number((BigInt(slot) >> BigInt(128)) & BigInt('0xFFFF')));
   
  return {
     counter,
