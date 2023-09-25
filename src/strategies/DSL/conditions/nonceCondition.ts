@@ -11,14 +11,14 @@ function nonceCondition ({state, nonce} : NonceConditionArgs): PrimitiveArgs[] {
       return [
         {
           functionName: 'requireBitUsed',
-          params: { bit: bitJson },
+          params: bitJson,
         }
       ]
     case NOT_USED_NONCE_STATE:
       return [
         {
           functionName: 'requireBitNotUsed',
-          params: { bit: bitJson }
+          params: bitJson
         }
       ]
     default:
