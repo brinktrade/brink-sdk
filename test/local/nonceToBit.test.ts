@@ -37,6 +37,8 @@ describe('nonceToBit', () => {
 
     // Testing nonce just above the 256 boundary
     { nonce: 257, expectedError: false, expectedIndex: 1n, expectedValue: BigInt(2**0) },
+
+    // Testing large nonce value
     { nonce: 1000, expectedError: false, expectedIndex: 3n, expectedValue: BigInt(2**231) },
   ];
 
