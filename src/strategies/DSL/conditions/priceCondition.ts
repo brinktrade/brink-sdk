@@ -1,4 +1,4 @@
-import { PrimitiveArgs, GREATER_THAN_OPERATOR, LESS_THAN_OPERATOR, BigIntish } from '@brinkninja/types'
+import { PrimitiveArgs, BigIntish, PriceOperator } from '@brinkninja/types'
 import { PriceConditionArgs, UniV3Twap, Token, priceToTwapValue } from '@brink-sdk'
 import { toTokenArgs } from '@brink-sdk/internal/toTokenArgs';
 import { FeeAmount } from '@uniswap/v3-sdk'
@@ -35,7 +35,7 @@ function priceCondition ({
   })
 
   switch (operator) {
-    case LESS_THAN_OPERATOR:
+    case PriceOperator.LESS_THAN:
     return [{
       functionName: 'requireUint256LowerBound', 
       params: {
@@ -43,7 +43,7 @@ function priceCondition ({
         lowerBound: twapValue,
       }
     }]
-    case GREATER_THAN_OPERATOR:
+    case PriceOperator.GREATER_THAN:
       return [{
         functionName: 'requireUint256UpperBound',
         params: {
