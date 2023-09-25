@@ -1,6 +1,5 @@
 import { PrimitiveArgs, BigIntish, PriceOperator } from '@brinkninja/types'
 import { PriceConditionArgs, UniV3Twap, Token, priceToTwapValue } from '@brink-sdk'
-import { toTokenArgs } from '@brink-sdk/internal/toTokenArgs';
 import { FeeAmount } from '@uniswap/v3-sdk'
 
 
@@ -15,8 +14,8 @@ function priceCondition ({
   twapFeePool,
 }: PriceConditionArgs): PrimitiveArgs[] {
   const twap = new UniV3Twap({
-    tokenA: new Token(toTokenArgs(tokenA)),
-    tokenB: new Token(toTokenArgs(tokenB)),
+    tokenA: new Token(tokenA),
+    tokenB: new Token(tokenB),
     interval: twapInterval,
     fee: BigIntishToFeeAmount(twapFeePool),
   })
