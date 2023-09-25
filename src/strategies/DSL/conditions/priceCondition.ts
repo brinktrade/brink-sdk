@@ -9,9 +9,7 @@ const DEFAULT_TIME_INTERVAL = BigInt(1000)
 function priceCondition ({
   operator,
   tokenA,
-  tokenA_decimals,
   tokenB,
-  tokenB_decimals,
   price,
   twapInterval = DEFAULT_TIME_INTERVAL,
   twapFeePool,
@@ -30,8 +28,8 @@ function priceCondition ({
 
   const twapValue = priceToTwapValue({
     price,
-    tokenA_decimals,
-    tokenB_decimals,
+    tokenA_decimals: tokenA.decimals,
+    tokenB_decimals: tokenB.decimals,
   })
 
   switch (operator) {
