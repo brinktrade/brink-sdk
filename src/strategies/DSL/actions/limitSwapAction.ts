@@ -1,5 +1,4 @@
-import { PrimitiveArgs } from '@brinkninja/types'
-import { LimitSwapActionArgs } from '@brink-sdk'
+import { LimitSwapActionArgs, PrimitiveArgs } from '@brinkninja/types'
 
 function limitSwapAction ({
   owner,

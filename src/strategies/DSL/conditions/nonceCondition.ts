@@ -1,5 +1,5 @@
-import { PrimitiveArgs, NonceState } from '@brinkninja/types'
-import { NonceConditionArgs, nonceToBit, BitJSON } from '@brink-sdk'
+import { nonceToBit } from '../../../utils'
+import { PrimitiveArgs, NonceState, NonceConditionArgs, BitJSON } from '@brinkninja/types'
 
 function nonceCondition ({state, nonce} : NonceConditionArgs): PrimitiveArgs[] {
   const bit = nonceToBit({nonce})
