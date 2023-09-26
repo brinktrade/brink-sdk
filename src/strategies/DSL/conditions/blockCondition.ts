@@ -1,5 +1,4 @@
-import { PrimitiveArgs } from '@brinkninja/types'
-import { BlockConditionArgs } from '@brink-sdk'
+import { BlockConditionArgs, PrimitiveArgs } from '@brinkninja/types'
 
 function blockCondition ({
   state,

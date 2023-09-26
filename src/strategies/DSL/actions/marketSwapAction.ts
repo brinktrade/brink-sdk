@@ -1,5 +1,4 @@
-import { PrimitiveArgs } from '@brinkninja/types'
-import { MarketSwapActionArgs } from '@brink-sdk'
+import { MarketSwapActionArgs, PrimitiveArgs } from '@brinkninja/types'
 
 function marketSwapAction ({
   owner,

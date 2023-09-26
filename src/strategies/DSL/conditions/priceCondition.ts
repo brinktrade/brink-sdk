@@ -1,6 +1,7 @@
-import { PrimitiveArgs, BigIntish, PriceOperator } from '@brinkninja/types'
-import { PriceConditionArgs, UniV3Twap, Token, priceToTwapValue } from '@brink-sdk'
+import { PrimitiveArgs, BigIntish, PriceOperator, PriceConditionArgs } from '@brinkninja/types'
 import { FeeAmount } from '@uniswap/v3-sdk'
+import Token from '../../Token'
+import { priceToTwapValue, UniV3Twap } from '../../../oracles'
 
 
 const DEFAULT_TIME_INTERVAL = BigInt(1000)

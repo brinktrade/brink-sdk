@@ -1,5 +1,4 @@
-import { PrimitiveArgs } from '@brinkninja/types'
-import { IntervalConditionArgs } from '@brink-sdk'
+import { IntervalConditionArgs, PrimitiveArgs } from '@brinkninja/types'
 
 const DEFAULT_MAX_INTERVALS = 0
 const DEFAULT_START_BLOCK = 0
