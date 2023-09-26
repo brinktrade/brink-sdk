@@ -15,7 +15,7 @@ function intervalCondition ({
       functionName: 'blockInterval',
       params: {
         id,
-        interval,
+        intervalMinSize: interval,
         initialStart: startBlock,
         maxIntervals
       }
