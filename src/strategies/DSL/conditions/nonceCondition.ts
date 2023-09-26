@@ -1,11 +1,29 @@
-import { PrimitiveArgs } from '@brinkninja/types'
-import { NonceConditionArgs } from '@brink-sdk'
+import { PrimitiveArgs, NonceState } from '@brinkninja/types'
+import { NonceConditionArgs, nonceToBit, BitJSON } from '@brink-sdk'
 
-function nonceCondition (def: NonceConditionArgs): PrimitiveArgs[] {
+function nonceCondition ({state, nonce} : NonceConditionArgs): PrimitiveArgs[] {
+  const bit = nonceToBit({nonce})
 
-  // TODO: implement
+  const bitJson: BitJSON = { index: bit.index.toString(), value: bit.value.toString() }
 
-  return []
+  switch (state) {
+    case NonceState.USED:
+      return [
+        {
+          functionName: 'requireBitUsed',
+          params: bitJson,
+        }
+      ]
+    case NonceState.NOT_USED:
+      return [
+        {
+          functionName: 'requireBitNotUsed',
+          params: bitJson
+        }
+      ]
+    default:
+      throw new Error(`Invalid state: ${state}`)
+  }
 }
 
 export default nonceCondition
