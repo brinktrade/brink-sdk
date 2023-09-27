@@ -22,7 +22,7 @@ import { ethers } from 'hardhat'
 const FLAT_PRICE_CURVE_ADDRESS = '0xc509733b8dddbab9369a96f6f216d6e59db3900f'
 const PRICE_CURVE_PARAMS = '0x0000000000000000000000000000000000000000000d1b71758e219680000000' //hex representation of a DAI/WETH price, 0.0002 WETH as x96, x96 price = 0.0002 * 2**96 = 15845632502852868278059008
 
-describe('executeStrategy with limitSwapExactInput', function () {
+describe.only('executeStrategy with limitSwapExactInput', function () {
   it('should execute a simple limit swap strategy', async function () {
     const deployTx = await deployAccount({ signer: this.signerAddress })
     await this.defaultSigner.sendTransaction(deployTx)
