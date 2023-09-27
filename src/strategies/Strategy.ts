@@ -1,7 +1,13 @@
 import Config from '../Config'
-import { StrategyArgs, StrategyJSON, ValidationResult, TokenAmount, Bit } from '@brinkninja/types'
+import { StrategyArgs, StrategyJSON, ValidationResult, TokenAmount, Bit, IntentArgs, IntentSegmentArgs } from '@brinkninja/types'
 import Order from './Order'
-import { EthereumJsVm as evm, invalidResult, validResult, groupAndSumTokenAmounts } from '../internal'
+import {
+  EthereumJsVm as evm,
+  invalidResult,
+  validResult,
+  groupAndSumTokenAmounts,
+  intentArgsToStrategyArgs
+} from '../internal'
 
 const { PRIMITIVES_01 } = Config
 
@@ -12,13 +18,28 @@ class Strategy {
   primitivesContract: string
 
   public constructor ()
+  public constructor (args: IntentArgs)
+  public constructor (args: IntentSegmentArgs)
+  public constructor (args: IntentSegmentArgs[])
   public constructor (args: StrategyArgs)
   public constructor (...arr: any[]) {
-    const args: StrategyArgs = arr[0] || {}
-    this.orders = (args?.orders || []).map(orderArgs => new Order(orderArgs))
-    this.beforeCalls = args?.beforeCalls || []
-    this.afterCalls = args?.afterCalls || []
-    this.primitivesContract = args?.primitivesContract || PRIMITIVES_01
+    const inputArgs: (StrategyArgs | IntentArgs | IntentSegmentArgs | IntentSegmentArgs[]) = arr[0] || {}
+
+    let strategyArgs: StrategyArgs
+    if ((inputArgs as IntentArgs).segments) {
+      strategyArgs = intentArgsToStrategyArgs(inputArgs as IntentArgs)
+    } else if ((inputArgs as IntentSegmentArgs).actions) {
+      strategyArgs = intentArgsToStrategyArgs({ segments: [inputArgs as IntentSegmentArgs] })
+    } else if ((inputArgs as IntentSegmentArgs[]).length > 0 && (inputArgs as IntentSegmentArgs[])[0].actions) {
+      strategyArgs = intentArgsToStrategyArgs({ segments: inputArgs as IntentSegmentArgs[] })
+    } else {
+      strategyArgs = inputArgs as StrategyArgs
+    }
+
+    this.orders = (strategyArgs?.orders || []).map(orderArgs => new Order(orderArgs))
+    this.beforeCalls = strategyArgs?.beforeCalls || []
+    this.afterCalls = strategyArgs?.afterCalls || []
+    this.primitivesContract = strategyArgs?.primitivesContract || PRIMITIVES_01
   }
 
   async toJSON (): Promise<StrategyJSON> {
