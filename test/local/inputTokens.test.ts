@@ -8,7 +8,7 @@ import {
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
-describe('Order.inputTokens()', function () {
+describe('IntentGroupIntent.inputTokens()', function () {
   it('should return tokenInputs for intent', async function () {
     const intentGroup1 = new IntentGroup(intentGroupForTokenInputs1)
     const tokenInputs = intentGroup1.intents[0].tokenInputs()

@@ -1,12 +1,12 @@
 import { OracleJSON, BigIntish, SegmentParamType } from '@brinkninja/types'
-import Segment from './Primitive'
+import Segment from './Segment'
 
-export type RequireUint256LowerBoundArgs = {
+export type RequireUint256UpperBoundArgs = {
   oracle: OracleJSON,
-  lowerBound: BigIntish
+  upperBound: BigIntish
 }
 
-export const RequireUint256LowerBoundFunctionParams: SegmentParamType[] = [
+export const RequireUint256UpperBoundFunctionParams: SegmentParamType[] = [
   {
     name: 'uint256Oracle',
     type: 'address',
@@ -18,7 +18,7 @@ export const RequireUint256LowerBoundFunctionParams: SegmentParamType[] = [
     signed: true
   },
   {
-    name: 'lowerBound',
+    name: 'upperBound',
     type: 'uint256',
     signed: true
   }
@@ -27,21 +27,21 @@ export const RequireUint256LowerBoundFunctionParams: SegmentParamType[] = [
 export default class RequireUint256LowerBound extends Segment {
   public constructor ({
     oracle,
-    lowerBound
-  }: RequireUint256LowerBoundArgs) {
+    upperBound
+  }: RequireUint256UpperBoundArgs) {
     super({
-      functionName: 'requireUint256LowerBound',
+      functionName: 'requireUint256UpperBound',
       type: 'require',
       requiresUnsignedCall: false,
       paramsJSON: {
         oracle,
-        lowerBound: lowerBound?.toString()
+        upperBound: upperBound?.toString()
       },
-      paramTypes: RequireUint256LowerBoundFunctionParams,
+      paramTypes: RequireUint256UpperBoundFunctionParams,
       paramValues: [
         oracle?.address,
         oracle?.params,
-        lowerBound?.toString()
+        upperBound?.toString()
       ]
     })
   }

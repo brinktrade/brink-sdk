@@ -1,4 +1,4 @@
-import { Token } from '../strategies'
+import { Token } from '../intents'
 import { CallData, TokenArgs } from '@brinkninja/types'
 import Uint256Oracle from './Uint256Oracle'
 

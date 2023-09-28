@@ -14,8 +14,8 @@ export { default as toTokenArgs } from './toTokenArgs'
 
 export * from './constants'
 
-export * from './createPrimitive'
-export { default as createSegment } from './createPrimitive'
+export * from './createSegment'
+export { default as createSegment } from './createSegment'
 
 export { default as encodeFunctionCall } from '../utils/encodeFunctionCall'
 
@@ -25,9 +25,9 @@ export { default as getUniV3Pool } from './getUniV3Pool'
 
 export { default as groupAndSumTokenAmounts } from './groupAndSumTokenAmounts'
 
-export { default as intentArgsToIntentGroupArgs } from './intentArgsToStrategyArgs'
+export { default as intentArgsToIntentGroupArgs } from './intentArgsToIntentGroupArgs'
 
-export { default as intentSegmentArgsToIntentGroupIntentArgs } from './intentSegmentArgsToOrderArgs'
+export { default as intentSegmentArgsToIntentGroupIntentArgs } from './intentSegmentArgsToIntentGroupIntentArgs'
 
 export { default as priceCurveAddress } from './priceCurveAddress'
 

@@ -1,5 +1,5 @@
 import { TokenJSON } from '@brinkninja/types'
-import Segment, { SegmentClassArgs } from './Primitive'
+import Segment, { SegmentClassArgs } from './Segment'
 
 interface InputTokenSegmentClassArgs extends SegmentClassArgs {
   inputTokenParam: string

@@ -1,6 +1,6 @@
 import Config from '../Config'
 import { IntentGroupArgs, IntentGroupJSON, ValidationResult, TokenAmount, Bit, IntentArgs, IntentSegmentArgs } from '@brinkninja/types'
-import Intent from './Order'
+import Intent from './IntentGroupIntent'
 import {
   EthereumJsVm as evm,
   invalidResult,
@@ -8,7 +8,7 @@ import {
   groupAndSumTokenAmounts,
   intentArgsToIntentGroupArgs
 } from '../internal'
-import IntentGroupIntent from './Order'
+import IntentGroupIntent from './IntentGroupIntent'
 
 const { PRIMITIVES_01 } = Config
 

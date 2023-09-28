@@ -1,7 +1,7 @@
 const { getTypedData } = require('@brinkninja/utils')
 
 import { ethers } from 'ethers'
-import IntentGroup from './Strategy'
+import IntentGroup from './IntentGroup'
 import { SignedIntentGroupArgs, SignedIntentGroupJSON, SignatureType, ValidationResult, EIP712TypedData } from '@brinkninja/types'
 import Config from '../Config'
 import { validResult, invalidResult } from '../internal/Validation'

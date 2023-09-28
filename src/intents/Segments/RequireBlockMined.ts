@@ -1,11 +1,11 @@
 import { BigIntish, SegmentParamType } from '@brinkninja/types'
-import Segment from './Primitive'
+import Segment from './Segment'
 
-export type RequireBlockNotMinedArgs = {
+export type RequireBlockMinedArgs = {
   blockNumber: BigIntish
 }
 
-export const RequireBlockNotMinedFunctionParams: SegmentParamType[] = [
+export const RequireBlockMinedFunctionParams: SegmentParamType[] = [
   {
     name: 'blockNumber',
     type: 'uint256',
@@ -14,15 +14,15 @@ export const RequireBlockNotMinedFunctionParams: SegmentParamType[] = [
 ]
 
 export default class RequireBlockNotMined extends Segment {
-  public constructor ({ blockNumber }: RequireBlockNotMinedArgs) {
+  public constructor ({ blockNumber }: RequireBlockMinedArgs) {
     super({
-      functionName: 'requireBlockNotMined',
+      functionName: 'requireBlockMined',
       type: 'require',
       requiresUnsignedCall: false,
       paramsJSON: {
         blockNumber: blockNumber?.toString()
       },
-      paramTypes: RequireBlockNotMinedFunctionParams,
+      paramTypes: RequireBlockMinedFunctionParams,
       paramValues: [
         blockNumber?.toString()
       ]

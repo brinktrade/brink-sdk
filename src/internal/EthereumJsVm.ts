@@ -12,7 +12,7 @@ import FlatPriceCurve from './contracts/FlatPriceCurve.json'
 import LinearPriceCurve from './contracts/LinearPriceCurve.json'
 import QuadraticPriceCurve from './contracts/QuadraticPriceCurve.json'
 import SwapIO from './contracts/SwapIO.json'
-import IdsProof from '../strategies/IdsProof'
+import IdsProof from '../intents/IdsProof'
 import {
   ContractCallParam,
   SegmentFunctionName,
@@ -148,7 +148,7 @@ export class EthereumJsVm {
     )
 
     // ethereumjs-vm returns the data with 28 bytes of extra 00's appended.
-    // the strategies break with these extra bytes. it seems to be consistently adding
+    // the intentGroup break with these extra bytes. it seems to be consistently adding
     // exactly 28 bytes of empty data, so trimming them out fixes the issue
 
     const IntentGroupIDataTrimmed = IntentGroupIData.slice(0, -56)

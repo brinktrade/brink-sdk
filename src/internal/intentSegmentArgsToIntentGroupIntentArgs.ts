@@ -10,8 +10,8 @@ import {
   PriceConditionArgs
 } from '@brinkninja/types'
 import { nonceToBit } from '../utils'
-import dslConditions from '../strategies/DSL/conditions'
-import dslActions from '../strategies/DSL/actions'
+import dslConditions from '../intents/DSL/conditions'
+import dslActions from '../intents/DSL/actions'
 
 type ActionFnTypeName = {
   marketSwapAction: MarketSwapActionArgs
@@ -58,7 +58,7 @@ function intentSegmentArgsToIntentGroupIntentArgs (intentSegment: IntentSegmentA
   if (!intentSegment.conditions) intentSegment.conditions = []
   if (!intentSegment.actions) intentSegment.actions = []
 
-  // add condition segments to orderArgs
+  // add condition segments to intentGroupIntentArgs
   const conditionSegments: SegmentArgs[] = intentSegment.conditions.reduce((segments: SegmentArgs[], conditionArgs) => {
     const typeName: keyof ConditionFnTypeName = `${conditionArgs.type}Condition`
     const args = conditionArgs as ConditionFnTypeName[typeof typeName]

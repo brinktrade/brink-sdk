@@ -1,5 +1,5 @@
 import { BigIntish, SegmentParamType } from '@brinkninja/types'
-import Segment from './Primitive'
+import Segment from './Segment'
 
 export type BlockIntervalArgs = {
   id: BigIntish,

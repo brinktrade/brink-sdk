@@ -1,5 +1,5 @@
 import { BitArgs, SegmentParamType } from '@brinkninja/types'
-import Segment from './Primitive'
+import Segment from './Segment'
 import { bitIsValid } from '../../core'
 
 export type UseBitArgs = BitArgs

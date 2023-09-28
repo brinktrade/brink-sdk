@@ -1,7 +1,7 @@
 import { utils } from 'ethers'
 import { FeeAmount } from '@uniswap/v3-sdk'
 import { TokenArgs } from '@brinkninja/types'
-import { Token } from '../strategies'
+import { Token } from '../intents'
 import Config from '../Config'
 import { BigIntish } from '@brinkninja/types'
 import getUniV3Pool from '../internal/getUniV3Pool'

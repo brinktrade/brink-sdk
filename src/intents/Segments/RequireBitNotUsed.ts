@@ -1,10 +1,10 @@
 import { BitArgs, SegmentParamType } from '@brinkninja/types'
-import Segment from './Primitive'
+import Segment from './Segment'
 import { bitIsValid } from '../../core'
 
-export type RequireBitUsedArgs = BitArgs
+export type RequireBitNotUsedArgs = BitArgs
 
-export const RequireBitUsedFunctionParams: SegmentParamType[] = [
+export const RequireBitNotUsedFunctionParams: SegmentParamType[] = [
   {
     name: 'bitmapIndex',
     type: 'uint256',
@@ -17,20 +17,20 @@ export const RequireBitUsedFunctionParams: SegmentParamType[] = [
   }
 ]
 
-export default class RequireBitUsed extends Segment {
-  public constructor ({ index, value }: RequireBitUsedArgs) {
+export default class RequireBitNotUsed extends Segment {
+  public constructor ({ index, value }: RequireBitNotUsedArgs) {
     if (!bitIsValid({ bit: value })) {
       throw new Error('invalid bit')
     }
     super({
-      functionName: 'requireBitUsed',
+      functionName: 'requireBitNotUsed',
       type: 'require',
       requiresUnsignedCall: false,
       paramsJSON: {
         index: index?.toString(),
         value: value?.toString()
       },
-      paramTypes: RequireBitUsedFunctionParams,
+      paramTypes: RequireBitNotUsedFunctionParams,
       paramValues: [
         index?.toString(),
         value?.toString()

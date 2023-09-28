@@ -1,5 +1,5 @@
 import { TransactionData } from '@brinkninja/types'
-import SignedIntentGroup from './SignedStrategy'
+import SignedIntentGroup from './SignedIntentGroup'
 import evm from '../internal/EthereumJsVm'
 import { metaDelegateCall } from '../core'
 

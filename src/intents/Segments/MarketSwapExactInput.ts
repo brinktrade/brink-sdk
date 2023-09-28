@@ -1,6 +1,6 @@
 import { TokenArgs, OracleJSON, SegmentParamType, BigIntish } from '@brinkninja/types'
 import Token from '../Token'
-import InputTokenSegment from './InputTokenPrimitive'
+import InputTokenSegment from './InputTokenSegment'
 
 export type MarketSwapExactInputArgs = {
   oracle: OracleJSON,

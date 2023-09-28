@@ -1,7 +1,7 @@
 import { TokenArgs, SegmentParamType, BigIntish, PriceCurveJSON, FillStateParamsArgs } from '@brinkninja/types'
 import { FillStateParams } from '..'
 import Token from '../Token'
-import InputTokenSegment from './InputTokenPrimitive'
+import InputTokenSegment from './InputTokenSegment'
 
 export type LimitSwapExactInputArgs = {
   priceCurve: PriceCurveJSON

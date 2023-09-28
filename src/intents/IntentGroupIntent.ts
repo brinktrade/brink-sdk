@@ -9,8 +9,8 @@ import {
   Bit,
   BitJSON
 } from '@brinkninja/types'
-import Segment from './Primitives/Primitive'
-import InputTokenSegment from './Primitives/InputTokenPrimitive'
+import Segment from './Segments/Segment'
+import InputTokenSegment from './Segments/InputTokenSegment'
 import { createSegment, invalidResult, validResult, groupAndSumTokenAmounts, bitJSONToBit } from '../internal'
 
 export type IntentConstructorArgs = {
