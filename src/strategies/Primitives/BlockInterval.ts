@@ -1,5 +1,5 @@
-import { BigIntish, PrimitiveParamType } from '@brinkninja/types'
-import Primitive from './Primitive'
+import { BigIntish, SegmentParamType } from '@brinkninja/types'
+import Segment from './Primitive'
 
 export type BlockIntervalArgs = {
   id: BigIntish,
@@ -8,7 +8,7 @@ export type BlockIntervalArgs = {
   maxIntervals: BigIntish
 }
 
-export const BlockIntervalFunctionParams: PrimitiveParamType[] = [
+export const BlockIntervalFunctionParams: SegmentParamType[] = [
   {
     name: 'id',
     type: 'uint64',
@@ -31,7 +31,7 @@ export const BlockIntervalFunctionParams: PrimitiveParamType[] = [
   }
 ]
 
-export default class BlockInterval extends Primitive {
+export default class BlockInterval extends Segment {
   public constructor ({
     id,
     initialStart,

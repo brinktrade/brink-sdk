@@ -1,7 +1,7 @@
 import { nonceToBit } from '../../../utils'
-import { PrimitiveArgs, NonceState, NonceConditionArgs, BitJSON } from '@brinkninja/types'
+import { SegmentArgs, NonceState, NonceConditionArgs, BitJSON } from '@brinkninja/types'
 
-function nonceCondition ({state, nonce} : NonceConditionArgs): PrimitiveArgs[] {
+function nonceCondition ({state, nonce} : NonceConditionArgs): SegmentArgs[] {
   const bit = nonceToBit({nonce})
 
   const bitJson: BitJSON = { index: bit.index.toString(), value: bit.value.toString() }

@@ -5,9 +5,9 @@ import {
   getSignerAccount,
   deployAccount,
   loadBitmap,
-  strategyEIP712TypedData,
-  SignedStrategy,
-  StrategyArgs,
+  intentGroupEIP712TypedData,
+  SignedIntentGroup,
+  IntentGroupArgs,
   BigIntish
 } from '@brink-sdk'
 import { use } from 'chai'
@@ -105,13 +105,13 @@ beforeEach(async function () {
     return bmp
   }
 
-  this.signStrategy = async (strategy: StrategyArgs): Promise<SignedStrategy> => {
+  this.signIntentGroup = async (intentGroup: IntentGroupArgs): Promise<SignedIntentGroup> => {
     const chainId = 31337
 
-    const eip712TypedData = await strategyEIP712TypedData({
+    const eip712TypedData = await intentGroupEIP712TypedData({
       signer: this.signerAddress,
       chainId,
-      strategy
+      intentGroup
     })
 
     // sign the EIP712 TypedData with an ethers signer
@@ -121,8 +121,8 @@ beforeEach(async function () {
       eip712TypedData.value
     )
 
-    return new SignedStrategy({
-      strategy,
+    return new SignedIntentGroup({
+      intentGroup,
       signature,
       chainId,
       signer: this.signerAddress

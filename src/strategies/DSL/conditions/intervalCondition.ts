@@ -1,4 +1,4 @@
-import { IntervalConditionArgs, PrimitiveArgs } from '@brinkninja/types'
+import { IntervalConditionArgs, SegmentArgs } from '@brinkninja/types'
 
 const DEFAULT_MAX_INTERVALS = 0
 const DEFAULT_START_BLOCK = 0
@@ -8,7 +8,7 @@ function intervalCondition ({
   interval,
   startBlock = DEFAULT_START_BLOCK,
   maxIntervals = DEFAULT_MAX_INTERVALS
-}: IntervalConditionArgs): PrimitiveArgs[] {
+}: IntervalConditionArgs): SegmentArgs[] {
   return [
     {
       functionName: 'blockInterval',

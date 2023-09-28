@@ -2,11 +2,11 @@ import find from 'lodash/find'
 
 const { ACCOUNT, DEPLOY_AND_CALL, ACCOUNT_FACTORY } = require('@brinkninja/core/constants')
 
-const strategiesConstants = require('@brinkninja/strategies/constants')
+const intentGroupsConstants = require('@brinkninja/strategies/constants')
 const { VERIFIERS } = require('@brinkninja/config').mainnet
 
 const config = {
-  ...strategiesConstants,
+  ...intentGroupsConstants,
   ACCOUNT,
   DEPLOY_AND_CALL,
   ACCOUNT_FACTORY,

@@ -1,10 +1,10 @@
-import { BitArgs, PrimitiveParamType } from '@brinkninja/types'
-import Primitive from './Primitive'
+import { BitArgs, SegmentParamType } from '@brinkninja/types'
+import Segment from './Primitive'
 import { bitIsValid } from '../../core'
 
 export type RequireBitNotUsedArgs = BitArgs
 
-export const RequireBitNotUsedFunctionParams: PrimitiveParamType[] = [
+export const RequireBitNotUsedFunctionParams: SegmentParamType[] = [
   {
     name: 'bitmapIndex',
     type: 'uint256',
@@ -17,7 +17,7 @@ export const RequireBitNotUsedFunctionParams: PrimitiveParamType[] = [
   }
 ]
 
-export default class RequireBitNotUsed extends Primitive {
+export default class RequireBitNotUsed extends Segment {
   public constructor ({ index, value }: RequireBitNotUsedArgs) {
     if (!bitIsValid({ bit: value })) {
       throw new Error('invalid bit')

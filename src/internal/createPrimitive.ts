@@ -1,4 +1,4 @@
-import Primitive from '../strategies/Primitives/Primitive'
+import Segment from '../strategies/Primitives/Primitive'
 import MarketSwapExactInput from '../strategies/Primitives/MarketSwapExactInput'
 import RequireBitUsed from '../strategies/Primitives/RequireBitUsed'
 import RequireBitNotUsed from '../strategies/Primitives/RequireBitNotUsed'
@@ -8,21 +8,21 @@ import RequireUint256LowerBound from '../strategies/Primitives/RequireUint256Low
 import RequireUint256UpperBound from '../strategies/Primitives/RequireUint256UpperBound'
 import BlockInterval from '../strategies/Primitives/BlockInterval'
 import UseBit from '../strategies/Primitives/UseBit'
-import { PrimitiveParamValue, PrimitiveFunctionName } from '@brinkninja/types'
+import { SegmentParamValue, SegmentFunctionName } from '@brinkninja/types'
 import LimitSwapExactInput from '../strategies/Primitives/LimitSwapExactInput'
 
-type PrimitiveMapping = {
-  [key in PrimitiveFunctionName]: typeof Primitive
+type SegmentMapping = {
+  [key in SegmentFunctionName]: typeof Segment
 }
 
-function createMappingObject(mapping: Record<string, Function>): PrimitiveMapping {
+function createMappingObject(mapping: Record<string, Function>): SegmentMapping {
   return Object.entries(mapping).reduce((acc, [key, value]) => {
-    acc[key as keyof PrimitiveMapping] = value as any
+    acc[key as keyof SegmentMapping] = value as any
     return acc
-  }, {} as PrimitiveMapping)
+  }, {} as SegmentMapping)
 }
 
-const primitiveMapping: PrimitiveMapping = createMappingObject({
+const segmentMapping: SegmentMapping = createMappingObject({
   limitSwapExactInput: LimitSwapExactInput,
   marketSwapExactInput: MarketSwapExactInput,
   requireBitUsed: RequireBitUsed,
@@ -35,17 +35,17 @@ const primitiveMapping: PrimitiveMapping = createMappingObject({
   useBit: UseBit
 })
 
-export interface CreatePrimitiverArgs {
-  functionName: PrimitiveFunctionName,
-  params: Record<string, PrimitiveParamValue>
+export interface CreateSegmentrArgs {
+  functionName: SegmentFunctionName,
+  params: Record<string, SegmentParamValue>
 }
 
-export default function createPrimitive({
+export default function createSegment({
   functionName, params
-}: CreatePrimitiverArgs): Primitive {
-  const PrimitiveClass = primitiveMapping[functionName]
-  if (!PrimitiveClass) {
-    throw new Error(`Unknown primitive: ${functionName}`)
+}: CreateSegmentrArgs): Segment {
+  const SegmentClass = segmentMapping[functionName]
+  if (!SegmentClass) {
+    throw new Error(`Unknown segment: ${functionName}`)
   }
-  return new (PrimitiveClass as any)(params)
+  return new (SegmentClass as any)(params)
 }

@@ -1,9 +1,9 @@
-import { BlockConditionArgs, PrimitiveArgs } from '@brinkninja/types'
+import { BlockConditionArgs, SegmentArgs } from '@brinkninja/types'
 
 function blockCondition ({
   state,
   blockNumber
-}: BlockConditionArgs): PrimitiveArgs[] {
+}: BlockConditionArgs): SegmentArgs[] {
   if (state == 'MINED') {
     return [{
       functionName: 'requireBlockMined',

@@ -1,4 +1,4 @@
-import { PrimitiveArgs, BigIntish, PriceOperator, PriceConditionArgs } from '@brinkninja/types'
+import { SegmentArgs, BigIntish, PriceOperator, PriceConditionArgs } from '@brinkninja/types'
 import { FeeAmount } from '@uniswap/v3-sdk'
 import Token from '../../Token'
 import { priceToTwapValue, UniV3Twap } from '../../../oracles'
@@ -13,7 +13,7 @@ function priceCondition ({
   price,
   twapInterval = DEFAULT_TIME_INTERVAL,
   twapFeePool,
-}: PriceConditionArgs): PrimitiveArgs[] {
+}: PriceConditionArgs): SegmentArgs[] {
   const twap = new UniV3Twap({
     tokenA: new Token(tokenA),
     tokenB: new Token(tokenB),

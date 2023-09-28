@@ -1,7 +1,7 @@
 import {
-  PrimitiveArgs,
+  SegmentArgs,
   IntentSegmentArgs,
-  OrderArgs,
+  IntentGroupIntentArgs,
   MarketSwapActionArgs,
   LimitSwapActionArgs,
   BlockConditionArgs,
@@ -25,19 +25,19 @@ type ConditionFnTypeName = {
   priceCondition: PriceConditionArgs
 }
 
-function intentSegmentArgsToOrderArgs (intentSegment: IntentSegmentArgs): OrderArgs {
-  let orderArgs: OrderArgs = { primitives: [] }
+function intentSegmentArgsToIntentGroupIntentArgs (intentSegment: IntentSegmentArgs): IntentGroupIntentArgs {
+  let intentGroupIntentArgs: IntentGroupIntentArgs = { segments: [] }
 
   if (intentSegment.replay) {
     if (intentSegment.replay.runs == 'ONCE') {
-     orderArgs.primitives.push({
+     intentGroupIntentArgs.segments.push({
       functionName: 'useBit',
       params: nonceToBit({ nonce: intentSegment.replay.nonce })
     })
     } else if (intentSegment.replay.runs == 'UNTIL_CANCELLED') {
       throw new Error('UNIL_CANCELLED not implemented')
-      // TODO: add primitive types for requireBitNotUsed
-      // orderArgs.primitives.push({
+      // TODO: add segment types for requireBitNotUsed
+      // intentArgs.segments.push({
       //   functionName: 'requireBitNotUsed',
       //   params: nonceToBit({ nonce: intentSegment.replay.nonce })
       // })
@@ -47,7 +47,7 @@ function intentSegmentArgsToOrderArgs (intentSegment: IntentSegmentArgs): OrderA
   }
 
   if (intentSegment.expiryBlock) {
-    orderArgs.primitives.push({
+    intentGroupIntentArgs.segments.push({
       functionName: 'requireBlockNotMined',
       params: {
         blockNumber: BigInt(intentSegment.expiryBlock)
@@ -58,35 +58,35 @@ function intentSegmentArgsToOrderArgs (intentSegment: IntentSegmentArgs): OrderA
   if (!intentSegment.conditions) intentSegment.conditions = []
   if (!intentSegment.actions) intentSegment.actions = []
 
-  // add condition primitives to orderArgs
-  const conditionPrimitives: PrimitiveArgs[] = intentSegment.conditions.reduce((primitives: PrimitiveArgs[], conditionArgs) => {
+  // add condition segments to orderArgs
+  const conditionSegments: SegmentArgs[] = intentSegment.conditions.reduce((segments: SegmentArgs[], conditionArgs) => {
     const typeName: keyof ConditionFnTypeName = `${conditionArgs.type}Condition`
     const args = conditionArgs as ConditionFnTypeName[typeof typeName]
-    primitives.push(...runPrimitiveArgsGeneratingFn<typeof args>(
+    segments.push(...runSegmentArgsGeneratingFn<typeof args>(
       conditionArgs,
-      dslConditions[`${conditionArgs.type}Condition`] as (a: typeof args) => PrimitiveArgs[]
+      dslConditions[`${conditionArgs.type}Condition`] as (a: typeof args) => SegmentArgs[]
     ))
-    return primitives
+    return segments
   }, [])
-  orderArgs.primitives.push(...conditionPrimitives)
+  intentGroupIntentArgs.segments.push(...conditionSegments)
 
-  // add action primitives to orderArgs
-  const actionPrimitives: PrimitiveArgs[] = intentSegment.actions.reduce((primitives: PrimitiveArgs[], actionArgs) => {
+  // add action segments to intentGroupIntentArgs
+  const actionSegments: SegmentArgs[] = intentSegment.actions.reduce((segments: SegmentArgs[], actionArgs) => {
     const typeName: keyof ActionFnTypeName = `${actionArgs.type}Action`
     const args = actionArgs as ActionFnTypeName[typeof typeName]
-    primitives.push(...runPrimitiveArgsGeneratingFn<typeof args>(
+    segments.push(...runSegmentArgsGeneratingFn<typeof args>(
       actionArgs,
-      dslActions[`${actionArgs.type}Action`] as (a: typeof args) => PrimitiveArgs[]
+      dslActions[`${actionArgs.type}Action`] as (a: typeof args) => SegmentArgs[]
     ))
-    return primitives
+    return segments
   }, [])
-  orderArgs.primitives.push(...actionPrimitives)
+  intentGroupIntentArgs.segments.push(...actionSegments)
 
-  return orderArgs
+  return intentGroupIntentArgs
 }
 
-function runPrimitiveArgsGeneratingFn<T>(args: T, fn: (args: T) => PrimitiveArgs[]): PrimitiveArgs[] {
+function runSegmentArgsGeneratingFn<T>(args: T, fn: (args: T) => SegmentArgs[]): SegmentArgs[] {
   return fn(args)
 }
 
-export default intentSegmentArgsToOrderArgs
+export default intentSegmentArgsToIntentGroupIntentArgs

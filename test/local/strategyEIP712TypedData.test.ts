@@ -1,20 +1,20 @@
 import { expect } from 'chai'
 import {
-  Strategy,
-  PrimitiveFunctionName,
-  strategyEIP712TypedData
+  IntentGroup,
+  SegmentFunctionName,
+  intentGroupEIP712TypedData
 } from '@brink-sdk'
 
 /*
-describe('strategyEIP712TypedData', function () {
+describe('intentGroupEIP712TypedData', function () {
   it('should return EIP712 TypedData', async function () {
-    const strategyData = await buildStrategy()
+    const intentGroupData = await buildIntentGroup()
 
     // get the EIP712 TypedData
-    const eip712TypedData = await strategyEIP712TypedData({
+    const eip712TypedData = await intentGroupEIP712TypedData({
       signer: this.signerAddress,
       chainId: 31337,
-      strategy: strategyData
+      intentGroup: intentGroupData
     })
 
     // sign the EIP712 TypedData with an ethers signer
@@ -28,18 +28,18 @@ describe('strategyEIP712TypedData', function () {
   })
 })
 
-async function buildStrategy () {
-  const strategy1 = new Strategy(
+async function buildIntentGroup () {
+  const intentGroup1 = new IntentGroup(
     {
-      orders: [
+      intents: [
         {
-          primitives: [
+          segments: [
             {
-              functionName: 'useBit' as PrimitiveFunctionName,
+              functionName: 'useBit' as SegmentFunctionName,
               params: [0, 1]
             },
             {
-              functionName: 'marketSwapExactInput' as PrimitiveFunctionName,
+              functionName: 'marketSwapExactInput' as SegmentFunctionName,
               params: [
                 '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648' as string,
                 '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8' as string,
@@ -68,6 +68,6 @@ async function buildStrategy () {
       ]
     }
   )
-  return await strategy1.toJSON()
+  return await intentGroup1.toJSON()
 }
 */

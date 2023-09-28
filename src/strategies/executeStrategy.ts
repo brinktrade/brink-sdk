@@ -1,36 +1,36 @@
 import { TransactionData } from '@brinkninja/types'
-import SignedStrategy from './SignedStrategy'
+import SignedIntentGroup from './SignedStrategy'
 import evm from '../internal/EthereumJsVm'
 import { metaDelegateCall } from '../core'
 
-export type ExecuteStrategyArgs = {
-  signedStrategy: SignedStrategy
-  orderIndex: number
+export type ExecuteIntentArgs = {
+  signedIntentGroup: SignedIntentGroup
+  intentIndex: number
   unsignedCalls: string[]
   deployAccount?: boolean
 }
 
-async function executeStrategy ({
-  signedStrategy,
-  orderIndex,
+async function executeIntentGroup ({
+  signedIntentGroup,
+  intentIndex,
   unsignedCalls,
   deployAccount = false
-}: ExecuteStrategyArgs): Promise<TransactionData> {
-  const validationResult = await signedStrategy.validate()
+}: ExecuteIntentArgs): Promise<TransactionData> {
+  const validationResult = await signedIntentGroup.validate()
   if (!validationResult.valid) {
-    throw new Error(`Invalid strategy: ${validationResult.message}`)
+    throw new Error(`Invalid intentGroup: ${validationResult.message}`)
   }
 
-  const strategyJSON = (await signedStrategy.toJSON()).strategy
-  const unsignedData = await evm.unsignedData(orderIndex, unsignedCalls)
+  const intentGroupJSON = (await signedIntentGroup.toJSON()).intentGroup
+  const unsignedData = await evm.unsignedData(intentIndex, unsignedCalls)
   return await metaDelegateCall({
-    signer: signedStrategy.signer,
-    to: signedStrategy.strategyContract,
-    data: strategyJSON.data as string,
-    signature: signedStrategy.signature,
+    signer: signedIntentGroup.signer,
+    to: signedIntentGroup.intentGroupContract,
+    data: intentGroupJSON.data as string,
+    signature: signedIntentGroup.signature,
     unsignedData,
     deployAccount
   })
 }
 
-export default executeStrategy
+export default executeIntentGroup

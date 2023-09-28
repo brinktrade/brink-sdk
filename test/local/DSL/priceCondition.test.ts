@@ -11,17 +11,17 @@ describe('priceCondition', function () {
       tokenB_decimals: 2,
   }
 
-  it('should return requireUint256LowerBound primitive when operator is lt', function () {
-    const primitives = priceCondition({
+  it('should return requireUint256LowerBound segment when operator is lt', function () {
+    const segments = priceCondition({
       ...tokenArgs,
       type: 'price',
       operator: 'lt',
       price: 1000
     })
 
-    expect(primitives.length).to.equal(1)
-    expect(primitives[0].functionName).to.equal('requireUint256LowerBound')
-    expect(primitives[0].params.lowerBound).to.equal(getTwapValue(1000))
+    expect(segments.length).to.equal(1)
+    expect(segments[0].functionName).to.equal('requireUint256LowerBound')
+    expect(segments[0].params.lowerBound).to.equal(getTwapValue(1000))
 
     const twap = new UniV3Twap({
       tokenA: new Token({address: USDC_ADDRESS}),
@@ -29,20 +29,20 @@ describe('priceCondition', function () {
       interval: BigInt(1000),
     })
 
-    expect(primitives[0].params.oracle).to.deep.equal({ address: twap.address, params: twap.params })
+    expect(segments[0].params.oracle).to.deep.equal({ address: twap.address, params: twap.params })
   })
 
-  it('should return requireUint256UpperBound primitive when operator is gt', function () {
-    const primitives = priceCondition({
+  it('should return requireUint256UpperBound segment when operator is gt', function () {
+    const segments = priceCondition({
       ...tokenArgs,
       type: 'price',
       operator: 'gt',
       price: 2000
     })
 
-    expect(primitives.length).to.equal(1)
-    expect(primitives[0].functionName).to.equal('requireUint256UpperBound')
-    expect(primitives[0].params.upperBound).to.equal(getTwapValue(2000))
+    expect(segments.length).to.equal(1)
+    expect(segments[0].functionName).to.equal('requireUint256UpperBound')
+    expect(segments[0].params.upperBound).to.equal(getTwapValue(2000))
 
     const twap = new UniV3Twap({
       tokenA: new Token({address: USDC_ADDRESS}),
@@ -50,7 +50,7 @@ describe('priceCondition', function () {
       interval: BigInt(1000),
     })
 
-    expect(primitives[0].params.oracle).to.deep.equal({ address: twap.address, params: twap.params })
+    expect(segments[0].params.oracle).to.deep.equal({ address: twap.address, params: twap.params })
   })
 
   function getTwapValue(price: number): bigint {

@@ -1,12 +1,12 @@
-import { OracleJSON, BigIntish, PrimitiveParamType } from '@brinkninja/types'
-import Primitive from './Primitive'
+import { OracleJSON, BigIntish, SegmentParamType } from '@brinkninja/types'
+import Segment from './Primitive'
 
 export type RequireUint256UpperBoundArgs = {
   oracle: OracleJSON,
   upperBound: BigIntish
 }
 
-export const RequireUint256UpperBoundFunctionParams: PrimitiveParamType[] = [
+export const RequireUint256UpperBoundFunctionParams: SegmentParamType[] = [
   {
     name: 'uint256Oracle',
     type: 'address',
@@ -24,7 +24,7 @@ export const RequireUint256UpperBoundFunctionParams: PrimitiveParamType[] = [
   }
 ]
 
-export default class RequireUint256LowerBound extends Primitive {
+export default class RequireUint256LowerBound extends Segment {
   public constructor ({
     oracle,
     upperBound

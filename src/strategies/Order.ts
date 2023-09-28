@@ -1,49 +1,49 @@
 import {
-  OrderArgs,
-  OrderJSON,
+  IntentGroupIntentArgs,
+  IntentGroupIntentJSON,
   ValidationResult,
-  PrimitiveFunctionName,
-  PrimitiveParamValue,
-  PrimitiveJSON,
+  SegmentFunctionName,
+  SegmentParamValue,
+  SegmentJSON,
   TokenAmount,
   Bit,
   BitJSON
 } from '@brinkninja/types'
-import Primitive from './Primitives/Primitive'
-import InputTokenPrimitive from './Primitives/InputTokenPrimitive'
-import { createPrimitive, invalidResult, validResult, groupAndSumTokenAmounts, bitJSONToBit } from '../internal'
+import Segment from './Primitives/Primitive'
+import InputTokenSegment from './Primitives/InputTokenPrimitive'
+import { createSegment, invalidResult, validResult, groupAndSumTokenAmounts, bitJSONToBit } from '../internal'
 
-export type OrderConstructorArgs = {
-  primitives: PrimitiveJSON[]
+export type IntentConstructorArgs = {
+  segments: SegmentJSON[]
 }
 
-class Order {
+class IntentGroupIntent {
 
-  primitives: Primitive[] = []
+  segments: Segment[] = []
 
   public constructor ()
-  public constructor (args: OrderArgs)
+  public constructor (args: IntentGroupIntentArgs)
   public constructor (...arr: any[]) {
-    const args: OrderArgs = arr[0] || {}
-    let orderArgs: OrderArgs = {
-      primitives: args?.primitives || []
+    const args: IntentGroupIntentArgs = arr[0] || {}
+    let intentGroupIntentsArgs: IntentGroupIntentArgs = {
+      segments: args?.segments || []
     }
 
-    this.primitives = orderArgs.primitives.map((primitiveData: {
-      functionName: PrimitiveFunctionName,
-      params: Record<string, PrimitiveParamValue>
+    this.segments = intentGroupIntentsArgs.segments.map((segmentData: {
+      functionName: SegmentFunctionName,
+      params: Record<string, SegmentParamValue>
     }) => {
-      return createPrimitive(primitiveData)
+      return createSegment(segmentData)
     })
   }
 
   tokenInputs (): TokenAmount[] {
     const tokenInputs: TokenAmount[] = []
-    this.primitives.forEach(primitive => {
-      if (primitive instanceof InputTokenPrimitive) {
+    this.segments.forEach(segment => {
+      if (segment instanceof InputTokenSegment) {
         tokenInputs.push({
-          token: primitive.inputToken,
-          amount: primitive.inputAmount
+          token: segment.inputToken,
+          amount: segment.inputAmount
         })
       }
     })
@@ -52,9 +52,9 @@ class Order {
 
   bits (): Bit[] {
     const bits: Bit[] = []
-    this.primitives.forEach(primitive => {
-      if (primitiveHasBitData(primitive)) {
-        const bit = bitJSONToBit(primitive.paramsJSON as BitJSON)
+    this.segments.forEach(segment => {
+      if (segmentHasBitData(segment)) {
+        const bit = bitJSONToBit(segment.paramsJSON as BitJSON)
         if(!bits.find(existingBit => (     
           existingBit.index == bit.index &&
           existingBit.value == bit.value
@@ -66,21 +66,21 @@ class Order {
     return bits
   }
 
-  async toJSON (): Promise<OrderJSON> {
-    const primitives = await Promise.all(
-      this.primitives.map(async primitive => await primitive.toJSON())
+  async toJSON (): Promise<IntentGroupIntentJSON> {
+    const segments = await Promise.all(
+      this.segments.map(async segment => await segment.toJSON())
     )
     return {
-      primitives
+      segments
     }
   }
 
   validate (): ValidationResult {
-    if (this.primitives.length == 0) return { valid: false }
+    if (this.segments.length == 0) return { valid: false }
     
     let numSwaps = 0
-    for (let i = 0; i < this.primitives.length; i++) {
-      if (this.primitives[i].type == 'swap') numSwaps++
+    for (let i = 0; i < this.segments.length; i++) {
+      if (this.segments[i].type == 'swap') numSwaps++
     }
     if (numSwaps !== 1) return invalidResult('WRONG_NUMBER_OF_SWAPS')
 
@@ -89,8 +89,8 @@ class Order {
 
 }
 
-const primitiveHasBitData = (primitive: Primitive): boolean => (
-  primitive.paramsJSON.hasOwnProperty('index') && primitive.paramsJSON.hasOwnProperty('value')
+const segmentHasBitData = (segment: Segment): boolean => (
+  segment.paramsJSON.hasOwnProperty('index') && segment.paramsJSON.hasOwnProperty('value')
 )
 
-export default Order
+export default IntentGroupIntent

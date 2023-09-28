@@ -1,27 +1,27 @@
 import { expect } from 'chai'
 import {
-  Strategy,
+  IntentGroup,
   TokenArgs,
-  PrimitiveArgs
+  SegmentArgs
 } from '@brink-sdk'
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
 describe('Order.inputTokens()', function () {
-  it('should return tokenInputs for order', async function () {
-    const strategy1 = new Strategy(strategyForTokenInputs1)
-    const tokenInputs = strategy1.orders[0].tokenInputs()
+  it('should return tokenInputs for intent', async function () {
+    const intentGroup1 = new IntentGroup(intentGroupForTokenInputs1)
+    const tokenInputs = intentGroup1.intents[0].tokenInputs()
     expect(tokenInputs.length).to.equal(1)
     expect(tokenInputs[0].token.address).to.equal(USDC_ADDRESS)
     expect(tokenInputs[0].amount).to.equal(BigInt(1450000000).toString())
   })
 })
 
-describe('Strategy.inputTokens()', function () {
-  it('should return tokenInputs for the strategy with amounts summed', async function () {
-    const strategy1 = new Strategy(strategyForTokenInputs1)
-    const tokenInputs = strategy1.tokenInputs()
+describe('IntentGroup.inputTokens()', function () {
+  it('should return tokenInputs for the intentGroup with amounts summed', async function () {
+    const intentGroup1 = new IntentGroup(intentGroupForTokenInputs1)
+    const tokenInputs = intentGroup1.tokenInputs()
     expect(tokenInputs.length).to.equal(2)
     expect(tokenInputs[0].token.address).to.equal(USDC_ADDRESS)
     expect(tokenInputs[0].amount).to.equal(BigInt(2450000000).toString())
@@ -30,11 +30,11 @@ describe('Strategy.inputTokens()', function () {
   })
 })
 
-const strategyForTokenInputs1 = {
-  orders: [
+const intentGroupForTokenInputs1 = {
+  intents: [
     {
-      primitives: [
-        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(1) } } as PrimitiveArgs,
+      segments: [
+        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(1) } } as SegmentArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -49,12 +49,12 @@ const strategyForTokenInputs1 = {
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as PrimitiveArgs
+        } as SegmentArgs
       ]
     },
     {
-      primitives: [
-        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as PrimitiveArgs,
+      segments: [
+        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as SegmentArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -69,12 +69,12 @@ const strategyForTokenInputs1 = {
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as PrimitiveArgs
+        } as SegmentArgs
       ]
     },
     {
-      primitives: [
-        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as PrimitiveArgs,
+      segments: [
+        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as SegmentArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -89,7 +89,7 @@ const strategyForTokenInputs1 = {
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as PrimitiveArgs
+        } as SegmentArgs
       ]
     }
   ]

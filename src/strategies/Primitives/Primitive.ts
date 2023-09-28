@@ -1,37 +1,37 @@
 import {
-  PrimitiveJSON,
-  PrimitiveFunctionName,
-  PrimitiveType,
-  PrimitiveParamType,
+  SegmentJSON,
+  SegmentFunctionName,
+  SegmentType,
+  SegmentParamType,
   ContractCallParam,
-  PrimitiveParamJSON
+  SegmentParamJSON
 } from '@brinkninja/types'
 import { verifyParams, EthereumJsVm as evm } from '../../internal'
 
-export interface PrimitiveClassArgs {
-  functionName: PrimitiveFunctionName
-  type: PrimitiveType
+export interface SegmentClassArgs {
+  functionName: SegmentFunctionName
+  type: SegmentType
   requiresUnsignedCall: boolean
-  paramsJSON: Record<string, PrimitiveParamJSON>
-  paramTypes: PrimitiveParamType[]
+  paramsJSON: Record<string, SegmentParamJSON>
+  paramTypes: SegmentParamType[]
   paramValues: ContractCallParam[]
 }
 
-export default class Primitive {
-  functionName: PrimitiveFunctionName
-  type: PrimitiveType
+export default class Segment {
+  functionName: SegmentFunctionName
+  type: SegmentType
   requiresUnsignedCall: boolean
-  paramsJSON: Record<string, PrimitiveParamJSON>
-  paramTypes: PrimitiveParamType[]
+  paramsJSON: Record<string, SegmentParamJSON>
+  paramTypes: SegmentParamType[]
   paramValues: ContractCallParam[]
 
-  constructor(primitiveArgs: PrimitiveClassArgs) {
-    this.functionName = primitiveArgs.functionName
-    this.type = primitiveArgs.type
-    this.requiresUnsignedCall = primitiveArgs.requiresUnsignedCall
-    this.paramsJSON = primitiveArgs.paramsJSON
-    this.paramTypes = primitiveArgs.paramTypes
-    this.paramValues = primitiveArgs.paramValues
+  constructor(segmentArgs: SegmentClassArgs) {
+    this.functionName = segmentArgs.functionName
+    this.type = segmentArgs.type
+    this.requiresUnsignedCall = segmentArgs.requiresUnsignedCall
+    this.paramsJSON = segmentArgs.paramsJSON
+    this.paramTypes = segmentArgs.paramTypes
+    this.paramValues = segmentArgs.paramValues
 
     verifyParams({
       functionName: this.functionName,
@@ -40,8 +40,8 @@ export default class Primitive {
     })
   }
 
-  async toJSON (): Promise<PrimitiveJSON> {
-    const data = await evm.primitiveData(this.functionName, ...this.paramValues)
+  async toJSON (): Promise<SegmentJSON> {
+    const data = await evm.segmentData(this.functionName, ...this.paramValues)
     return {
       data: data,
       functionName: this.functionName,

@@ -1,4 +1,4 @@
-import { LimitSwapActionArgs, PrimitiveArgs, PrimitiveParamValue } from '@brinkninja/types'
+import { LimitSwapActionArgs, SegmentArgs, SegmentParamValue } from '@brinkninja/types'
 import { convertToX96HexPrice, toBigint, toTokenArgs } from '@brink-sdk/internal';
 import { InvalidInputError } from '../errors';
 
@@ -11,7 +11,7 @@ function limitSwapAction ({
   tokenOut,
   tokenInAmount,
   tokenOutAmount
-}: LimitSwapActionArgs): PrimitiveArgs[] {
+}: LimitSwapActionArgs): SegmentArgs[] {
   if (tokenOutAmount === undefined) {
     throw new InvalidInputError('tokenOutAmount is required')
   }
@@ -42,8 +42,8 @@ function limitSwapAction ({
     params: {
       priceCurve: priceCurveParams,
       signer: owner,
-      tokenIn: tokenInArgs as PrimitiveParamValue,
-      tokenOut: tokenOutArgs as PrimitiveParamValue,
+      tokenIn: tokenInArgs as SegmentParamValue,
+      tokenOut: tokenOutArgs as SegmentParamValue,
       tokenInAmount: tokenInAmount,
       fillStateParams
     }

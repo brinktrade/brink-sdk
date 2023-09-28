@@ -4,25 +4,25 @@ import {
   deployAccount,
   unsignedMarketSwapData,
   MarketSwapExactInput,
-  Order,
-  Strategy,
-  SignedStrategy,
+  IntentGroupIntent,
+  IntentGroup,
+  SignedIntentGroup,
   Token,
   UniV3Twap,
   UseBit,
   marketSwapExactInput_getOutput,
-  executeStrategy,
-  strategyEIP712TypedData,
-  StrategyArgs
+  executeIntentGroup,
+  intentGroupEIP712TypedData,
+  IntentGroupArgs
 } from '@brink-sdk'
 import fundWithERC20 from '../helpers/fundWithERC20'
 
-describe('executeStrategy with marketSwapExactInput', function () {
-  it('should execute a simple market swap strategy', async function () {
+describe('executeIntentGroup with marketSwapExactInput', function () {
+  it('should execute a simple market swap intentGroup', async function () {
     const deployTx = await deployAccount({ signer: this.signerAddress })
     await this.defaultSigner.sendTransaction(deployTx)
 
-    const { signedStrategy, unsignedSwapCall, usdcInput } = await successfulExecuteStrategy.bind(this)()
+    const { signedIntentGroup, unsignedSwapCall, usdcInput } = await successfulExecuteIntentGroup.bind(this)()
 
     // store initial balances
     const signer_usdcBal_0 = await this.usdc.balanceOf(this.ethersAccountSigner.address)
@@ -30,10 +30,10 @@ describe('executeStrategy with marketSwapExactInput', function () {
     const filler_usdcBal_0 = await this.usdc.balanceOf(this.filler.address)
     const filler_wethBal_0 = await this.weth.balanceOf(this.filler.address)
 
-    // execute order 0 for the strategy
-    const tx = await executeStrategy({
-      signedStrategy,
-      orderIndex: 0,
+    // execute intent 0 for the intentGroup
+    const tx = await executeIntentGroup({
+      signedIntentGroup,
+      intentIndex: 0,
       unsignedCalls: [unsignedSwapCall]
     })
     await this.defaultSigner.sendTransaction(tx)
@@ -59,27 +59,27 @@ describe('executeStrategy with marketSwapExactInput', function () {
     const deployTx = await deployAccount({ signer: this.signerAddress })
     await this.defaultSigner.sendTransaction(deployTx)
 
-    const { signedStrategy, unsignedSwapCall } = await successfulExecuteStrategy.bind(this)()
+    const { signedIntentGroup, unsignedSwapCall } = await successfulExecuteIntentGroup.bind(this)()
 
     // modify the signature to have a bad v value
-    const v = signedStrategy.signature.slice(-2)
+    const v = signedIntentGroup.signature.slice(-2)
     const badV = v == '1b' ? '00' : '01'
-    signedStrategy.signature = signedStrategy.signature.slice(0, -2) + badV
+    signedIntentGroup.signature = signedIntentGroup.signature.slice(0, -2) + badV
 
-    // execute order 0 for the strategy
-    const tx = await executeStrategy({
-      signedStrategy,
-      orderIndex: 0,
+    // execute intent 0 for the intentGroup
+    const tx = await executeIntentGroup({
+      signedIntentGroup,
+      intentIndex: 0,
       unsignedCalls: [unsignedSwapCall]
     })
     await this.defaultSigner.sendTransaction(tx)
   })
 })
 
-async function successfulExecuteStrategy (this: TestContext): Promise<{
+async function successfulExecuteIntentGroup (this: TestContext): Promise<{
   usdcInput: bigint,
   wethOutput: bigint,
-  signedStrategy: SignedStrategy,
+  signedIntentGroup: SignedIntentGroup,
   unsignedSwapCall: string
 }> {
   const usdc = new Token({ address: this.USDC_ADDRESS })
@@ -94,11 +94,11 @@ async function successfulExecuteStrategy (this: TestContext): Promise<{
   const feePercent = BigInt(10000)
   const feeMin = BigInt(0)
 
-  // build the market swap strategy
-  const strategy = new Strategy()
-  strategy.orders[0] = new Order()
-  strategy.orders[0].primitives[0] = new UseBit({ index: BigInt(0), value: BigInt(2**0) })
-  strategy.orders[0].primitives[1] = new MarketSwapExactInput({
+  // build the market swap intentGroup
+  const intentGroup = new IntentGroup()
+  intentGroup.intents[0] = new IntentGroupIntent()
+  intentGroup.intents[0].segments[0] = new UseBit({ index: BigInt(0), value: BigInt(2**0) })
+  intentGroup.intents[0].segments[1] = new MarketSwapExactInput({
     oracle: priceOracle,
     signer: this.signerAddress,
     tokenIn: new Token({ address: this.USDC_ADDRESS }),
@@ -108,19 +108,19 @@ async function successfulExecuteStrategy (this: TestContext): Promise<{
     feeMin
   })
 
-  // sign the strategy
+  // sign the intentGroup
   const chainId = 31337
-  const strategyJSON = await strategy.toJSON()
-  const { domain, types, value } = await strategyEIP712TypedData({
+  const intentGroupJSON = await intentGroup.toJSON()
+  const { domain, types, value } = await intentGroupEIP712TypedData({
     signer: this.ethersAccountSigner.address,
     chainId,
-    strategy: strategyJSON as StrategyArgs
+    intentGroup: intentGroupJSON as IntentGroupArgs
   })
   const signature = await this.ethersAccountSigner._signTypedData(
     domain, types, value
   )
-  const signedStrategy = new SignedStrategy({
-    strategy: strategyJSON as StrategyArgs,
+  const signedIntentGroup = new SignedIntentGroup({
+    intentGroup: intentGroupJSON as IntentGroupArgs,
     chainId,
     signature,
     signer: this.ethersAccountSigner.address
@@ -144,7 +144,7 @@ async function successfulExecuteStrategy (this: TestContext): Promise<{
     this.WETH_ADDRESS, wethOutput.toString(), this.signerAddress
   )).data
 
-  // get unsigned data for the marketSwapExactInput primitive
+  // get unsigned data for the marketSwapExactInput segment
   const unsignedSwapCall = await unsignedMarketSwapData({
     recipient: this.filler.address,
     callData: {
@@ -156,7 +156,7 @@ async function successfulExecuteStrategy (this: TestContext): Promise<{
   return {
     usdcInput,
     wethOutput,
-    signedStrategy,
+    signedIntentGroup,
     unsignedSwapCall
   }
 }

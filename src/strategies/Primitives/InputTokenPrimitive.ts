@@ -1,22 +1,22 @@
 import { TokenJSON } from '@brinkninja/types'
-import Primitive, { PrimitiveClassArgs } from './Primitive'
+import Segment, { SegmentClassArgs } from './Primitive'
 
-interface InputTokenPrimitiveClassArgs extends PrimitiveClassArgs {
+interface InputTokenSegmentClassArgs extends SegmentClassArgs {
   inputTokenParam: string
   inputAmountParam: string
 }
 
-export default class InputTokenPrimitive extends Primitive {
+export default class InputTokenSegment extends Segment {
 
   inputToken: TokenJSON
   inputAmount: string
 
-  constructor(inputTokenPrimitiveArgs: InputTokenPrimitiveClassArgs) {
+  constructor(inputTokenSegmentArgs: InputTokenSegmentClassArgs) {
     super({
-      ...inputTokenPrimitiveArgs
+      ...inputTokenSegmentArgs
     })
 
-    const { inputTokenParam, inputAmountParam } = inputTokenPrimitiveArgs
+    const { inputTokenParam, inputAmountParam } = inputTokenSegmentArgs
 
     this.inputToken = this.paramsJSON[inputTokenParam] as TokenJSON
     this.inputAmount = this.paramsJSON[inputAmountParam] as string

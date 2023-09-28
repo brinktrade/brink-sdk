@@ -1,7 +1,7 @@
-import { TokenArgs, PrimitiveParamType, BigIntish, PriceCurveJSON, FillStateParamsArgs } from '@brinkninja/types'
+import { TokenArgs, SegmentParamType, BigIntish, PriceCurveJSON, FillStateParamsArgs } from '@brinkninja/types'
 import { FillStateParams } from '..'
 import Token from '../Token'
-import InputTokenPrimitive from './InputTokenPrimitive'
+import InputTokenSegment from './InputTokenPrimitive'
 
 export type LimitSwapExactInputArgs = {
   priceCurve: PriceCurveJSON
@@ -12,7 +12,7 @@ export type LimitSwapExactInputArgs = {
   fillStateParams: FillStateParamsArgs
 }
 
-export const LimitSwapExactInputFunctionParams: PrimitiveParamType[] = [
+export const LimitSwapExactInputFunctionParams: SegmentParamType[] = [
   {
     name: 'owner',
     type: 'address',
@@ -54,7 +54,7 @@ export const LimitSwapExactInputFunctionParams: PrimitiveParamType[] = [
   }
 ]
 
-export default class LimitSwapExactInput extends InputTokenPrimitive {
+export default class LimitSwapExactInput extends InputTokenSegment {
   public constructor ({
     priceCurve,
     signer,

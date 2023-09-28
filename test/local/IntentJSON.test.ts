@@ -1,47 +1,47 @@
 import { expect } from 'chai'
 import {
-  Strategy,
+  IntentGroup,
   IntentArgs,
   IntentSegmentArgs
 } from '@brink-sdk'
 
 describe('IntentArgs', function () {
-  describe('IntentArgs object passed to strategy', function () {
-    it('should return primitives based on intent object args', async function () {
-      const strategy1 = new Strategy(intentObject)
-      const strategyJSON = await strategy1.toJSON()
-      expect(strategyJSON.orders.length).to.equal(2)
-      expect(strategyJSON.orders[0].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[0].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
-      expect(strategyJSON.orders[1].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[1].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
+  describe('IntentArgs object passed to intentGroup', function () {
+    it('should return segments based on intent object args', async function () {
+      const intentGroup1 = new IntentGroup(intentObject)
+      const intentGroupJSON = await intentGroup1.toJSON()
+      expect(intentGroupJSON.intents.length).to.equal(2)
+      expect(intentGroupJSON.intents[0].segments[0].functionName).to.equal('useBit')
+      expect(intentGroupJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(intentGroupJSON.intents[1].segments[0].functionName).to.equal('useBit')
+      expect(intentGroupJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
     })
   })
 
-  describe('single IntentSegmentArgs passed to strategy', function () {
-    it('should return primitives based on intent object args', async function () {
-      const strategy1 = new Strategy(singleSegmentIntent)
-      const strategyJSON = await strategy1.toJSON()
-      expect(strategyJSON.orders.length).to.equal(1)
-      expect(strategyJSON.orders[0].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[0].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
+  describe('single IntentSegmentArgs passed to intentGroup', function () {
+    it('should return segments based on intent object args', async function () {
+      const intentGroup1 = new IntentGroup(singleSegmentIntent)
+      const intentGroupJSON = await intentGroup1.toJSON()
+      expect(intentGroupJSON.intents.length).to.equal(1)
+      expect(intentGroupJSON.intents[0].segments[0].functionName).to.equal('useBit')
+      expect(intentGroupJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
     })
   })
 
-  describe('IntentSegmentArgs array passed to strategy', function () {
-    it('should return primitives based on intent object args', async function () {
-      const strategy1 = new Strategy(multiSegmentIntent)
-      const strategyJSON = await strategy1.toJSON()
-      expect(strategyJSON.orders.length).to.equal(2)
-      expect(strategyJSON.orders[0].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[0].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
-      expect(strategyJSON.orders[1].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[1].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
+  describe('IntentSegmentArgs array passed to intentGroup', function () {
+    it('should return segments based on intent object args', async function () {
+      const intentGroup1 = new IntentGroup(multiSegmentIntent)
+      const intentGroupJSON = await intentGroup1.toJSON()
+      expect(intentGroupJSON.intents.length).to.equal(2)
+      expect(intentGroupJSON.intents[0].segments[0].functionName).to.equal('useBit')
+      expect(intentGroupJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(intentGroupJSON.intents[1].segments[0].functionName).to.equal('useBit')
+      expect(intentGroupJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
     })
   })
 })

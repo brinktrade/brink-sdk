@@ -1,38 +1,38 @@
 import { expect } from 'chai'
-import { Strategy, Token, TokenArgs, PrimitiveArgs } from '@brink-sdk'
+import { IntentGroup, Token, TokenArgs, SegmentArgs } from '@brink-sdk'
 
-describe('SignedStrategy', function () {
+describe('SignedIntentGroup', function () {
   describe('validate()', function () {
-    it('should return valid for a valid SignedStrategy', async function () {
-      const strategyData = await buildStrategy()
-      const signedStrategy = await this.signStrategy(strategyData)
-      expect((await signedStrategy.validate()).valid).to.equal(true)
+    it('should return valid for a valid SignedIntentGroup', async function () {
+      const intentGroupData = await buildIntentGroup()
+      const signedIntentGroup = await this.signIntentGroup(intentGroupData)
+      expect((await signedIntentGroup.validate()).valid).to.equal(true)
     })
 
-    it('SignedStrategy where signer does not match signature recovered address should be invalid', async function () {
-      const strategyData = await buildStrategy()
-      let signedStrategy = await this.signStrategy(strategyData)
-      signedStrategy.signature = '0xa6d6160d57568bde2a1ca2f623cf8814e06d75ee174389e5325110f7029311c2192404dc20a07e9b71cc8747102612c081b4c20ed4f16b37cb3980dd7bd8df1c1b'
-      const validationResult = await signedStrategy.validate()
+    it('SignedIntentGroup where signer does not match signature recovered address should be invalid', async function () {
+      const intentGroupData = await buildIntentGroup()
+      let signedIntentGroup = await this.signIntentGroup(intentGroupData)
+      signedIntentGroup.signature = '0xa6d6160d57568bde2a1ca2f623cf8814e06d75ee174389e5325110f7029311c2192404dc20a07e9b71cc8747102612c081b4c20ed4f16b37cb3980dd7bd8df1c1b'
+      const validationResult = await signedIntentGroup.validate()
       expect(validationResult.valid).to.equal(false)
       expect(validationResult.reason).to.equal('SIGNATURE_MISMATCH')
     })
   })
 })
 
-async function buildStrategy () {
-  const strategy1 = new Strategy(
+async function buildIntentGroup () {
+  const intentGroup1 = new IntentGroup(
     {
-      orders: [
+      intents: [
         {
-          primitives: [
+          segments: [
             {
               functionName: 'useBit',
               params: {
                 index: BigInt(0),
                 value: BigInt(1)
               }
-            } as PrimitiveArgs,
+            } as SegmentArgs,
             {
               functionName: 'marketSwapExactInput',
               params: {
@@ -47,11 +47,11 @@ async function buildStrategy () {
                 feePercent: BigInt(10000),
                 feeMin: BigInt(0)
               }
-            } as PrimitiveArgs
+            } as SegmentArgs
           ]
         }
       ]
     }
   )
-  return await strategy1.toJSON()
+  return await intentGroup1.toJSON()
 }

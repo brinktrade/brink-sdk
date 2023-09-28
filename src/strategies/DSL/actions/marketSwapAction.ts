@@ -1,4 +1,4 @@
-import { MarketSwapActionArgs, PrimitiveArgs } from '@brinkninja/types'
+import { MarketSwapActionArgs, SegmentArgs } from '@brinkninja/types'
 
 function marketSwapAction ({
   owner,
@@ -7,7 +7,7 @@ function marketSwapAction ({
   tokenInAmount,
   feePercent,
   feeMinTokenOut
-}: MarketSwapActionArgs): PrimitiveArgs[] {
+}: MarketSwapActionArgs): SegmentArgs[] {
   if (!feeMinTokenOut) {
     feeMinTokenOut = 0
   }
