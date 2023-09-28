@@ -1,25 +1,8 @@
 import { toTokenArgs } from '../../../internal/toTokenArgs'
 import { LimitSwapActionArgs, PrimitiveArgs, PrimitiveParamValue } from '@brinkninja/types'
-import priceCurveAddress from '../../../internal/priceCurveAddress'
-import { convertToHexPrice } from '@brink-sdk/internal/toHexPrice';
+import { convertToX96HexPrice } from '@brink-sdk/internal/price';
 
-const DEFAULT_PRICE_CURVE = 'flat';
-
-let globalPriceCurveAddress: string | null = null;
-let addressFetchInitiated = false;
-
-function ensurePriceCurveAddressInitialized(): void {
-  if (!addressFetchInitiated) {
-    addressFetchInitiated = true; // To prevent multiple fetch attempts
-    priceCurveAddress(DEFAULT_PRICE_CURVE)
-      .then(result => {
-        globalPriceCurveAddress = result;
-      })
-      .catch(err => {
-        console.error("Error fetching price curve address:", err);
-      });
-  }
-}
+const FLAT_PRICE_CURVE_ADDRESS = '0xC509733B8dDdbab9369A96F6F216d6E59DB3900f';
 
 function limitSwapAction ({
   id,
@@ -29,18 +12,12 @@ function limitSwapAction ({
   tokenInAmount,
   tokenOutAmount
 }: LimitSwapActionArgs): PrimitiveArgs[] {
-  ensurePriceCurveAddressInitialized();  // Ensure fetch attempt has been made
-  
-  if (!globalPriceCurveAddress) {
-    throw new Error('Price curve address not initialized.');
-  }
-
   if (tokenOutAmount === undefined) {
     throw new Error('tokenOutAmount is required')
   }
 
-  const hexPrice = convertToHexPrice(tokenOutAmount, tokenInAmount)
-  const priceCurveParams = { address: globalPriceCurveAddress, params: hexPrice }
+  const hexPrice = convertToX96HexPrice(tokenOutAmount, tokenInAmount)
+  const priceCurveParams = { address: FLAT_PRICE_CURVE_ADDRESS, params: hexPrice }
   
   const tokenArgsIn = toTokenArgs(tokenIn)
   const tokenArgsOut = toTokenArgs(tokenOut)
@@ -55,7 +32,7 @@ function limitSwapAction ({
     functionName: 'limitSwapExactInput',
     params: {
       priceCurve: priceCurveParams,
-      signer: owner, // TODO: Check
+      signer: owner,
       tokenIn: tokenArgsIn as PrimitiveParamValue, 
       tokenOut: tokenArgsOut as PrimitiveParamValue,
       tokenInAmount: tokenInAmount,
