@@ -1,4 +1,4 @@
-export default function calculateX96PriceFromAmounts(quoteAmount: bigint, baseAmount: bigint): bigint {
+export default function calculateX96PriceFromAmounts(baseAmount: bigint, quoteAmount: bigint): bigint {
   if(baseAmount === 0n) {
     throw new Error("Division by zero");
   }
