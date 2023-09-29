@@ -1,10 +1,6 @@
 import { BigIntish } from "@brinkninja/types";
 
 export default function toBigint(value: BigIntish): bigint {
-    if (typeof value === "number" && !Number.isInteger(value)) {
-        throw new Error(`Cannot convert non-integer number ${value} to bigint.`);
-    }
-
     try {
         return BigInt(value);
     } catch (error) { 
