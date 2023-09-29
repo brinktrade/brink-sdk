@@ -16,16 +16,16 @@ function limitSwapAction ({
     throw new InvalidInputError('tokenOutAmount is required')
   }
 
-  let bigTokenInAmount: bigint
-  let bigTokenOutAmount: bigint
+  let tokenInAmountBN: bigint
+  let tokenOutAmountBN: bigint
   try {
-    bigTokenInAmount = toBigint(tokenInAmount)
-    bigTokenOutAmount = toBigint(tokenOutAmount)
+    tokenInAmountBN = toBigint(tokenInAmount)
+    tokenOutAmountBN = toBigint(tokenOutAmount)
   } catch (error) {
     throw new InvalidInputError(`Failed to convert tokenInAmount or tokenOutAmount to bigint: ${error}`)
   }
 
-  const hexPrice = convertToX96HexPrice(bigTokenInAmount, bigTokenOutAmount)
+  const hexPrice = convertToX96HexPrice(tokenInAmountBN, tokenOutAmountBN)
   const priceCurveParams = { address: FLAT_PRICE_CURVE_ADDRESS, params: hexPrice }
   
   const tokenArgsIn = toTokenArgs(tokenIn)
