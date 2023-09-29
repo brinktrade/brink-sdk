@@ -47,7 +47,6 @@ describe('limitSwapAction', function () {
           })
           throw new Error('Expected limitSwapAction to throw an error, but it did not.');
         } catch (error: any) {
-            console.log("@@@@@error", error)
             expect(error.name).to.equal('InvalidInputError');
         }
       });
