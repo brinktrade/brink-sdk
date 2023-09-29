@@ -1,14 +1,8 @@
 import { LimitSwapActionArgs, PrimitiveArgs, PrimitiveParamValue } from '@brinkninja/types'
 import { convertToX96HexPrice, toBigint, toTokenArgs } from '@brink-sdk/internal';
+import { InvalidInputError } from '../InvalidInputError';
 
 const FLAT_PRICE_CURVE_ADDRESS = '0xC509733B8dDdbab9369A96F6F216d6E59DB3900f';
-
-export class InvalidInputError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'InvalidInputError';
-    }
-}
 
 function limitSwapAction ({
   id,
