@@ -4,11 +4,11 @@ export { default as bitJSONToBit } from './bitJSONToBit'
 
 export { default as calculateX96PriceFromAmounts } from './calculateX96PriceFromAmounts'
 
-export { default as toBigInt } from './toBigInt'
+export { default as toBigint } from './toBigint'
 
 export { default as convertToX96HexPrice } from './convertToX96HexPrice'
 
-export { default as bigIntToHex } from './bigintToHex'
+export { default as bigintToHex } from './bigintToHex'
 
 export { default as toTokenArgs } from './toTokenArgs'
 

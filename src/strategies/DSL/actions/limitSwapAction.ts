@@ -1,5 +1,5 @@
 import { LimitSwapActionArgs, PrimitiveArgs, PrimitiveParamValue } from '@brinkninja/types'
-import { convertToX96HexPrice, toBigInt, toTokenArgs } from '@brink-sdk/internal';
+import { convertToX96HexPrice, toBigint, toTokenArgs } from '@brink-sdk/internal';
 
 const FLAT_PRICE_CURVE_ADDRESS = '0xC509733B8dDdbab9369A96F6F216d6E59DB3900f';
 
@@ -25,8 +25,8 @@ function limitSwapAction ({
   let bigTokenInAmount: bigint
   let bigTokenOutAmount: bigint
   try {
-    bigTokenInAmount = toBigInt(tokenInAmount)
-    bigTokenOutAmount = toBigInt(tokenOutAmount)
+    bigTokenInAmount = toBigint(tokenInAmount)
+    bigTokenOutAmount = toBigint(tokenOutAmount)
   } catch (error) {
     throw new InvalidInputError(`Failed to convert tokenInAmount or tokenOutAmount to bigint: ${error}`)
   }
