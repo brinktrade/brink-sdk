@@ -1,4 +1,4 @@
-import { convertToX96HexPrice } from '@brink-sdk/internal/convertToX96HexPrice';
+import { convertToX96HexPrice } from '@brink-sdk/internal';
 import { expect } from 'chai';
 
 describe('Utils', () => {

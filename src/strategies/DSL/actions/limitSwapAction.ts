@@ -1,7 +1,5 @@
-import { toTokenArgs } from '../../../internal/toTokenArgs'
 import { LimitSwapActionArgs, PrimitiveArgs, PrimitiveParamValue } from '@brinkninja/types'
-import { convertToX96HexPrice } from '@brink-sdk/internal/convertToX96HexPrice';
-import { toBigInt } from '@brink-sdk/internal/toBigint';
+import { convertToX96HexPrice, toBigInt, toTokenArgs } from '@brink-sdk/internal';
 
 const FLAT_PRICE_CURVE_ADDRESS = '0xC509733B8dDdbab9369A96F6F216d6E59DB3900f';
 
