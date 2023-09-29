@@ -1,8 +1,16 @@
 import { toTokenArgs } from '../../../internal/toTokenArgs'
 import { LimitSwapActionArgs, PrimitiveArgs, PrimitiveParamValue } from '@brinkninja/types'
-import { convertToX96HexPrice } from '@brink-sdk/internal/price';
+import { convertToX96HexPrice } from '@brink-sdk/internal/convertToX96HexPrice';
+import { toBigInt } from '@brink-sdk/internal/toBigint';
 
 const FLAT_PRICE_CURVE_ADDRESS = '0xC509733B8dDdbab9369A96F6F216d6E59DB3900f';
+
+export class InvalidInputError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'InvalidInputError';
+    }
+}
 
 function limitSwapAction ({
   id,
@@ -13,10 +21,19 @@ function limitSwapAction ({
   tokenOutAmount
 }: LimitSwapActionArgs): PrimitiveArgs[] {
   if (tokenOutAmount === undefined) {
-    throw new Error('tokenOutAmount is required')
+    throw new InvalidInputError('tokenOutAmount is required')
   }
 
-  const hexPrice = convertToX96HexPrice(tokenOutAmount, tokenInAmount)
+  let bigTokenInAmount: bigint
+  let bigTokenOutAmount: bigint
+  try {
+    bigTokenInAmount = toBigInt(tokenInAmount)
+    bigTokenOutAmount = toBigInt(tokenOutAmount)
+  } catch (error) {
+    throw new InvalidInputError(`Failed to convert tokenInAmount or tokenOutAmount to bigint: ${error}`)
+  }
+
+  const hexPrice = convertToX96HexPrice(bigTokenOutAmount, bigTokenInAmount)
   const priceCurveParams = { address: FLAT_PRICE_CURVE_ADDRESS, params: hexPrice }
   
   const tokenArgsIn = toTokenArgs(tokenIn)
