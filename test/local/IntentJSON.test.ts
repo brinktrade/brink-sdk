@@ -1,47 +1,47 @@
 import { expect } from 'chai'
 import {
-  IntentGroup,
+  Declaration,
   IntentArgs,
   IntentSegmentArgs
 } from '@brink-sdk'
 
 describe('IntentArgs', function () {
-  describe('IntentArgs object passed to intentGroup', function () {
+  describe('IntentArgs object passed to declaration', function () {
     it('should return segments based on intent object args', async function () {
-      const intentGroup1 = new IntentGroup(intentObject)
-      const intentGroupJSON = await intentGroup1.toJSON()
-      expect(intentGroupJSON.intents.length).to.equal(2)
-      expect(intentGroupJSON.intents[0].segments[0].functionName).to.equal('useBit')
-      expect(intentGroupJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
-      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
-      expect(intentGroupJSON.intents[1].segments[0].functionName).to.equal('useBit')
-      expect(intentGroupJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
-      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      const declaration1 = new Declaration(intentObject)
+      const declarationJSON = await declaration1.toJSON()
+      expect(declarationJSON.intents.length).to.equal(2)
+      expect(declarationJSON.intents[0].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[1].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
     })
   })
 
-  describe('single IntentSegmentArgs passed to intentGroup', function () {
+  describe('single IntentSegmentArgs passed to declaration', function () {
     it('should return segments based on intent object args', async function () {
-      const intentGroup1 = new IntentGroup(singleSegmentIntent)
-      const intentGroupJSON = await intentGroup1.toJSON()
-      expect(intentGroupJSON.intents.length).to.equal(1)
-      expect(intentGroupJSON.intents[0].segments[0].functionName).to.equal('useBit')
-      expect(intentGroupJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
-      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      const declaration1 = new Declaration(singleSegmentIntent)
+      const declarationJSON = await declaration1.toJSON()
+      expect(declarationJSON.intents.length).to.equal(1)
+      expect(declarationJSON.intents[0].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
     })
   })
 
-  describe('IntentSegmentArgs array passed to intentGroup', function () {
+  describe('IntentSegmentArgs array passed to declaration', function () {
     it('should return segments based on intent object args', async function () {
-      const intentGroup1 = new IntentGroup(multiSegmentIntent)
-      const intentGroupJSON = await intentGroup1.toJSON()
-      expect(intentGroupJSON.intents.length).to.equal(2)
-      expect(intentGroupJSON.intents[0].segments[0].functionName).to.equal('useBit')
-      expect(intentGroupJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
-      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
-      expect(intentGroupJSON.intents[1].segments[0].functionName).to.equal('useBit')
-      expect(intentGroupJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
-      expect(intentGroupJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      const declaration1 = new Declaration(multiSegmentIntent)
+      const declarationJSON = await declaration1.toJSON()
+      expect(declarationJSON.intents.length).to.equal(2)
+      expect(declarationJSON.intents[0].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[1].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
     })
   })
 })

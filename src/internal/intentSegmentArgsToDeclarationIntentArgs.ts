@@ -1,7 +1,7 @@
 import {
   SegmentArgs,
   IntentSegmentArgs,
-  IntentGroupIntentArgs,
+  DeclarationIntentArgs,
   MarketSwapActionArgs,
   LimitSwapActionArgs,
   BlockConditionArgs,
@@ -25,12 +25,12 @@ type ConditionFnTypeName = {
   priceCondition: PriceConditionArgs
 }
 
-function intentSegmentArgsToIntentGroupIntentArgs (intentSegment: IntentSegmentArgs): IntentGroupIntentArgs {
-  let intentGroupIntentArgs: IntentGroupIntentArgs = { segments: [] }
+function intentSegmentArgsToDeclarationIntentArgs (intentSegment: IntentSegmentArgs): DeclarationIntentArgs {
+  let declarationIntentArgs: DeclarationIntentArgs = { segments: [] }
 
   if (intentSegment.replay) {
     if (intentSegment.replay.runs == 'ONCE') {
-     intentGroupIntentArgs.segments.push({
+     declarationIntentArgs.segments.push({
       functionName: 'useBit',
       params: nonceToBit({ nonce: intentSegment.replay.nonce })
     })
@@ -47,7 +47,7 @@ function intentSegmentArgsToIntentGroupIntentArgs (intentSegment: IntentSegmentA
   }
 
   if (intentSegment.expiryBlock) {
-    intentGroupIntentArgs.segments.push({
+    declarationIntentArgs.segments.push({
       functionName: 'requireBlockNotMined',
       params: {
         blockNumber: BigInt(intentSegment.expiryBlock)
@@ -58,7 +58,7 @@ function intentSegmentArgsToIntentGroupIntentArgs (intentSegment: IntentSegmentA
   if (!intentSegment.conditions) intentSegment.conditions = []
   if (!intentSegment.actions) intentSegment.actions = []
 
-  // add condition segments to intentGroupIntentArgs
+  // add condition segments to declarationIntentArgs
   const conditionSegments: SegmentArgs[] = intentSegment.conditions.reduce((segments: SegmentArgs[], conditionArgs) => {
     const typeName: keyof ConditionFnTypeName = `${conditionArgs.type}Condition`
     const args = conditionArgs as ConditionFnTypeName[typeof typeName]
@@ -68,9 +68,9 @@ function intentSegmentArgsToIntentGroupIntentArgs (intentSegment: IntentSegmentA
     ))
     return segments
   }, [])
-  intentGroupIntentArgs.segments.push(...conditionSegments)
+  declarationIntentArgs.segments.push(...conditionSegments)
 
-  // add action segments to intentGroupIntentArgs
+  // add action segments to declarationIntentArgs
   const actionSegments: SegmentArgs[] = intentSegment.actions.reduce((segments: SegmentArgs[], actionArgs) => {
     const typeName: keyof ActionFnTypeName = `${actionArgs.type}Action`
     const args = actionArgs as ActionFnTypeName[typeof typeName]
@@ -80,13 +80,13 @@ function intentSegmentArgsToIntentGroupIntentArgs (intentSegment: IntentSegmentA
     ))
     return segments
   }, [])
-  intentGroupIntentArgs.segments.push(...actionSegments)
+  declarationIntentArgs.segments.push(...actionSegments)
 
-  return intentGroupIntentArgs
+  return declarationIntentArgs
 }
 
 function runSegmentArgsGeneratingFn<T>(args: T, fn: (args: T) => SegmentArgs[]): SegmentArgs[] {
   return fn(args)
 }
 
-export default intentSegmentArgsToIntentGroupIntentArgs
+export default intentSegmentArgsToDeclarationIntentArgs

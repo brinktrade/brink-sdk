@@ -1,34 +1,34 @@
 const { getTypedData } = require('@brinkninja/utils')
 
 import { ethers } from 'ethers'
-import IntentGroup from './IntentGroup'
-import { SignedIntentGroupArgs, SignedIntentGroupJSON, SignatureType, ValidationResult, EIP712TypedData } from '@brinkninja/types'
+import Declaration from './Declaration'
+import { SignedDeclarationArgs, SignedDeclarationJSON, SignatureType, ValidationResult, EIP712TypedData } from '@brinkninja/types'
 import Config from '../Config'
 import { validResult, invalidResult } from '../internal/Validation'
 import getSignerAccount from '../core/getSignerAccount'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 
-class SignedIntentGroup {
+class SignedDeclaration {
   chainId: number
   signer: string
   signatureType: SignatureType
   signature: string
-  intentGroup: IntentGroup
-  intentGroupContract: string
+  declaration: Declaration
+  declarationContract: string
 
-  constructor(signedIntentGroup: SignedIntentGroupArgs) {
-    this.signer = signedIntentGroup.signer
-    this.chainId = signedIntentGroup.chainId
-    this.signatureType = signedIntentGroup.signatureType || 'EIP712'
-    this.signature = signedIntentGroup.signature
-    this.intentGroup = new IntentGroup(signedIntentGroup.intentGroup)
-    this.intentGroupContract = signedIntentGroup.intentGroupContract || Config['STRATEGY_TARGET_01'] as string
+  constructor(signedDeclaration: SignedDeclarationArgs) {
+    this.signer = signedDeclaration.signer
+    this.chainId = signedDeclaration.chainId
+    this.signatureType = signedDeclaration.signatureType || 'EIP712'
+    this.signature = signedDeclaration.signature
+    this.declaration = new Declaration(signedDeclaration.declaration)
+    this.declarationContract = signedDeclaration.declarationContract || Config['STRATEGY_TARGET_01'] as string
   }
 
   async validate (): Promise<ValidationResult> {
-    const intentGroupValidationResult = this.intentGroup.validate()
-    if (!intentGroupValidationResult.valid) {
-      return intentGroupValidationResult
+    const declarationValidationResult = this.declaration.validate()
+    if (!declarationValidationResult.valid) {
+      return declarationValidationResult
     }
 
     const { domain, types, value } = await this.EIP712Data()
@@ -49,7 +49,7 @@ class SignedIntentGroup {
     return getSignerAccount({ signer: this.signer })
   }
 
-  async EIP712Data (intentGroupData?: string): Promise<EIP712TypedData> {
+  async EIP712Data (declarationData?: string): Promise<EIP712TypedData> {
     const domain = {
       name: 'BrinkAccount',
       version: '1',
@@ -61,8 +61,8 @@ class SignedIntentGroup {
       'metaDelegateCall',
       MetaDelegateCallSignedParamTypes,
       [
-        this.intentGroupContract,
-        intentGroupData || (await this.intentGroup.toJSON()).data
+        this.declarationContract,
+        declarationData || (await this.declaration.toJSON()).data
       ]
     )
     return {
@@ -73,11 +73,11 @@ class SignedIntentGroup {
     }
   }
 
-  async toJSON (): Promise<SignedIntentGroupJSON> {
+  async toJSON (): Promise<SignedDeclarationJSON> {
     await this.validate()
 
-    const intentGroup = await this.intentGroup.toJSON()
-    const eip712Data = await this.EIP712Data(intentGroup.data)
+    const declaration = await this.declaration.toJSON()
+    const eip712Data = await this.EIP712Data(declaration.data)
 
     return {
       eip712Data,
@@ -86,10 +86,10 @@ class SignedIntentGroup {
       signer: this.signer,
       signatureType: this.signatureType,
       signature: this.signature,
-      intentGroup,
-      intentGroupContract: this.intentGroupContract
+      declaration,
+      declarationContract: this.declarationContract
     }
   }
 }
 
-export default SignedIntentGroup
+export default SignedDeclaration

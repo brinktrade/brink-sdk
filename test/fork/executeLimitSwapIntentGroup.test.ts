@@ -4,25 +4,25 @@ import {
   deployAccount,
   unsignedLimitSwapData,
   LimitSwapExactInput,
-  IntentGroupIntent,
-  IntentGroup,
-  SignedIntentGroup,
+  DeclarationIntent,
+  Declaration,
+  SignedDeclaration,
   Token,
   UniV3Twap,
   UseBit,
   marketSwapExactInput_getOutput,
-  executeIntentGroup,
-  intentGroupEIP712TypedData,
-  IntentGroupArgs
+  executeDeclaration,
+  declarationEIP712TypedData,
+  DeclarationArgs
 } from '@brink-sdk'
 import fundWithERC20 from '../helpers/fundWithERC20'
 
-describe('executeIntentGroup with limitSwapExactInput', function () {
-  it('should execute a simple limit swap intentGroup', async function () {
+describe('executeDeclaration with limitSwapExactInput', function () {
+  it('should execute a simple limit swap declaration', async function () {
     // const deployTx = await deployAccount({ signer: this.signerAddress })
     // await this.defaultSigner.sendTransaction(deployTx)
 
-    // const { signedIntentGroup, unsignedSwapCall, usdcInput } = await successfulExecuteIntentGroup.bind(this)()
+    // const { signedDeclaration, unsignedSwapCall, usdcInput } = await successfulExecuteDeclaration.bind(this)()
 
     // // store initial balances
     // const signer_usdcBal_0 = await this.usdc.balanceOf(this.ethersAccountSigner.address)
@@ -30,9 +30,9 @@ describe('executeIntentGroup with limitSwapExactInput', function () {
     // const filler_usdcBal_0 = await this.usdc.balanceOf(this.filler.address)
     // const filler_wethBal_0 = await this.weth.balanceOf(this.filler.address)
 
-    // // execute intent 0 for the intentGroup
-    // const tx = await executeIntentGroup({
-    //   signedIntentGroup,
+    // // execute intent 0 for the declaration
+    // const tx = await executeDeclaration({
+    //   signedDeclaration,
     //   intentIndex: 0,
     //   unsignedCalls: [unsignedSwapCall]
     // })
@@ -56,10 +56,10 @@ describe('executeIntentGroup with limitSwapExactInput', function () {
   })
 })
 
-// async function successfulExecuteIntentGroup (this: TestContext): Promise<{
+// async function successfulExecuteDeclaration (this: TestContext): Promise<{
 //   usdcInput: bigint,
 //   wethOutput: bigint,
-//   signedIntentGroup: SignedIntentGroup,
+//   signedDeclaration: SignedDeclaration,
 //   unsignedSwapCall: string
 // }> {
 //   const usdc = new Token({ address: this.USDC_ADDRESS })
@@ -74,13 +74,13 @@ describe('executeIntentGroup with limitSwapExactInput', function () {
 //   const feePercent = BigInt(10000)
 //   const feeMin = BigInt(0)
 
-//   // build the market swap intentGroup
-//   const intentGroup = new IntentGroup()
-//   intentGroup.intents[0] = new IntentGroupIntent()
-//   intentGroup.intents[0].segments[0] = new UseBit({ index: BigInt(0), value: BigInt(2**0) })
+//   // build the market swap declaration
+//   const declaration = new Declaration()
+//   declaration.intents[0] = new DeclarationIntent()
+//   declaration.intents[0].segments[0] = new UseBit({ index: BigInt(0), value: BigInt(2**0) })
 
 //   // TODO: construct a limit swap here
-//   // intentGroup.intents[0].segments[1] = new LimitSwapExactInput({
+//   // declaration.intents[0].segments[1] = new LimitSwapExactInput({
 //   //   oracle: priceOracle,
 //   //   signer: this.signerAddress,
 //   //   tokenIn: new Token({ address: this.USDC_ADDRESS }),
@@ -90,19 +90,19 @@ describe('executeIntentGroup with limitSwapExactInput', function () {
 //   //   feeMin
 //   // })
 
-//   // sign the intentGroup
+//   // sign the declaration
 //   const chainId = 31337
-//   const intentGroupJSON = await intentGroup.toJSON()
-//   const { domain, types, value } = await intentGroupEIP712TypedData({
+//   const declarationJSON = await declaration.toJSON()
+//   const { domain, types, value } = await declarationEIP712TypedData({
 //     signer: this.ethersAccountSigner.address,
 //     chainId,
-//     intentGroup: intentGroupJSON as IntentGroupArgs
+//     declaration: declarationJSON as DeclarationArgs
 //   })
 //   const signature = await this.ethersAccountSigner._signTypedData(
 //     domain, types, value
 //   )
-//   const signedIntentGroup = new SignedIntentGroup({
-//     intentGroup: intentGroupJSON as IntentGroupArgs,
+//   const signedDeclaration = new SignedDeclaration({
+//     declaration: declarationJSON as DeclarationArgs,
 //     chainId,
 //     signature,
 //     signer: this.ethersAccountSigner.address
@@ -138,7 +138,7 @@ describe('executeIntentGroup with limitSwapExactInput', function () {
 //   return {
 //     usdcInput,
 //     wethOutput,
-//     signedIntentGroup,
+//     signedDeclaration,
 //     unsignedSwapCall
 //   }
 // }

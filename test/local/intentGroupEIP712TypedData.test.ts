@@ -1,20 +1,20 @@
 import { expect } from 'chai'
 import {
-  IntentGroup,
+  Declaration,
   SegmentFunctionName,
-  intentGroupEIP712TypedData
+  declarationEIP712TypedData
 } from '@brink-sdk'
 
 /*
-describe('intentGroupEIP712TypedData', function () {
+describe('declarationEIP712TypedData', function () {
   it('should return EIP712 TypedData', async function () {
-    const intentGroupData = await buildIntentGroup()
+    const declarationData = await buildDeclaration()
 
     // get the EIP712 TypedData
-    const eip712TypedData = await intentGroupEIP712TypedData({
+    const eip712TypedData = await declarationEIP712TypedData({
       signer: this.signerAddress,
       chainId: 31337,
-      intentGroup: intentGroupData
+      declaration: declarationData
     })
 
     // sign the EIP712 TypedData with an ethers signer
@@ -28,8 +28,8 @@ describe('intentGroupEIP712TypedData', function () {
   })
 })
 
-async function buildIntentGroup () {
-  const intentGroup1 = new IntentGroup(
+async function buildDeclaration () {
+  const declaration1 = new Declaration(
     {
       intents: [
         {
@@ -68,6 +68,6 @@ async function buildIntentGroup () {
       ]
     }
   )
-  return await intentGroup1.toJSON()
+  return await declaration1.toJSON()
 }
 */

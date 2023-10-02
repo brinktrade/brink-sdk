@@ -10,23 +10,23 @@ export { default as cancelEIP712TypedData } from './cancelEIP712TypedData'
 export * from './cancelWithSignature'
 export { default as cancelWithSignature } from './cancelWithSignature'
 
-export * from './executeIntentGroup'
-export { default as executeIntentGroup } from './executeIntentGroup'
+export * from './executeDeclaration'
+export { default as executeDeclaration } from './executeDeclaration'
 
 export * from './IdsProof'
 export { default as IdsProof } from './IdsProof'
 
-export * from './IntentGroupIntent'
-export { default as IntentGroupIntent } from './IntentGroupIntent'
+export * from './DeclarationIntent'
+export { default as DeclarationIntent } from './DeclarationIntent'
 
-export * from './SignedIntentGroup'
-export { default as SignedIntentGroup } from './SignedIntentGroup'
+export * from './SignedDeclaration'
+export { default as SignedDeclaration } from './SignedDeclaration'
 
-export * from './IntentGroup'
-export { default as IntentGroup } from './IntentGroup'
+export * from './Declaration'
+export { default as Declaration } from './Declaration'
 
-export * from './intentGroupEIP712TypedData'
-export { default as intentGroupEIP712TypedData } from './intentGroupEIP712TypedData'
+export * from './declarationEIP712TypedData'
+export { default as declarationEIP712TypedData } from './declarationEIP712TypedData'
 
 export * from './Token'
 export { default as Token } from './Token'

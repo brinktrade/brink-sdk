@@ -5,7 +5,7 @@ import { Transaction } from '@ethereumjs/tx'
 import { EVMResult } from '@ethereumjs/evm'
 import { VM } from '@ethereumjs/vm'
 import config from '../Config'
-import IntentGroupBuilder01 from './contracts/StrategyBuilder01.json'
+import DeclarationBuilder01 from './contracts/StrategyBuilder01.json'
 import SegmentBuilder01 from './contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from './contracts/UnsignedDataBuilder01.json'
 import FlatPriceCurve from './contracts/FlatPriceCurve.json'
@@ -19,7 +19,7 @@ import {
   CallStruct,
   SignatureType,
   SignatureTypeEnum,
-  IntentGroupIntentJSON,
+  DeclarationIntentJSON,
   BigIntish
 } from '@brinkninja/types'
 
@@ -29,7 +29,7 @@ export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
 }
 
 type EvmContractName =
-  'IntentGroupBuilder' |
+  'DeclarationBuilder' |
   'SegmentBuilder' |
   'UnsignedDataBuilder' |
   'FlatPriceCurve' |
@@ -45,7 +45,7 @@ const signer = new ethers.Wallet(privateKey)
 
 export class EthereumJsVm {
 
-  readonly _intentGroupContractAddress: string
+  readonly _declarationContractAddress: string
   readonly _segmentsContractAddress: string
 
   _common: Common
@@ -54,7 +54,7 @@ export class EthereumJsVm {
   _vmInitialized: boolean = false
 
   _nonce: number = 0
-  IntentGroupBuilder!: ethers.Contract
+  DeclarationBuilder!: ethers.Contract
   SegmentBuilder!: ethers.Contract
   UnsignedDataBuilder!: ethers.Contract
   FlatPriceCurve!: ethers.Contract
@@ -63,10 +63,10 @@ export class EthereumJsVm {
   SwapIO!: ethers.Contract
 
   constructor (
-    intentGroupContractAddress: string,
+    declarationContractAddress: string,
     segmentsContractAddress: string
   ) {
-    this._intentGroupContractAddress = intentGroupContractAddress
+    this._declarationContractAddress = declarationContractAddress
     this._segmentsContractAddress = segmentsContractAddress
 
     this._common = new Common({ chain: Chain.Mainnet })
@@ -84,7 +84,7 @@ export class EthereumJsVm {
       this._vmInitializing = true
       this._vm = await VM.create({ common: this._common })
       
-      this.IntentGroupBuilder = await this._deployContract(IntentGroupBuilder01, this._intentGroupContractAddress, this._segmentsContractAddress)
+      this.DeclarationBuilder = await this._deployContract(DeclarationBuilder01, this._declarationContractAddress, this._segmentsContractAddress)
       this.SegmentBuilder = await this._deployContract(SegmentBuilder01)
       this.UnsignedDataBuilder = await this._deployContract(UnsignedDataBuilder01)
       this.FlatPriceCurve = await this._deployContract(FlatPriceCurve)
@@ -130,8 +130,8 @@ export class EthereumJsVm {
     return `0x${cleanDynamicBytes(segmentData)}`
   }
 
-  async IntentGroupData (
-    intent: IntentGroupIntentJSON [] = [],
+  async DeclarationData (
+    intent: DeclarationIntentJSON [] = [],
     beforeCalls: CallStruct[] = [],
     afterCalls: CallStruct[] = []
   ): Promise<string> {
@@ -139,8 +139,8 @@ export class EthereumJsVm {
       i => i.segments.map(s => s.data as string)
     )
 
-    const IntentGroupIData: string = await this.callContractFn(
-      'IntentGroupBuilder',
+    const DeclarationIData: string = await this.callContractFn(
+      'DeclarationBuilder',
       'strategyData(bytes[][],(address,bytes)[],(address,bytes)[])',
       intentsBytesArray,
       beforeCalls,
@@ -148,21 +148,21 @@ export class EthereumJsVm {
     )
 
     // ethereumjs-vm returns the data with 28 bytes of extra 00's appended.
-    // the intentGroup break with these extra bytes. it seems to be consistently adding
+    // the declaration break with these extra bytes. it seems to be consistently adding
     // exactly 28 bytes of empty data, so trimming them out fixes the issue
 
-    const IntentGroupIDataTrimmed = IntentGroupIData.slice(0, -56)
-    return `0x${cleanDynamicBytes(IntentGroupIDataTrimmed)}`
+    const DeclarationIDataTrimmed = DeclarationIData.slice(0, -56)
+    return `0x${cleanDynamicBytes(DeclarationIDataTrimmed)}`
   }
 
-  async IntentGroupIMessageHash (
+  async DeclarationIMessageHash (
     signatureType: SignatureType,
     data: string,
     account: string,
     chainId: BigIntish
   ): Promise<string> {
     const messageHash: string = await this.callContractFn(
-      'IntentGroupBuilder',
+      'DeclarationBuilder',
       `getMessageHash`,
       signatureTypeMap[signatureType],
       data,

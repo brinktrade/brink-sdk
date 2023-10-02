@@ -1,8 +1,8 @@
 import { expect } from 'chai'
 import { FeeAmount } from '@uniswap/v3-sdk'
 import {
-  IntentGroup,
-  IntentGroupIntent,
+  Declaration,
+  DeclarationIntent,
   UseBit,
   MarketSwapExactInput,
   RequireUint256LowerBound,
@@ -12,7 +12,7 @@ import {
   Config,
   SegmentArgs,
   OracleJSON,
-  IntentGroupArgs,
+  DeclarationArgs,
   FillStateParamsArgs
 } from '@brink-sdk'
 
@@ -32,42 +32,42 @@ const DAI_TOKEN =  new Token({ address: DAI_ADDRESS })
 const FLAT_PRICE_CURVE_ADDRESS = '0xc509733b8dddbab9369a96f6f216d6e59db3900f'
 const PRICE_CURVE_PARAMS = '0x0000000000000000000000000000000000000000000d1b71758e219680000000' //hex representation of a DAI/WETH price, 0.0002 WETH as x96, x96 price = 0.0002 * 2**96 = 15845632502852868278059008
 
-describe('IntentGroups', function () {
-  it('should build basic intentGroup and convert to JSON', async function () {
-    const intentGroup1 = new IntentGroup(validIntentGroup1)
-    const intentGroupJSON = await intentGroup1.toJSON()
-    expect(intentGroupJSON.intents.length).to.equal(1)
-    expect(intentGroupJSON.intents[0].segments.length).to.equal(4)
+describe('Declarations', function () {
+  it('should build basic declaration and convert to JSON', async function () {
+    const declaration1 = new Declaration(validDeclaration1)
+    const declarationJSON = await declaration1.toJSON()
+    expect(declarationJSON.intents.length).to.equal(1)
+    expect(declarationJSON.intents[0].segments.length).to.equal(4)
   })
 
   it('should build basic limitSwapExactInput and convert to JSON', async function () {
-    const intentGroup1 = new IntentGroup(validLimitSwapExactInput)
-    const intentGroupJSON = await intentGroup1.toJSON()
-    expect(intentGroupJSON.intents.length).to.equal(1)
-    expect(intentGroupJSON.intents[0].segments.length).to.equal(3)
+    const declaration1 = new Declaration(validLimitSwapExactInput)
+    const declarationJSON = await declaration1.toJSON()
+    expect(declarationJSON.intents.length).to.equal(1)
+    expect(declarationJSON.intents[0].segments.length).to.equal(3)
   })
 
   it('should build blockInterval segment and convert to JSON', async function () {
-    const intentGroup1 = new IntentGroup(validSwapOnBlockInterval)
-    const intentGroupJSON = await intentGroup1.toJSON()
-    expect(intentGroupJSON.intents.length).to.equal(1)
-    expect(intentGroupJSON.intents[0].segments.length).to.equal(2)
+    const declaration1 = new Declaration(validSwapOnBlockInterval)
+    const declarationJSON = await declaration1.toJSON()
+    expect(declarationJSON.intents.length).to.equal(1)
+    expect(declarationJSON.intents[0].segments.length).to.equal(2)
   })
 
-  it('intentGroup JSON serialize/deserialize should succeed', async function () {
-    const intentGroup1 = new IntentGroup(validIntentGroup1)
-    const intentGroup1JSON = await intentGroup1.toJSON()
-    const json1Str = JSON.stringify(intentGroup1JSON)
+  it('declaration JSON serialize/deserialize should succeed', async function () {
+    const declaration1 = new Declaration(validDeclaration1)
+    const declaration1JSON = await declaration1.toJSON()
+    const json1Str = JSON.stringify(declaration1JSON)
     expect(json1Str).not.to.be.undefined
 
-    const intentGroup2 = new IntentGroup(intentGroup1JSON as IntentGroupArgs)
-    const intentGroup2JSON = await intentGroup2.toJSON()
-    const json2Str = JSON.stringify(intentGroup2JSON)
+    const declaration2 = new Declaration(declaration1JSON as DeclarationArgs)
+    const declaration2JSON = await declaration2.toJSON()
+    const json2Str = JSON.stringify(declaration2JSON)
     expect(json2Str).to.deep.equal(json1Str)
   })
 
-  it('should build intentGroup using Oracle segment param classes', async function () {
-    const intentGroup1 = new IntentGroup()
+  it('should build declaration using Oracle segment param classes', async function () {
+    const declaration1 = new Declaration()
 
     const usdc_weth_500_twap = new UniV3Twap({
       tokenA: USDC_TOKEN,
@@ -76,16 +76,16 @@ describe('IntentGroups', function () {
       fee: FeeAmount.LOW
     })
 
-    intentGroup1.intents[0] = new IntentGroupIntent()
-    intentGroup1.intents[0].segments[0] = new UseBit({
+    declaration1.intents[0] = new DeclarationIntent()
+    declaration1.intents[0].segments[0] = new UseBit({
       index: BigInt(0),
       value: BigInt(1)
     })
-    intentGroup1.intents[0].segments[1] = new RequireUint256LowerBound({
+    declaration1.intents[0].segments[1] = new RequireUint256LowerBound({
       oracle: usdc_weth_500_twap,
       lowerBound: BigInt(1000) * BigInt(2)**BigInt(96)
     })
-    intentGroup1.intents[0].segments[2] = new MarketSwapExactInput({
+    declaration1.intents[0].segments[2] = new MarketSwapExactInput({
       oracle: usdc_weth_500_twap,
       signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
       tokenIn: USDC_TOKEN,
@@ -95,36 +95,36 @@ describe('IntentGroups', function () {
       feeMin: BigInt(0)
     })
 
-    const intentGroupJSON = await intentGroup1.toJSON()
-    expect((intentGroupJSON.intents[0].segments[2].params.oracle as OracleJSON).address).to.equal(TWAP_ADAPTER_02)
+    const declarationJSON = await declaration1.toJSON()
+    expect((declarationJSON.intents[0].segments[2].params.oracle as OracleJSON).address).to.equal(TWAP_ADAPTER_02)
   })
 
-  it('should build intentGroup with requireBitUsed segment', async function () {
-    const intentGroupJSON = await new IntentGroup(requireBitUsedIntentGroup).toJSON()
-    expect(intentGroupJSON.intents[0].segments[0].functionName).to.equal('requireBitUsed')
+  it('should build declaration with requireBitUsed segment', async function () {
+    const declarationJSON = await new Declaration(requireBitUsedDeclaration).toJSON()
+    expect(declarationJSON.intents[0].segments[0].functionName).to.equal('requireBitUsed')
   })
 
-  it('should build intentGroup with requireBitNotUsed segment', async function () {
-    const intentGroupJSON = await new IntentGroup(requireBitNotUsedIntentGroup).toJSON()
-    expect(intentGroupJSON.intents[0].segments[0].functionName).to.equal('requireBitNotUsed')
+  it('should build declaration with requireBitNotUsed segment', async function () {
+    const declarationJSON = await new Declaration(requireBitNotUsedDeclaration).toJSON()
+    expect(declarationJSON.intents[0].segments[0].functionName).to.equal('requireBitNotUsed')
   })
 
   describe('validate()', function () {
-    it('should return valid for valid intentGroup', async function () {
-      const intentGroup = new IntentGroup(validIntentGroup1)
-      expect(intentGroup.validate().valid).to.be.true
+    it('should return valid for valid declaration', async function () {
+      const declaration = new Declaration(validDeclaration1)
+      expect(declaration.validate().valid).to.be.true
     })
 
-    it('empty intentGroup should be invalid', async function () {
-      const intentGroup = new IntentGroup()
-      expect(intentGroup.validate().valid).to.be.false
-      expect(intentGroup.validate().reason).to.equal('ZERO_INTENTS')
+    it('empty declaration should be invalid', async function () {
+      const declaration = new Declaration()
+      expect(declaration.validate().valid).to.be.false
+      expect(declaration.validate().reason).to.equal('ZERO_INTENTS')
     })
 
     it('intent with more than one swap should be invalid', function () {
-      const intentGroup = new IntentGroup()
-      intentGroup.intents[0] = new IntentGroupIntent()
-      intentGroup.intents[0].segments[0] = new MarketSwapExactInput({
+      const declaration = new Declaration()
+      declaration.intents[0] = new DeclarationIntent()
+      declaration.intents[0].segments[0] = new MarketSwapExactInput({
         oracle: {
           address: '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
           params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
@@ -136,7 +136,7 @@ describe('IntentGroups', function () {
         feePercent: BigInt(1000),
         feeMin: BigInt(0)
       })
-      intentGroup.intents[0].segments[1] = new MarketSwapExactInput({
+      declaration.intents[0].segments[1] = new MarketSwapExactInput({
         oracle: {
           address: '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
           params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
@@ -148,24 +148,24 @@ describe('IntentGroups', function () {
         feePercent: BigInt(1000),
         feeMin: BigInt(0)
       })
-      expect(intentGroup.validate().valid).to.be.false
-      expect(intentGroup.validate().reason).to.equal('WRONG_NUMBER_OF_SWAPS')
+      expect(declaration.validate().valid).to.be.false
+      expect(declaration.validate().reason).to.equal('WRONG_NUMBER_OF_SWAPS')
     })
 
     it('intent with zero swaps should be invalid', function () {
-      const intentGroup = new IntentGroup()
-      intentGroup.intents[0] = new IntentGroupIntent()
-      intentGroup.intents[0].segments[0] = new UseBit({ index: BigInt(0), value: BigInt(1) })
-      expect(intentGroup.validate().valid).to.be.false
-      expect(intentGroup.validate().reason).to.equal('WRONG_NUMBER_OF_SWAPS')
+      const declaration = new Declaration()
+      declaration.intents[0] = new DeclarationIntent()
+      declaration.intents[0].segments[0] = new UseBit({ index: BigInt(0), value: BigInt(1) })
+      expect(declaration.validate().valid).to.be.false
+      expect(declaration.validate().reason).to.equal('WRONG_NUMBER_OF_SWAPS')
     })
 
     it('uint overflow should throw an error', function () {
-      const intentGroup = new IntentGroup()
-      intentGroup.intents[0] = new IntentGroupIntent()
-      expect(createSwapIntentGroupWithUintOverflow.bind(this)).to.throw('out of range for Solidity uint256')  
+      const declaration = new Declaration()
+      declaration.intents[0] = new DeclarationIntent()
+      expect(createSwapDeclarationWithUintOverflow.bind(this)).to.throw('out of range for Solidity uint256')  
       
-      function createSwapIntentGroupWithUintOverflow () {
+      function createSwapDeclarationWithUintOverflow () {
         new MarketSwapExactInput({
           oracle: {
             address: '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
@@ -182,11 +182,11 @@ describe('IntentGroups', function () {
     })
 
     it('uint under 0 should throw an error', function () {
-      const intentGroup = new IntentGroup()
-      intentGroup.intents[0] = new IntentGroupIntent()
-      expect(createSwapIntentGroupWithUintOverflow.bind(this)).to.throw('out of range for Solidity uint256')  
+      const declaration = new Declaration()
+      declaration.intents[0] = new DeclarationIntent()
+      expect(createSwapDeclarationWithUintOverflow.bind(this)).to.throw('out of range for Solidity uint256')  
       
-      function createSwapIntentGroupWithUintOverflow () {
+      function createSwapDeclarationWithUintOverflow () {
         new MarketSwapExactInput({
           oracle: {
             address: '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
@@ -204,7 +204,7 @@ describe('IntentGroups', function () {
   })
 })
 
-const validIntentGroup1 = {
+const validDeclaration1 = {
   intents: [
     {
       segments: [
@@ -324,7 +324,7 @@ const validSwapOnBlockInterval = {
   ]
 }
 
-const requireBitUsedIntentGroup = {
+const requireBitUsedDeclaration = {
   intents: [
     {
       segments: [
@@ -355,7 +355,7 @@ const requireBitUsedIntentGroup = {
   ]
 }
 
-const requireBitNotUsedIntentGroup = {
+const requireBitNotUsedDeclaration = {
   intents: [
     {
       segments: [

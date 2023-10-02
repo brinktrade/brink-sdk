@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import {
-  IntentGroup,
+  Declaration,
   TokenArgs,
   SegmentArgs
 } from '@brink-sdk'
@@ -8,20 +8,20 @@ import {
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
-describe('IntentGroupIntent.inputTokens()', function () {
+describe('DeclarationIntent.inputTokens()', function () {
   it('should return tokenInputs for intent', async function () {
-    const intentGroup1 = new IntentGroup(intentGroupForTokenInputs1)
-    const tokenInputs = intentGroup1.intents[0].tokenInputs()
+    const declaration1 = new Declaration(declarationForTokenInputs1)
+    const tokenInputs = declaration1.intents[0].tokenInputs()
     expect(tokenInputs.length).to.equal(1)
     expect(tokenInputs[0].token.address).to.equal(USDC_ADDRESS)
     expect(tokenInputs[0].amount).to.equal(BigInt(1450000000).toString())
   })
 })
 
-describe('IntentGroup.inputTokens()', function () {
-  it('should return tokenInputs for the intentGroup with amounts summed', async function () {
-    const intentGroup1 = new IntentGroup(intentGroupForTokenInputs1)
-    const tokenInputs = intentGroup1.tokenInputs()
+describe('Declaration.inputTokens()', function () {
+  it('should return tokenInputs for the declaration with amounts summed', async function () {
+    const declaration1 = new Declaration(declarationForTokenInputs1)
+    const tokenInputs = declaration1.tokenInputs()
     expect(tokenInputs.length).to.equal(2)
     expect(tokenInputs[0].token.address).to.equal(USDC_ADDRESS)
     expect(tokenInputs[0].amount).to.equal(BigInt(2450000000).toString())
@@ -30,7 +30,7 @@ describe('IntentGroup.inputTokens()', function () {
   })
 })
 
-const intentGroupForTokenInputs1 = {
+const declarationForTokenInputs1 = {
   intents: [
     {
       segments: [

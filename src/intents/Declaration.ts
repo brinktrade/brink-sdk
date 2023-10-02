@@ -1,19 +1,19 @@
 import Config from '../Config'
-import { IntentGroupArgs, IntentGroupJSON, ValidationResult, TokenAmount, Bit, IntentArgs, IntentSegmentArgs } from '@brinkninja/types'
-import Intent from './IntentGroupIntent'
+import { DeclarationArgs, DeclarationJSON, ValidationResult, TokenAmount, Bit, IntentArgs, IntentSegmentArgs } from '@brinkninja/types'
+import Intent from './DeclarationIntent'
 import {
   EthereumJsVm as evm,
   invalidResult,
   validResult,
   groupAndSumTokenAmounts,
-  intentArgsToIntentGroupArgs
+  intentArgsToDeclarationArgs
 } from '../internal'
-import IntentGroupIntent from './IntentGroupIntent'
+import DeclarationIntent from './DeclarationIntent'
 
 const { PRIMITIVES_01 } = Config
 
-class IntentGroup {
-  intents: IntentGroupIntent[]
+class Declaration {
+  intents: DeclarationIntent[]
   beforeCalls: any[]
   afterCalls: any[]
   segmentsContract: string
@@ -22,34 +22,34 @@ class IntentGroup {
   public constructor (args: IntentArgs)
   public constructor (args: IntentSegmentArgs)
   public constructor (args: IntentSegmentArgs[])
-  public constructor (args: IntentGroupArgs)
+  public constructor (args: DeclarationArgs)
   public constructor (...arr: any[]) {
-    const inputArgs: (IntentGroupArgs | IntentArgs | IntentSegmentArgs | IntentSegmentArgs[]) = arr[0] || {}
+    const inputArgs: (DeclarationArgs | IntentArgs | IntentSegmentArgs | IntentSegmentArgs[]) = arr[0] || {}
 
-    let intentGroupArgs: IntentGroupArgs
+    let declarationArgs: DeclarationArgs
     if ((inputArgs as IntentArgs).segments) {
-      intentGroupArgs = intentArgsToIntentGroupArgs(inputArgs as IntentArgs)
+      declarationArgs = intentArgsToDeclarationArgs(inputArgs as IntentArgs)
     } else if ((inputArgs as IntentSegmentArgs).actions) {
-      intentGroupArgs = intentArgsToIntentGroupArgs({ segments: [inputArgs as IntentSegmentArgs] })
+      declarationArgs = intentArgsToDeclarationArgs({ segments: [inputArgs as IntentSegmentArgs] })
     } else if ((inputArgs as IntentSegmentArgs[]).length > 0 && (inputArgs as IntentSegmentArgs[])[0].actions) {
-      intentGroupArgs = intentArgsToIntentGroupArgs({ segments: inputArgs as IntentSegmentArgs[] })
+      declarationArgs = intentArgsToDeclarationArgs({ segments: inputArgs as IntentSegmentArgs[] })
     } else {
-      intentGroupArgs = inputArgs as IntentGroupArgs
+      declarationArgs = inputArgs as DeclarationArgs
     }
 
-    this.intents = (intentGroupArgs?.intents || []).map(intentArgs => new Intent(intentArgs))
-    this.beforeCalls = intentGroupArgs?.beforeCalls || []
-    this.afterCalls = intentGroupArgs?.afterCalls || []
-    this.segmentsContract = intentGroupArgs?.segmentsContract || PRIMITIVES_01
+    this.intents = (declarationArgs?.intents || []).map(intentArgs => new Intent(intentArgs))
+    this.beforeCalls = declarationArgs?.beforeCalls || []
+    this.afterCalls = declarationArgs?.afterCalls || []
+    this.segmentsContract = declarationArgs?.segmentsContract || PRIMITIVES_01
   }
 
-  async toJSON (): Promise<IntentGroupJSON> {
+  async toJSON (): Promise<DeclarationJSON> {
     const intents = await Promise.all(
       this.intents.map(async intent => await intent.toJSON())
     )
 
     return {
-      data: await evm.IntentGroupData(
+      data: await evm.DeclarationData(
         intents,
         this.beforeCalls,
         this.afterCalls
@@ -106,4 +106,4 @@ class IntentGroup {
 
 
 
-export default IntentGroup
+export default Declaration

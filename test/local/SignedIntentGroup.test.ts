@@ -1,27 +1,27 @@
 import { expect } from 'chai'
-import { IntentGroup, Token, TokenArgs, SegmentArgs } from '@brink-sdk'
+import { Declaration, Token, TokenArgs, SegmentArgs } from '@brink-sdk'
 
-describe('SignedIntentGroup', function () {
+describe('SignedDeclaration', function () {
   describe('validate()', function () {
-    it('should return valid for a valid SignedIntentGroup', async function () {
-      const intentGroupData = await buildIntentGroup()
-      const signedIntentGroup = await this.signIntentGroup(intentGroupData)
-      expect((await signedIntentGroup.validate()).valid).to.equal(true)
+    it('should return valid for a valid SignedDeclaration', async function () {
+      const declarationData = await buildDeclaration()
+      const signedDeclaration = await this.signDeclaration(declarationData)
+      expect((await signedDeclaration.validate()).valid).to.equal(true)
     })
 
-    it('SignedIntentGroup where signer does not match signature recovered address should be invalid', async function () {
-      const intentGroupData = await buildIntentGroup()
-      let signedIntentGroup = await this.signIntentGroup(intentGroupData)
-      signedIntentGroup.signature = '0xa6d6160d57568bde2a1ca2f623cf8814e06d75ee174389e5325110f7029311c2192404dc20a07e9b71cc8747102612c081b4c20ed4f16b37cb3980dd7bd8df1c1b'
-      const validationResult = await signedIntentGroup.validate()
+    it('SignedDeclaration where signer does not match signature recovered address should be invalid', async function () {
+      const declarationData = await buildDeclaration()
+      let signedDeclaration = await this.signDeclaration(declarationData)
+      signedDeclaration.signature = '0xa6d6160d57568bde2a1ca2f623cf8814e06d75ee174389e5325110f7029311c2192404dc20a07e9b71cc8747102612c081b4c20ed4f16b37cb3980dd7bd8df1c1b'
+      const validationResult = await signedDeclaration.validate()
       expect(validationResult.valid).to.equal(false)
       expect(validationResult.reason).to.equal('SIGNATURE_MISMATCH')
     })
   })
 })
 
-async function buildIntentGroup () {
-  const intentGroup1 = new IntentGroup(
+async function buildDeclaration () {
+  const declaration1 = new Declaration(
     {
       intents: [
         {
@@ -53,5 +53,5 @@ async function buildIntentGroup () {
       ]
     }
   )
-  return await intentGroup1.toJSON()
+  return await declaration1.toJSON()
 }

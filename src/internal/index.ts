@@ -25,9 +25,9 @@ export { default as getUniV3Pool } from './getUniV3Pool'
 
 export { default as groupAndSumTokenAmounts } from './groupAndSumTokenAmounts'
 
-export { default as intentArgsToIntentGroupArgs } from './intentArgsToIntentGroupArgs'
+export { default as intentArgsToDeclarationArgs } from './intentArgsToDeclarationArgs'
 
-export { default as intentSegmentArgsToIntentGroupIntentArgs } from './intentSegmentArgsToIntentGroupIntentArgs'
+export { default as intentSegmentArgsToDeclarationIntentArgs } from './intentSegmentArgsToDeclarationIntentArgs'
 
 export { default as priceCurveAddress } from './priceCurveAddress'
 

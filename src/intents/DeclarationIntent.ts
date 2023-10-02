@@ -1,6 +1,6 @@
 import {
-  IntentGroupIntentArgs,
-  IntentGroupIntentJSON,
+  DeclarationIntentArgs,
+  DeclarationIntentJSON,
   ValidationResult,
   SegmentFunctionName,
   SegmentParamValue,
@@ -17,19 +17,19 @@ export type IntentConstructorArgs = {
   segments: SegmentJSON[]
 }
 
-class IntentGroupIntent {
+class DeclarationIntent {
 
   segments: Segment[] = []
 
   public constructor ()
-  public constructor (args: IntentGroupIntentArgs)
+  public constructor (args: DeclarationIntentArgs)
   public constructor (...arr: any[]) {
-    const args: IntentGroupIntentArgs = arr[0] || {}
-    let intentGroupIntentsArgs: IntentGroupIntentArgs = {
+    const args: DeclarationIntentArgs = arr[0] || {}
+    let declarationIntentsArgs: DeclarationIntentArgs = {
       segments: args?.segments || []
     }
 
-    this.segments = intentGroupIntentsArgs.segments.map((segmentData: {
+    this.segments = declarationIntentsArgs.segments.map((segmentData: {
       functionName: SegmentFunctionName,
       params: Record<string, SegmentParamValue>
     }) => {
@@ -66,7 +66,7 @@ class IntentGroupIntent {
     return bits
   }
 
-  async toJSON (): Promise<IntentGroupIntentJSON> {
+  async toJSON (): Promise<DeclarationIntentJSON> {
     const segments = await Promise.all(
       this.segments.map(async segment => await segment.toJSON())
     )
@@ -93,4 +93,4 @@ const segmentHasBitData = (segment: Segment): boolean => (
   segment.paramsJSON.hasOwnProperty('index') && segment.paramsJSON.hasOwnProperty('value')
 )
 
-export default IntentGroupIntent
+export default DeclarationIntent
