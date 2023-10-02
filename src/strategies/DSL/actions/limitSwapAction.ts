@@ -32,7 +32,7 @@ function limitSwapAction ({
   const tokenOutArgs = toTokenArgs(tokenOut)
 
   const fillStateParams = {
-    id,
+    id: BigInt(id),
     sign: true,
     startX96: 0n
   }
