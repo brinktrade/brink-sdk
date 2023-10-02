@@ -28,8 +28,8 @@ function limitSwapAction ({
   const hexPrice = convertToX96HexPrice(tokenInAmountBN, tokenOutAmountBN)
   const priceCurveParams = { address: FLAT_PRICE_CURVE_ADDRESS, params: hexPrice }
   
-  const tokenArgsIn = toTokenArgs(tokenIn)
-  const tokenArgsOut = toTokenArgs(tokenOut)
+  const tokenInArgs = toTokenArgs(tokenIn)
+  const tokenOutArgs = toTokenArgs(tokenOut)
 
   const fillStateParams = {
     id,
@@ -42,8 +42,8 @@ function limitSwapAction ({
     params: {
       priceCurve: priceCurveParams,
       signer: owner,
-      tokenIn: tokenArgsIn as PrimitiveParamValue, 
-      tokenOut: tokenArgsOut as PrimitiveParamValue,
+      tokenIn: tokenInArgs as PrimitiveParamValue,
+      tokenOut: tokenOutArgs as PrimitiveParamValue,
       tokenInAmount: tokenInAmount,
       fillStateParams
     }
