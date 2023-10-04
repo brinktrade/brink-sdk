@@ -1,36 +1,51 @@
-import { MarketSwapActionArgs, SegmentArgs } from '@brinkninja/types'
+import { MarketSwapActionArgs, SegmentArgs, TokenJSON } from '@brinkninja/types'
+import { bigintToFeeAmount, toBigint, toTokenArgs } from '../../../internal'
+import { UniV3Twap } from '../../../oracles'
+import Token from '../../Token'
+
+const DEFAULT_TIME_INTERVAL = BigInt(60)
+const DEFAULT_FEE_MIN = BigInt(0)
 
 function marketSwapAction ({
   owner,
   tokenIn,
   tokenOut,
   tokenInAmount,
-  feePercent,
-  feeMinTokenOut
+  fee,
+  twapInterval = DEFAULT_TIME_INTERVAL,
+  twapFeePool = 0
 }: MarketSwapActionArgs): SegmentArgs[] {
-  if (!feeMinTokenOut) {
-    feeMinTokenOut = 0
+  const twapFeePoolBN = twapFeePool ? toBigint(twapFeePool) : undefined
+  const twapFeePoolFeeAmount = twapFeePoolBN ? bigintToFeeAmount(twapFeePoolBN) : undefined
+  const tokenInAmountBn = toBigint(tokenInAmount)
+
+  const tokenInArgs = toTokenArgs(tokenIn)
+  const tokenOutArgs = toTokenArgs(tokenOut)
+
+  const twap = new UniV3Twap({
+    tokenA: new Token(tokenInArgs),
+    tokenB: new Token(tokenOutArgs),
+    interval: twapInterval,
+    fee: twapFeePoolFeeAmount,
+  })
+
+  const oracle = {
+    address: twap.address,
+    params: twap.params,
   }
 
-  // TODO: implement this. will have to handle TwapOracle
-
-  // {
-  //   functionName: 'marketSwapExactInput',
-  //   params: {
-  //     oracle: {
-  //       address: '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
-  //       params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
-  //     },
-  //     signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
-  //     tokenIn: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' } as TokenArgs,
-  //     tokenOut: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' } as TokenArgs,
-  //     tokenInAmount: BigInt(1450000000),
-  //     feePercent: BigInt(10000),
-  //     feeMin: BigInt(0)
-  //   }
-  // }
-
-  return []
+  return [{
+    functionName: 'marketSwapExactInput',
+    params: {
+      oracle: oracle,
+      signer: owner,
+      tokenIn: tokenInArgs as TokenJSON,
+      tokenOut: tokenOutArgs as TokenJSON,
+      tokenInAmount: tokenInAmountBn,
+      feePercent: toBigint(fee * 10 ** 4),
+      feeMin: DEFAULT_FEE_MIN,
+    }
+  }]
 }
 
 export default marketSwapAction
