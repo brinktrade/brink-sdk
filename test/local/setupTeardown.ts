@@ -76,7 +76,7 @@ beforeEach(async function () {
   await this.token2.mint(this.testFulfillSwap.address, tknDefaultBal)
   await this.defaultSigner.sendTransaction({
     to: this.testFulfillSwap.address,
-    value: ethers.BigNumber.from('10000000000000000000000000')
+    value: ethers.BigNumber.from('1000000000000000000000000')
   })
   this.cryptoSkunkID = _.isUndefined(this.cryptoSkunkID) ? 1 : this.cryptoSkunkID + 1
   await this.nft1.mint(this.testFulfillSwap.address, this.cryptoSkunkID)
