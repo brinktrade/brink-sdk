@@ -1,7 +1,7 @@
 import { DeclarationArgs, DeclarationDefinitionArgs, IntentArgs } from '@brinkninja/types'
 import { intentDefinitionArgsToIntentArgs } from '.'
 
-function declarationDefinitionArgsToIntetnArgs (declaration: DeclarationDefinitionArgs): DeclarationArgs {
+function declarationDefinitionArgsToIntentArgs (declaration: DeclarationDefinitionArgs): DeclarationArgs {
   if (declaration.replay) {
     throw new Error(`Intent replay not implemented. Set replay for individual segments`)
   }
@@ -15,4 +15,4 @@ function declarationDefinitionArgsToIntetnArgs (declaration: DeclarationDefiniti
   return { intents }
 }
 
-export default declarationDefinitionArgsToIntetnArgs
+export default declarationDefinitionArgsToIntentArgs

@@ -26,11 +26,11 @@ type ConditionFnTypeName = {
 }
 
 function IntentDefinitionArgsToIntentArgs (intentSegment: IntentDefinitionArgs): IntentArgs {
-  let declarationIntentArgs: IntentArgs = { segments: [] }
+  let intentArgs: IntentArgs = { segments: [] }
 
   if (intentSegment.replay) {
     if (intentSegment.replay.runs == 'ONCE') {
-     declarationIntentArgs.segments.push({
+     intentArgs.segments.push({
       functionName: 'useBit',
       params: nonceToBit({ nonce: intentSegment.replay.nonce })
     })
@@ -47,7 +47,7 @@ function IntentDefinitionArgsToIntentArgs (intentSegment: IntentDefinitionArgs):
   }
 
   if (intentSegment.expiryBlock) {
-    declarationIntentArgs.segments.push({
+    intentArgs.segments.push({
       functionName: 'requireBlockNotMined',
       params: {
         blockNumber: BigInt(intentSegment.expiryBlock)
@@ -58,7 +58,7 @@ function IntentDefinitionArgsToIntentArgs (intentSegment: IntentDefinitionArgs):
   if (!intentSegment.conditions) intentSegment.conditions = []
   if (!intentSegment.actions) intentSegment.actions = []
 
-  // add condition segments to declarationIntentArgs
+  // add condition segments to intentArgs
   const conditionSegments: SegmentArgs[] = intentSegment.conditions.reduce((segments: SegmentArgs[], conditionArgs) => {
     const typeName: keyof ConditionFnTypeName = `${conditionArgs.type}Condition`
     const args = conditionArgs as ConditionFnTypeName[typeof typeName]
@@ -68,9 +68,9 @@ function IntentDefinitionArgsToIntentArgs (intentSegment: IntentDefinitionArgs):
     ))
     return segments
   }, [])
-  declarationIntentArgs.segments.push(...conditionSegments)
+  intentArgs.segments.push(...conditionSegments)
 
-  // add action segments to declarationIntentArgs
+  // add action segments to intentArgs
   const actionSegments: SegmentArgs[] = intentSegment.actions.reduce((segments: SegmentArgs[], actionArgs) => {
     const typeName: keyof ActionFnTypeName = `${actionArgs.type}Action`
     const args = actionArgs as ActionFnTypeName[typeof typeName]
@@ -80,9 +80,9 @@ function IntentDefinitionArgsToIntentArgs (intentSegment: IntentDefinitionArgs):
     ))
     return segments
   }, [])
-  declarationIntentArgs.segments.push(...actionSegments)
+  intentArgs.segments.push(...actionSegments)
 
-  return declarationIntentArgs
+  return intentArgs
 }
 
 function runSegmentArgsGeneratingFn<T>(args: T, fn: (args: T) => SegmentArgs[]): SegmentArgs[] {
