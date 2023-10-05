@@ -1,5 +1,5 @@
 import { LimitSwapActionArgs, SegmentArgs, SegmentParamValue } from '@brinkninja/types'
-import { convertToX96HexPrice, toBigint, toTokenArgs } from '@brink-sdk/internal';
+import { convertToX96HexPrice, toBigint, toTokenArgs } from '../../../internal'
 import { InvalidInputError } from '../errors';
 
 const FLAT_PRICE_CURVE_ADDRESS = '0xC509733B8dDdbab9369A96F6F216d6E59DB3900f';
