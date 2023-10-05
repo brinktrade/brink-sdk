@@ -5,21 +5,21 @@ import { Transaction } from '@ethereumjs/tx'
 import { EVMResult } from '@ethereumjs/evm'
 import { VM } from '@ethereumjs/vm'
 import config from '../Config'
-import StrategyBuilder01 from './contracts/StrategyBuilder01.json'
-import PrimitiveBuilder01 from './contracts/PrimitiveBuilder01.json'
+import DeclarationBuilder01 from './contracts/StrategyBuilder01.json'
+import SegmentBuilder01 from './contracts/PrimitiveBuilder01.json'
 import UnsignedDataBuilder01 from './contracts/UnsignedDataBuilder01.json'
 import FlatPriceCurve from './contracts/FlatPriceCurve.json'
 import LinearPriceCurve from './contracts/LinearPriceCurve.json'
 import QuadraticPriceCurve from './contracts/QuadraticPriceCurve.json'
 import SwapIO from './contracts/SwapIO.json'
-import IdsProof from '../strategies/IdsProof'
+import IdsProof from '../intents/IdsProof'
 import {
   ContractCallParam,
-  PrimitiveFunctionName,
+  SegmentFunctionName,
   CallStruct,
   SignatureType,
   SignatureTypeEnum,
-  OrderJSON,
+  IntentJSON,
   BigIntish
 } from '@brinkninja/types'
 
@@ -29,8 +29,8 @@ export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
 }
 
 type EvmContractName =
-  'StrategyBuilder' |
-  'PrimitiveBuilder' |
+  'DeclarationBuilder' |
+  'SegmentBuilder' |
   'UnsignedDataBuilder' |
   'FlatPriceCurve' |
   'LinearPriceCurve' |
@@ -45,8 +45,8 @@ const signer = new ethers.Wallet(privateKey)
 
 export class EthereumJsVm {
 
-  readonly _strategyContractAddress: string
-  readonly _primitivesContractAddress: string
+  readonly _declarationContractAddress: string
+  readonly _segmentsContractAddress: string
 
   _common: Common
   _vm!: VM
@@ -54,8 +54,8 @@ export class EthereumJsVm {
   _vmInitialized: boolean = false
 
   _nonce: number = 0
-  StrategyBuilder!: ethers.Contract
-  PrimitiveBuilder!: ethers.Contract
+  DeclarationBuilder!: ethers.Contract
+  SegmentBuilder!: ethers.Contract
   UnsignedDataBuilder!: ethers.Contract
   FlatPriceCurve!: ethers.Contract
   LinearPriceCurve!: ethers.Contract
@@ -63,11 +63,11 @@ export class EthereumJsVm {
   SwapIO!: ethers.Contract
 
   constructor (
-    strategyContractAddress: string,
-    primitivesContractAddress: string
+    declarationContractAddress: string,
+    segmentsContractAddress: string
   ) {
-    this._strategyContractAddress = strategyContractAddress
-    this._primitivesContractAddress = primitivesContractAddress
+    this._declarationContractAddress = declarationContractAddress
+    this._segmentsContractAddress = segmentsContractAddress
 
     this._common = new Common({ chain: Chain.Mainnet })
   }
@@ -84,8 +84,8 @@ export class EthereumJsVm {
       this._vmInitializing = true
       this._vm = await VM.create({ common: this._common })
       
-      this.StrategyBuilder = await this._deployContract(StrategyBuilder01, this._strategyContractAddress, this._primitivesContractAddress)
-      this.PrimitiveBuilder = await this._deployContract(PrimitiveBuilder01)
+      this.DeclarationBuilder = await this._deployContract(DeclarationBuilder01, this._declarationContractAddress, this._segmentsContractAddress)
+      this.SegmentBuilder = await this._deployContract(SegmentBuilder01)
       this.UnsignedDataBuilder = await this._deployContract(UnsignedDataBuilder01)
       this.FlatPriceCurve = await this._deployContract(FlatPriceCurve)
       this.LinearPriceCurve = await this._deployContract(LinearPriceCurve)
@@ -125,44 +125,44 @@ export class EthereumJsVm {
     return factory.attach(result.createdAddress.toString())
   }
 
-  async primitiveData (functionName: PrimitiveFunctionName, ...args: ContractCallParam[]): Promise<string> {
-    const primitiveData = await this.callContractFn('PrimitiveBuilder', functionName as unknown as string, ...args)
-    return `0x${cleanDynamicBytes(primitiveData)}`
+  async segmentData (functionName: SegmentFunctionName, ...args: ContractCallParam[]): Promise<string> {
+    const segmentData = await this.callContractFn('SegmentBuilder', functionName as unknown as string, ...args)
+    return `0x${cleanDynamicBytes(segmentData)}`
   }
 
-  async strategyData (
-    orders: OrderJSON[] = [],
+  async DeclarationData (
+    intents: IntentJSON [] = [],
     beforeCalls: CallStruct[] = [],
     afterCalls: CallStruct[] = []
   ): Promise<string> {
-    const ordersBytesArray: string[][] = orders.map(
-      o => o.primitives.map(p => p.data as string)
+    const intentsBytesArray: string[][] = intents.map(
+      i => i.segments.map(s => s.data as string)
     )
 
-    const strategyData: string = await this.callContractFn(
-      'StrategyBuilder',
+    const declarationIData: string = await this.callContractFn(
+      'DeclarationBuilder',
       'strategyData(bytes[][],(address,bytes)[],(address,bytes)[])',
-      ordersBytesArray,
+      intentsBytesArray,
       beforeCalls,
       afterCalls
     )
 
     // ethereumjs-vm returns the data with 28 bytes of extra 00's appended.
-    // the strategies break with these extra bytes. it seems to be consistently adding
+    // the declarations break with these extra bytes. it seems to be consistently adding
     // exactly 28 bytes of empty data, so trimming them out fixes the issue
 
-    const strategyDataTrimmed = strategyData.slice(0, -56)
-    return `0x${cleanDynamicBytes(strategyDataTrimmed)}`
+    const declarationIDataTrimmed = declarationIData.slice(0, -56)
+    return `0x${cleanDynamicBytes(declarationIDataTrimmed)}`
   }
 
-  async strategyMessageHash (
+  async declarationIMessageHash (
     signatureType: SignatureType,
     data: string,
     account: string,
     chainId: BigIntish
   ): Promise<string> {
     const messageHash: string = await this.callContractFn(
-      'StrategyBuilder',
+      'DeclarationBuilder',
       `getMessageHash`,
       signatureTypeMap[signatureType],
       data,
@@ -208,7 +208,7 @@ export class EthereumJsVm {
     return `0x${cleanDynamicBytes(unsignedLimitSwapData)}`
   }
 
-  async unsignedData (orderIndex: number, unsignedCalls: string[]): Promise<string> {
+  async unsignedData (intentIndex: number, unsignedCalls: string[]): Promise<string> {
     if (unsignedCalls.length === 0) {
       throw new Error(`unsignedData needs at least 1 unsignedCall`)
     }
@@ -219,7 +219,7 @@ export class EthereumJsVm {
     const unsignedData: string = await this.callContractFn(
       'UnsignedDataBuilder',
       `unsignedData(uint8,${'bytes,'.repeat(unsignedCalls.length).slice(0, -1)})`,
-      orderIndex,
+      intentIndex,
       ...unsignedCalls
     )
     return `0x${cleanDynamicBytes(unsignedData)}`

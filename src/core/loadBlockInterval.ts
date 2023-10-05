@@ -1,4 +1,3 @@
-import { type } from 'os'
 import blockIntervalPointer from './blockIntervalPointer'
 import storageLoad from './storageLoad'
 import { RpcMethodCall, BigIntish } from '@brinkninja/types'

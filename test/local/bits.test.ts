@@ -1,27 +1,27 @@
 import { expect } from 'chai'
 import {
-  Strategy,
+  Declaration,
   TokenArgs,
-  PrimitiveArgs
+  SegmentArgs
 } from '@brink-sdk'
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
-describe('Order.bits()', function () {
-  it('should return bits for order, deduplicated', async function () {
-    const strategy1 = new Strategy(strategyWithBits)
-    const bits = strategy1.orders[1].bits()
+describe('Intent.bits()', function () {
+  it('should return bits for declaration, deduplicated', async function () {
+    const declaration1 = new Declaration(declarationWithBits)
+    const bits = declaration1.intents[1].bits()
     expect(bits.length).to.equal(1)
     expect(bits[0].index).to.equal(1n)
     expect(bits[0].value).to.equal(1n)
   })
 })
 
-describe('Strategy.bits()', function () {
-  it('should return bits for the strategy, deduplicated', async function () {
-    const strategy1 = new Strategy(strategyWithBits)
-    const bits = strategy1.bits()
+describe('Intent.bits()', function () {
+  it('should return bits for the declaration, deduplicated', async function () {
+    const declaration = new Declaration(declarationWithBits)
+    const bits = declaration.bits()
     expect(bits.length).to.equal(2)
     expect(bits[0].index).to.equal(0n)
     expect(bits[0].value).to.equal(1n)
@@ -29,25 +29,25 @@ describe('Strategy.bits()', function () {
     expect(bits[1].value).to.equal(1n)
   })
 
-  it('should return empty array with strategy has no bits', async function () {
-    const strategy1 = new Strategy(strategyWithoutBits)
-    const bits = strategy1.bits()
+  it('should return empty array with Declaration has no bits', async function () {
+    const declaration = new Declaration(declarationWithoutBits)
+    const bits = declaration.bits()
     expect(bits.length).to.equal(0)
   })
 })
 
 describe('useBit with invalid bit', function () {
   it('should throw error', async function () {
-    const createStrategyWithInvalidBit = () => { new Strategy(strategyWithInvalidBit) }
-    expect(createStrategyWithInvalidBit).to.throw('invalid bit')
+    const createDeclarationWithInvalidBit = () => { new Declaration(declarationWithInvalidBit) }
+    expect(createDeclarationWithInvalidBit).to.throw('invalid bit')
   })
 })
 
-const strategyWithBits = {
-  orders: [
+const declarationWithBits = {
+  intents: [
     {
-      primitives: [
-        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(1) } } as PrimitiveArgs,
+      segments: [
+        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(1) } } as SegmentArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -62,12 +62,12 @@ const strategyWithBits = {
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as PrimitiveArgs
+        } as SegmentArgs
       ]
     },
     {
-      primitives: [
-        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as PrimitiveArgs,
+      segments: [
+        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as SegmentArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -82,12 +82,12 @@ const strategyWithBits = {
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as PrimitiveArgs
+        } as SegmentArgs
       ]
     },
     {
-      primitives: [
-        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as PrimitiveArgs,
+      segments: [
+        { functionName: 'useBit', params: { index: BigInt(1), value: BigInt(1) } } as SegmentArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -102,16 +102,16 @@ const strategyWithBits = {
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as PrimitiveArgs
+        } as SegmentArgs
       ]
     }
   ]
 }
 
-const strategyWithoutBits = {
-  orders: [
+const declarationWithoutBits = {
+  intents: [
     {
-      primitives: [
+      segments: [
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -126,18 +126,18 @@ const strategyWithoutBits = {
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as PrimitiveArgs
+        } as SegmentArgs
       ]
     },
   ]
 }
 
-const strategyWithInvalidBit = {
-  orders: [
+const declarationWithInvalidBit = {
+  intents: [
     {
-      primitives: [
+      segments: [
         // 3 is invalid, 2**0, 2**1, and 2**2 are valid individual bits, but 3 is 2**0 | 2**1
-        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(3) } } as PrimitiveArgs,
+        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(3) } } as SegmentArgs,
         {
           functionName: 'marketSwapExactInput',
           params: {
@@ -152,7 +152,7 @@ const strategyWithInvalidBit = {
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as PrimitiveArgs
+        } as SegmentArgs
       ]
     }
   ]

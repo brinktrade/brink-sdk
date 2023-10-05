@@ -1,52 +1,52 @@
 import { expect } from 'chai'
 import {
-  Strategy,
-  IntentArgs,
-  IntentSegmentArgs
+  Declaration,
+  DeclarationDefinitionArgs,
+  IntentDefinitionArgs
 } from '@brink-sdk'
 
-describe('IntentArgs', function () {
-  describe('IntentArgs object passed to strategy', function () {
-    it('should return primitives based on intent object args', async function () {
-      const strategy1 = new Strategy(intentObject)
-      const strategyJSON = await strategy1.toJSON()
-      expect(strategyJSON.orders.length).to.equal(2)
-      expect(strategyJSON.orders[0].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[0].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
-      expect(strategyJSON.orders[1].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[1].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
+describe('DeclarationDefinitionArgs', function () {
+  describe('DeclarationDefinitionArgs object passed to declaration', function () {
+    it('should return segments based on intent object args', async function () {
+      const declaration1 = new Declaration(intentObject)
+      const declarationJSON = await declaration1.toJSON()
+      expect(declarationJSON.intents.length).to.equal(2)
+      expect(declarationJSON.intents[0].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[1].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
     })
   })
 
-  describe('single IntentSegmentArgs passed to strategy', function () {
-    it('should return primitives based on intent object args', async function () {
-      const strategy1 = new Strategy(singleSegmentIntent)
-      const strategyJSON = await strategy1.toJSON()
-      expect(strategyJSON.orders.length).to.equal(1)
-      expect(strategyJSON.orders[0].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[0].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
+  describe('single IntentDefinitionArgs passed to declaration', function () {
+    it('should return segments based on intent object args', async function () {
+      const declaration1 = new Declaration(singleSegmentIntent)
+      const declarationJSON = await declaration1.toJSON()
+      expect(declarationJSON.intents.length).to.equal(1)
+      expect(declarationJSON.intents[0].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
     })
   })
 
-  describe('IntentSegmentArgs array passed to strategy', function () {
-    it('should return primitives based on intent object args', async function () {
-      const strategy1 = new Strategy(multiSegmentIntent)
-      const strategyJSON = await strategy1.toJSON()
-      expect(strategyJSON.orders.length).to.equal(2)
-      expect(strategyJSON.orders[0].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[0].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
-      expect(strategyJSON.orders[1].primitives[0].functionName).to.equal('useBit')
-      expect(strategyJSON.orders[1].primitives[1].functionName).to.equal('requireBlockNotMined')
-      expect(strategyJSON.orders[0].primitives[2].functionName).to.equal('requireBlockMined')
+  describe('IntentDefinitionArgs array passed to declaration', function () {
+    it('should return segments based on intent object args', async function () {
+      const declaration1 = new Declaration(multiSegmentIntent)
+      const declarationJSON = await declaration1.toJSON()
+      expect(declarationJSON.intents.length).to.equal(2)
+      expect(declarationJSON.intents[0].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[1].segments[0].functionName).to.equal('useBit')
+      expect(declarationJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
+      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
     })
   })
 })
 
-const singleSegmentIntent: IntentSegmentArgs = {
+const singleSegmentIntent: IntentDefinitionArgs = {
   replay: {
     nonce: 123,
     runs: 'ONCE'
@@ -67,7 +67,7 @@ const singleSegmentIntent: IntentSegmentArgs = {
   }]
 }
 
-const multiSegmentIntent: IntentSegmentArgs[] = [
+const multiSegmentIntent: IntentDefinitionArgs[] = [
   {
     replay: {
       nonce: 123,
@@ -110,6 +110,6 @@ const multiSegmentIntent: IntentSegmentArgs[] = [
   }
 ]
 
-const intentObject: IntentArgs = {
-  segments: multiSegmentIntent
+const intentObject: DeclarationDefinitionArgs = {
+  intents: multiSegmentIntent
 }

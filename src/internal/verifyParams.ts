@@ -1,5 +1,5 @@
 import { filter } from 'lodash'
-import { PrimitiveFunctionName, PrimitiveParamType, PrimitiveParamValue } from '@brinkninja/types'
+import { SegmentFunctionName, SegmentParamType, SegmentParamValue } from '@brinkninja/types'
 import { validateAddress, validateBytes, validateUint } from '.'
 
 export default function verifyParams ({
@@ -7,9 +7,9 @@ export default function verifyParams ({
   types,
   values
 }: {
-  functionName: PrimitiveFunctionName
-  types: PrimitiveParamType[],
-  values: PrimitiveParamValue[]
+  functionName: SegmentFunctionName
+  types: SegmentParamType[],
+  values: SegmentParamValue[]
 }) {
   const signedParamTypes = filter(types, { signed: true })
 
