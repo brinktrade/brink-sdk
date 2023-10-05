@@ -11,14 +11,14 @@ import {
   UniV3Twap,
   UseBit,
   marketSwapExactInput_getOutput,
-  executeDeclaration,
+  executeIntent,
   declarationEIP712TypedData,
   DeclarationArgs
 } from '@brink-sdk'
 import fundWithERC20 from '../helpers/fundWithERC20'
 
-describe('executeDeclaration with limitSwapExactInput', function () {
-  it('should execute a simple limit swap declaration', async function () {
+describe('executeIntent with limitSwapExactInput', function () {
+  it('should execute a simple limit swap intent', async function () {
     // const deployTx = await deployAccount({ signer: this.signerAddress })
     // await this.defaultSigner.sendTransaction(deployTx)
 
@@ -31,7 +31,7 @@ describe('executeDeclaration with limitSwapExactInput', function () {
     // const filler_wethBal_0 = await this.weth.balanceOf(this.filler.address)
 
     // // execute intent 0 for the declaration
-    // const tx = await executeDeclaration({
+    // const tx = await executeIntent({
     //   signedDeclaration,
     //   intentIndex: 0,
     //   unsignedCalls: [unsignedSwapCall]

@@ -1,12 +1,12 @@
 import { expect } from 'chai'
 import {
   Declaration,
-  IntentArgs,
-  IntentSegmentArgs
+  DeclarationDefinitionArgs,
+  IntentDefinitionArgs
 } from '@brink-sdk'
 
-describe('IntentArgs', function () {
-  describe('IntentArgs object passed to declaration', function () {
+describe('DeclarationDefinitionArgs', function () {
+  describe('DeclarationDefinitionArgs object passed to declaration', function () {
     it('should return segments based on intent object args', async function () {
       const declaration1 = new Declaration(intentObject)
       const declarationJSON = await declaration1.toJSON()
@@ -20,7 +20,7 @@ describe('IntentArgs', function () {
     })
   })
 
-  describe('single IntentSegmentArgs passed to declaration', function () {
+  describe('single IntentDefinitionArgs passed to declaration', function () {
     it('should return segments based on intent object args', async function () {
       const declaration1 = new Declaration(singleSegmentIntent)
       const declarationJSON = await declaration1.toJSON()
@@ -31,7 +31,7 @@ describe('IntentArgs', function () {
     })
   })
 
-  describe('IntentSegmentArgs array passed to declaration', function () {
+  describe('IntentDefinitionArgs array passed to declaration', function () {
     it('should return segments based on intent object args', async function () {
       const declaration1 = new Declaration(multiSegmentIntent)
       const declarationJSON = await declaration1.toJSON()
@@ -46,7 +46,7 @@ describe('IntentArgs', function () {
   })
 })
 
-const singleSegmentIntent: IntentSegmentArgs = {
+const singleSegmentIntent: IntentDefinitionArgs = {
   replay: {
     nonce: 123,
     runs: 'ONCE'
@@ -67,7 +67,7 @@ const singleSegmentIntent: IntentSegmentArgs = {
   }]
 }
 
-const multiSegmentIntent: IntentSegmentArgs[] = [
+const multiSegmentIntent: IntentDefinitionArgs[] = [
   {
     replay: {
       nonce: 123,
@@ -110,6 +110,6 @@ const multiSegmentIntent: IntentSegmentArgs[] = [
   }
 ]
 
-const intentObject: IntentArgs = {
-  segments: multiSegmentIntent
+const intentObject: DeclarationDefinitionArgs = {
+  intents: multiSegmentIntent
 }

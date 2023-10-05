@@ -2,7 +2,8 @@ import { expect } from 'chai'
 import {
   Declaration,
   TokenArgs,
-  SegmentArgs
+  SegmentArgs,
+  DeclarationArgs
 } from '@brink-sdk'
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
@@ -30,7 +31,7 @@ describe('Declaration.inputTokens()', function () {
   })
 })
 
-const declarationForTokenInputs1 = {
+const declarationForTokenInputs1: DeclarationArgs = {
   intents: [
     {
       segments: [

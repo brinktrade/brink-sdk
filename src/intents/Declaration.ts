@@ -1,14 +1,14 @@
 import Config from '../Config'
-import { DeclarationArgs, DeclarationJSON, ValidationResult, TokenAmount, Bit, IntentArgs, IntentSegmentArgs } from '@brinkninja/types'
-import Intent from './DeclarationIntent'
+import { DeclarationArgs, DeclarationJSON, ValidationResult, TokenAmount, Bit, DeclarationDefinitionArgs, IntentDefinitionArgs } from '@brinkninja/types'
+import Intent from './Intent'
 import {
   EthereumJsVm as evm,
   invalidResult,
   validResult,
   groupAndSumTokenAmounts,
-  intentArgsToDeclarationArgs
+  declarationDefinitionArgsToIntentArgs
 } from '../internal'
-import DeclarationIntent from './DeclarationIntent'
+import DeclarationIntent from './Intent'
 
 const { PRIMITIVES_01 } = Config
 
@@ -19,25 +19,26 @@ class Declaration {
   segmentsContract: string
 
   public constructor ()
-  public constructor (args: IntentArgs)
-  public constructor (args: IntentSegmentArgs)
-  public constructor (args: IntentSegmentArgs[])
+  public constructor (args: DeclarationDefinitionArgs)
+  public constructor (args: IntentDefinitionArgs)
+  public constructor (args: IntentDefinitionArgs[])
   public constructor (args: DeclarationArgs)
   public constructor (...arr: any[]) {
-    const inputArgs: (DeclarationArgs | IntentArgs | IntentSegmentArgs | IntentSegmentArgs[]) = arr[0] || {}
+    const inputArgs: (DeclarationArgs | DeclarationDefinitionArgs | IntentDefinitionArgs | IntentDefinitionArgs[]) = arr[0] || {}
 
-    let declarationArgs: DeclarationArgs
-    if ((inputArgs as IntentArgs).segments) {
-      declarationArgs = intentArgsToDeclarationArgs(inputArgs as IntentArgs)
-    } else if ((inputArgs as IntentSegmentArgs).actions) {
-      declarationArgs = intentArgsToDeclarationArgs({ segments: [inputArgs as IntentSegmentArgs] })
-    } else if ((inputArgs as IntentSegmentArgs[]).length > 0 && (inputArgs as IntentSegmentArgs[])[0].actions) {
-      declarationArgs = intentArgsToDeclarationArgs({ segments: inputArgs as IntentSegmentArgs[] })
-    } else {
-      declarationArgs = inputArgs as DeclarationArgs
+    let declarationArgs: DeclarationArgs = { intents: [] }
+
+    if ('intents' in inputArgs && 'actions' in inputArgs?.intents[0]) {
+      declarationArgs = declarationDefinitionArgsToIntentArgs(inputArgs as DeclarationDefinitionArgs);
+    } else if ('intents' in inputArgs && 'segments' in (inputArgs.intents[0])) {
+      declarationArgs = inputArgs as DeclarationArgs;
+    } else if ('actions' in inputArgs) {
+      declarationArgs = declarationDefinitionArgsToIntentArgs({ intents: [inputArgs as IntentDefinitionArgs] });
+    } else if ( Array.isArray(inputArgs) && 'actions' in inputArgs[0]) {
+      declarationArgs = declarationDefinitionArgsToIntentArgs({ intents: inputArgs as IntentDefinitionArgs[] });
     }
 
-    this.intents = (declarationArgs?.intents || []).map(intentArgs => new Intent(intentArgs))
+    this.intents = (declarationArgs?.intents).map(intentArgs => new Intent(intentArgs))
     this.beforeCalls = declarationArgs?.beforeCalls || []
     this.afterCalls = declarationArgs?.afterCalls || []
     this.segmentsContract = declarationArgs?.segmentsContract || PRIMITIVES_01

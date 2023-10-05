@@ -1,7 +1,7 @@
 import {
   SegmentArgs,
-  IntentSegmentArgs,
-  DeclarationIntentArgs,
+  IntentDefinitionArgs,
+  IntentArgs,
   MarketSwapActionArgs,
   LimitSwapActionArgs,
   BlockConditionArgs,
@@ -25,8 +25,8 @@ type ConditionFnTypeName = {
   priceCondition: PriceConditionArgs
 }
 
-function intentSegmentArgsToDeclarationIntentArgs (intentSegment: IntentSegmentArgs): DeclarationIntentArgs {
-  let declarationIntentArgs: DeclarationIntentArgs = { segments: [] }
+function IntentDefinitionArgsToIntentArgs (intentSegment: IntentDefinitionArgs): IntentArgs {
+  let declarationIntentArgs: IntentArgs = { segments: [] }
 
   if (intentSegment.replay) {
     if (intentSegment.replay.runs == 'ONCE') {
@@ -89,4 +89,4 @@ function runSegmentArgsGeneratingFn<T>(args: T, fn: (args: T) => SegmentArgs[]):
   return fn(args)
 }
 
-export default intentSegmentArgsToDeclarationIntentArgs
+export default IntentDefinitionArgsToIntentArgs

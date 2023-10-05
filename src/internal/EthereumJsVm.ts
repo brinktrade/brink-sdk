@@ -19,7 +19,7 @@ import {
   CallStruct,
   SignatureType,
   SignatureTypeEnum,
-  DeclarationIntentJSON,
+  IntentJSON,
   BigIntish
 } from '@brinkninja/types'
 
@@ -131,15 +131,15 @@ export class EthereumJsVm {
   }
 
   async DeclarationData (
-    intent: DeclarationIntentJSON [] = [],
+    intents: IntentJSON [] = [],
     beforeCalls: CallStruct[] = [],
     afterCalls: CallStruct[] = []
   ): Promise<string> {
-    const intentsBytesArray: string[][] = intent.map(
+    const intentsBytesArray: string[][] = intents.map(
       i => i.segments.map(s => s.data as string)
     )
 
-    const DeclarationIData: string = await this.callContractFn(
+    const declarationIData: string = await this.callContractFn(
       'DeclarationBuilder',
       'strategyData(bytes[][],(address,bytes)[],(address,bytes)[])',
       intentsBytesArray,
@@ -148,14 +148,14 @@ export class EthereumJsVm {
     )
 
     // ethereumjs-vm returns the data with 28 bytes of extra 00's appended.
-    // the declaration break with these extra bytes. it seems to be consistently adding
+    // the declarations break with these extra bytes. it seems to be consistently adding
     // exactly 28 bytes of empty data, so trimming them out fixes the issue
 
-    const DeclarationIDataTrimmed = DeclarationIData.slice(0, -56)
-    return `0x${cleanDynamicBytes(DeclarationIDataTrimmed)}`
+    const declarationIDataTrimmed = declarationIData.slice(0, -56)
+    return `0x${cleanDynamicBytes(declarationIDataTrimmed)}`
   }
 
-  async DeclarationIMessageHash (
+  async declarationIMessageHash (
     signatureType: SignatureType,
     data: string,
     account: string,

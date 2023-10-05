@@ -10,7 +10,7 @@ export type ExecuteIntentArgs = {
   deployAccount?: boolean
 }
 
-async function executeDeclaration ({
+async function executeIntent ({
   signedDeclaration,
   intentIndex,
   unsignedCalls,
@@ -33,4 +33,4 @@ async function executeDeclaration ({
   })
 }
 
-export default executeDeclaration
+export default executeIntent

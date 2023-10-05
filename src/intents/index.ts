@@ -10,14 +10,14 @@ export { default as cancelEIP712TypedData } from './cancelEIP712TypedData'
 export * from './cancelWithSignature'
 export { default as cancelWithSignature } from './cancelWithSignature'
 
-export * from './executeDeclaration'
-export { default as executeDeclaration } from './executeDeclaration'
+export * from './executeIntent'
+export { default as executeIntent } from './executeIntent'
 
 export * from './IdsProof'
 export { default as IdsProof } from './IdsProof'
 
-export * from './DeclarationIntent'
-export { default as DeclarationIntent } from './DeclarationIntent'
+export * from './Intent'
+export { default as DeclarationIntent } from './Intent'
 
 export * from './SignedDeclaration'
 export { default as SignedDeclaration } from './SignedDeclaration'

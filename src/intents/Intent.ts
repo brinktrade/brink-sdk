@@ -1,6 +1,6 @@
 import {
-  DeclarationIntentArgs,
-  DeclarationIntentJSON,
+  IntentArgs,
+  IntentJSON,
   ValidationResult,
   SegmentFunctionName,
   SegmentParamValue,
@@ -17,15 +17,16 @@ export type IntentConstructorArgs = {
   segments: SegmentJSON[]
 }
 
-class DeclarationIntent {
+class Intent {
 
   segments: Segment[] = []
 
   public constructor ()
-  public constructor (args: DeclarationIntentArgs)
+  public constructor (args: IntentArgs)
   public constructor (...arr: any[]) {
-    const args: DeclarationIntentArgs = arr[0] || {}
-    let declarationIntentsArgs: DeclarationIntentArgs = {
+    const args: IntentArgs = arr[0] || {}
+
+    let declarationIntentsArgs: IntentArgs = {
       segments: args?.segments || []
     }
 
@@ -66,7 +67,7 @@ class DeclarationIntent {
     return bits
   }
 
-  async toJSON (): Promise<DeclarationIntentJSON> {
+  async toJSON (): Promise<IntentJSON> {
     const segments = await Promise.all(
       this.segments.map(async segment => await segment.toJSON())
     )
@@ -93,4 +94,4 @@ const segmentHasBitData = (segment: Segment): boolean => (
   segment.paramsJSON.hasOwnProperty('index') && segment.paramsJSON.hasOwnProperty('value')
 )
 
-export default DeclarationIntent
+export default Intent
