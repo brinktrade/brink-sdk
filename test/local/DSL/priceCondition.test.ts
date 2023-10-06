@@ -26,7 +26,7 @@ describe('priceCondition', function () {
     const twap = new UniV3Twap({
       tokenA: new Token({address: USDC_ADDRESS}),
       tokenB: new Token({address: DAI_ADDRESS}),
-      interval: BigInt(1000),
+      interval: BigInt(60),
     })
 
     expect(segments[0].params.oracle).to.deep.equal({ address: twap.address, params: twap.params })
@@ -47,7 +47,7 @@ describe('priceCondition', function () {
     const twap = new UniV3Twap({
       tokenA: new Token({address: USDC_ADDRESS}),
       tokenB: new Token({address: DAI_ADDRESS}),
-      interval: BigInt(1000),
+      interval: BigInt(60),
     })
 
     expect(segments[0].params.oracle).to.deep.equal({ address: twap.address, params: twap.params })

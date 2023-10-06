@@ -2,9 +2,10 @@ import { SegmentArgs, BigIntish, PriceOperator, PriceConditionArgs } from '@brin
 import { FeeAmount } from '@uniswap/v3-sdk'
 import Token from '../../Token'
 import { priceToTwapValue, UniV3Twap } from '../../../oracles'
+import { bigintToFeeAmount, toBigint } from '@brink-sdk/internal'
 
 
-const DEFAULT_TIME_INTERVAL = BigInt(1000)
+const DEFAULT_TIME_INTERVAL = BigInt(60)
 
 function priceCondition ({
   operator,
@@ -14,11 +15,15 @@ function priceCondition ({
   twapInterval = DEFAULT_TIME_INTERVAL,
   twapFeePool,
 }: PriceConditionArgs): SegmentArgs[] {
+  const twapFeePoolBN = twapFeePool ? toBigint(twapFeePool) : undefined
+
+  const fee = twapFeePoolBN ? bigintToFeeAmount(twapFeePoolBN) : undefined
+
   const twap = new UniV3Twap({
     tokenA: new Token(tokenA),
     tokenB: new Token(tokenB),
     interval: twapInterval,
-    fee: BigIntishToFeeAmount(twapFeePool),
+    fee: fee,
   })
 
   const oracle = {
@@ -52,18 +57,6 @@ function priceCondition ({
     default:
       throw new Error(`Operator ${operator} is not valid`)
   }
-}
-
-function BigIntishToFeeAmount(value: BigIntish | undefined): FeeAmount | undefined {
-    if (value === undefined) {
-        return undefined;
-    }
-
-    if (Object.values(FeeAmount).includes(Number(value))) {
-        return value as FeeAmount;
-    }
-
-    throw new Error('Invalid fee amount');
 }
 
 export default priceCondition

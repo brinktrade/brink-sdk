@@ -91,7 +91,7 @@ async function successfulExecuteDeclaration (this: TestContext): Promise<{
   })
 
   const usdcInput = BigInt(1450_000000)
-  const feePercent = BigInt(10000)
+  const feePercent = 5
   const feeMin = BigInt(0)
 
   // build the market swap declaration

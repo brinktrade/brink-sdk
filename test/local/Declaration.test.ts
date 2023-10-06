@@ -91,7 +91,7 @@ describe('Declarations', function () {
       tokenIn: USDC_TOKEN,
       tokenOut: WETH_TOKEN,
       tokenInAmount: BigInt(1000) * BigInt(10)**BigInt(6),
-      feePercent: BigInt(1000),
+      feePercent: 1000,
       feeMin: BigInt(0)
     })
 
@@ -133,7 +133,7 @@ describe('Declarations', function () {
         tokenIn: USDC_TOKEN,
         tokenOut: WETH_TOKEN,
         tokenInAmount: BigInt(1000) * BigInt(10)**BigInt(6),
-        feePercent: BigInt(1000),
+        feePercent: 5,
         feeMin: BigInt(0)
       })
       declaration.intents[0].segments[1] = new MarketSwapExactInput({
@@ -145,7 +145,7 @@ describe('Declarations', function () {
         tokenIn: USDC_TOKEN,
         tokenOut: WETH_TOKEN,
         tokenInAmount: BigInt(1000) * BigInt(10)**BigInt(6),
-        feePercent: BigInt(1000),
+        feePercent: 5,
         feeMin: BigInt(0)
       })
       expect(declaration.validate().valid).to.be.false
@@ -175,7 +175,7 @@ describe('Declarations', function () {
           tokenIn: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' } as TokenArgs,
           tokenOut: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' } as TokenArgs,
           tokenInAmount: BigInt(MAX_UINT256) + BigInt(1), // uint overflow
-          feePercent: BigInt(10000),
+          feePercent: 5,
           feeMin: BigInt(0)
         })
       }
@@ -196,7 +196,7 @@ describe('Declarations', function () {
           tokenIn: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' } as TokenArgs,
           tokenOut: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' } as TokenArgs,
           tokenInAmount: -BigInt(10**18),
-          feePercent: BigInt(10000),
+          feePercent: 5,
           feeMin: BigInt(0)
         })
       }

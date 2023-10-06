@@ -14,9 +14,11 @@ describe('DeclarationDefinitionArgs', function () {
       expect(declarationJSON.intents[0].segments[0].functionName).to.equal('useBit')
       expect(declarationJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
       expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[0].segments[3].functionName).to.equal('marketSwapExactInput')
       expect(declarationJSON.intents[1].segments[0].functionName).to.equal('useBit')
       expect(declarationJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
-      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[1].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[1].segments[3].functionName).to.equal('marketSwapExactInput')
     })
   })
 
@@ -28,6 +30,7 @@ describe('DeclarationDefinitionArgs', function () {
       expect(declarationJSON.intents[0].segments[0].functionName).to.equal('useBit')
       expect(declarationJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
       expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[0].segments[3].functionName).to.equal('marketSwapExactInput')
     })
   })
 
@@ -39,9 +42,11 @@ describe('DeclarationDefinitionArgs', function () {
       expect(declarationJSON.intents[0].segments[0].functionName).to.equal('useBit')
       expect(declarationJSON.intents[0].segments[1].functionName).to.equal('requireBlockNotMined')
       expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[0].segments[3].functionName).to.equal('marketSwapExactInput')
       expect(declarationJSON.intents[1].segments[0].functionName).to.equal('useBit')
       expect(declarationJSON.intents[1].segments[1].functionName).to.equal('requireBlockNotMined')
-      expect(declarationJSON.intents[0].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[1].segments[2].functionName).to.equal('requireBlockMined')
+      expect(declarationJSON.intents[1].segments[3].functionName).to.equal('marketSwapExactInput')
     })
   })
 })
@@ -63,7 +68,7 @@ const singleSegmentIntent: IntentDefinitionArgs = {
     tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
     tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     tokenInAmount: 15_000,
-    feePercent: 2.5
+    fee: 2.5
   }]
 }
 
@@ -85,7 +90,7 @@ const multiSegmentIntent: IntentDefinitionArgs[] = [
       tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
       tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
       tokenInAmount: 15_000,
-      feePercent: 2.5
+      fee: 2.5
     }]
   },
   {
@@ -105,7 +110,7 @@ const multiSegmentIntent: IntentDefinitionArgs[] = [
       tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
       tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
       tokenInAmount: 8_000,
-      feePercent: 1.7
+      fee: 1.7
     }]
   }
 ]

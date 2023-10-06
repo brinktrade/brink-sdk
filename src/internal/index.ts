@@ -33,6 +33,8 @@ export { default as priceCurveAddress } from './priceCurveAddress'
 
 export { default as sigToValidECDSA } from './sigToValidECDSA'
 
+export { default as bigintToFeeAmount } from './bigintToFeeAmount'
+
 export * from './SolidityValidation'
 
 export * from './Validation'
