@@ -35,7 +35,7 @@ function IntentDefinitionArgsToIntentArgs (intentSegment: IntentDefinitionArgs):
       params: nonceToBit({ nonce: intentSegment.replay.nonce })
     })
     } else if (intentSegment.replay.runs == 'UNTIL_CANCELLED') {
-      throw new Error('UNIL_CANCELLED not implemented')
+      throw new Error('UNTIL_CANCELLED not implemented')
       // TODO: add segment types for requireBitNotUsed
       // intentArgs.segments.push({
       //   functionName: 'requireBitNotUsed',
