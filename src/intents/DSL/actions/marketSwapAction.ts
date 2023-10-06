@@ -17,7 +17,7 @@ function marketSwapAction ({
 }: MarketSwapActionArgs): SegmentArgs[] {
   const twapFeePoolBN = twapFeePool ? toBigint(twapFeePool) : undefined
   const twapFeePoolFeeAmount = twapFeePoolBN ? bigintToFeeAmount(twapFeePoolBN) : undefined
-  const tokenInAmountBn = toBigint(tokenInAmount)
+  const tokenInAmountBN = toBigint(tokenInAmount)
 
   const tokenInArgs = toTokenArgs(tokenIn)
   const tokenOutArgs = toTokenArgs(tokenOut)
@@ -41,7 +41,7 @@ function marketSwapAction ({
       signer: owner,
       tokenIn: tokenInArgs as TokenJSON,
       tokenOut: tokenOutArgs as TokenJSON,
-      tokenInAmount: tokenInAmountBn,
+      tokenInAmount: tokenInAmountBN,
       feePercent: toBigint(fee * 10 ** 4),
       feeMin: DEFAULT_FEE_MIN,
     }
