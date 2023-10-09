@@ -9,6 +9,7 @@ import {
   declarationDefinitionArgsToIntentArgs
 } from '../internal'
 import DeclarationIntent from './Intent'
+import { intentOrArraySchema } from './DSL/schema'
 
 const { PRIMITIVES_01 } = Config
 
@@ -33,8 +34,18 @@ class Declaration {
     } else if ('intents' in inputArgs && 'segments' in (inputArgs.intents[0])) {
       declarationArgs = inputArgs as DeclarationArgs;
     } else if ('actions' in inputArgs) {
+      const { error } = intentOrArraySchema.validate(inputArgs)
+      if (error) {
+        throw new Error(error.message)
+      }
+
       declarationArgs = declarationDefinitionArgsToIntentArgs({ intents: [inputArgs as IntentDefinitionArgs] });
     } else if ( Array.isArray(inputArgs) && 'actions' in inputArgs[0]) {
+      const { error } = intentOrArraySchema.validate(inputArgs)
+      if (error) {
+        throw new Error(error.message)
+      }
+
       declarationArgs = declarationDefinitionArgsToIntentArgs({ intents: inputArgs as IntentDefinitionArgs[] });
     }
 
