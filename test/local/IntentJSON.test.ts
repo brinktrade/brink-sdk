@@ -49,6 +49,39 @@ describe('DeclarationDefinitionArgs', function () {
       expect(declarationJSON.intents[1].segments[3].functionName).to.equal('marketSwapExactInput')
     })
   })
+
+  describe('with RUNS set to UNTIL_CANCELLED', function () {
+    it('should add a segment requireBitNotUsed', async function () {
+      const singleSegmentIntent: IntentDefinitionArgs = {
+        replay: {
+          nonce: 123,
+          runs: 'UNTIL_CANCELLED'
+        },
+        expiryBlock: 21_000_000,
+        conditions: [{
+          type: 'block',
+          state: 'MINED',
+          blockNumber: 20_000_000
+        }],
+        actions: [{
+          type: 'marketSwap',
+          owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+          tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+          tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+          tokenInAmount: 15_000,
+          fee: 2.5
+        }]
+      }
+      const declaration1 = new Declaration(singleSegmentIntent)
+      const declarationJSON = await declaration1.toJSON()
+
+      let segmentFound = false
+      for (const segment of declarationJSON.intents[0].segments) {
+        if (segment.functionName === 'requireBitNotUsed') segmentFound = true
+      }
+      expect(segmentFound).to.equal(true)
+    })
+  })
 })
 
 const singleSegmentIntent: IntentDefinitionArgs = {

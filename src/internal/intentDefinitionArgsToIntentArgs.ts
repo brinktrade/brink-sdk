@@ -35,12 +35,14 @@ function IntentDefinitionArgsToIntentArgs (intentSegment: IntentDefinitionArgs):
       params: nonceToBit({ nonce: intentSegment.replay.nonce })
     })
     } else if (intentSegment.replay.runs == 'UNTIL_CANCELLED') {
-      throw new Error('UNTIL_CANCELLED not implemented')
-      // TODO: add segment types for requireBitNotUsed
-      // intentArgs.segments.push({
-      //   functionName: 'requireBitNotUsed',
-      //   params: nonceToBit({ nonce: intentSegment.replay.nonce })
-      // })
+      const bit = nonceToBit({ nonce: intentSegment.replay.nonce })
+      intentArgs.segments.push({
+        functionName: 'requireBitNotUsed',
+        params: {
+          index: bit.index.toString(),
+          value: bit.value.toString()
+        }
+      })
     } else {
       throw new Error(`Invalid value for replay.runs: ${intentSegment.replay.runs}`)
     }
