@@ -1,4 +1,5 @@
 import { TokenStandard } from "@brinkninja/types";
+import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
 
 const tokenStandards = Object.keys(TokenStandard).filter(key => isNaN(Number(key)));
@@ -50,6 +51,13 @@ export const priceConditionSchema = joi.object({
   twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
 });
 
+const conditionSchemas = {
+  interval: intervalConditionSchema,
+  block: blockConditionSchema,
+  nonce: nonceConditionSchema,
+  price: priceConditionSchema,
+};
+
 export const limitSwapActionSchema = joi.object({
   type: joi.string().valid('limitSwap').required(),
   id: joi.bigIntish().required(),
@@ -70,37 +78,16 @@ export const marketSwapActionSchema = joi.object({
   twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
 });
 
+const actionSchemas = {
+  limitSwap: limitSwapActionSchema,
+  marketSwap: marketSwapActionSchema,
+};
+
 export const intentSegmentSchema = joi.object({
   replay: replaySchema.optional(),
   expiryBlock: joi.bigIntish().optional(),
-  conditions: joi.array().items(
-    joi.alternatives().conditional('.type', {
-      switch: [{
-        is: 'interval',
-        then: intervalConditionSchema,
-      }, {
-          is: 'block',
-          then: blockConditionSchema,
-        }, {
-          is: 'nonce',
-          then: nonceConditionSchema,
-        }, {
-          is: 'price',
-          then: priceConditionSchema,
-        }]
-    })
-  ).optional(),
-  actions: joi.array().items(
-    joi.alternatives().conditional('.type', {
-      switch: [{
-        is: 'limitSwap',
-        then: limitSwapActionSchema,
-      }, {
-        is: 'marketSwap',
-        then: marketSwapActionSchema,
-      }]
-    })
-  ).required(),
+  conditions: joi.array().items(generateConditional(conditionSchemas)).optional(),
+  actions: joi.array().items(generateConditional(actionSchemas)).required(),
 });
 
 export const intentOrArraySchema = joi.alternatives().try(
@@ -108,3 +95,16 @@ export const intentOrArraySchema = joi.alternatives().try(
   joi.array().items(intentSegmentSchema)
 );
 
+
+type SchemaMap = {
+  [type: string]: Joi.ObjectSchema;
+};
+
+function generateConditional(schemaMap: SchemaMap) {
+  return joi.alternatives().conditional('.type', {
+    switch: Object.entries(schemaMap).map(([type, schema]) => ({
+      is: type,
+      then: schema,
+    }))
+  });
+}
