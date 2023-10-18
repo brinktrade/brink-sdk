@@ -2,6 +2,8 @@ import { BigNumber } from 'ethers';
 import Joi from 'joi';
 import web3Utils from 'web3-utils';
 
+const MAX_UINT256 = BigInt(2**256 - 1);
+
 export const joi = Joi
   // validates ethereum address
   .extend((joi: Joi.Root) => {
@@ -24,23 +26,29 @@ export const joi = Joi
       base: joi.alternatives().try(joi.string(), joi.number()),
       messages: {
         'bigIntish.base': '{{#value}} is not a valid bigIntish',
-        'bigIntish.min': 'min not satisfied'
+        'bigIntish.uint256': '{{#value}} should be uint256',
+        'bigIntish.min': '{{#value}} is less than the minimum allowed value of {{#minValue}}',
+        'bigIntish.max': '{{#value}} is greater than the maximum allowed value of {{#maxValue}}',
       },
       type: 'bigIntish',
       validate (value: any, helpers: any) {
         if (!isBigIntish(value)) {
           return { errors: helpers.error('bigIntish.base'), value, };
         }
+
+        if (BigInt(value) > MAX_UINT256) {
+          return { errors: helpers.error('bigIntish.uint256'), value, };
+        }
       },
       rules: {
         min: {
-          method(q: any): any {
+          method(minValue: any): any {
             // @ts-ignore: Unreachable code error
-            return this.$_addRule({ name: 'min', args: { q } });
+            return this.$_addRule({ name: 'min', args: { minValue } });
           },
           args: [
             {
-              name: 'q',
+              name: 'minValue',
               ref: true,
               // should validate that q is a bigIntish. should convert to big int and compare to the arg value
               assert: (value: any) => isBigIntish(value),
@@ -48,38 +56,38 @@ export const joi = Joi
             }
           ],
           validate (value: any, helpers: any, args: any, options: any) {
-            if (BigInt(value) < BigInt(args.q)) {
-              return helpers.error('bigIntish.min', { q: args.q });
+            if (BigInt(value) < BigInt(args.minValue)) {
+              return helpers.error('bigIntish.min', { minValue: args.minValue });
             }
 
             return value
           }
-        }
+        },
+        max: {
+          method(maxValue: any): any {
+            // @ts-ignore: Unreachable code error
+            return this.$_addRule({ name: 'max', args: { maxValue } });
+          },
+          args: [
+            {
+              name: 'maxValue',
+              ref: true,
+              // should validate that q is a bigIntish. should convert to big int and compare to the arg value
+              assert: (value: any) => isBigIntish(value),
+              message: 'must be a number or string representing an integer'
+            }
+          ],
+          validate (value: any, helpers: any, args: any, options: any) {
+            if (BigInt(value) > BigInt(args.maxValue)) {
+              return helpers.error('bigIntish.max', { maxValue: args.maxValue });
+            }
+
+            return value
+          }
+        },
       }
     };
   })
-
-
-  // // validates positive bigintish
-  // .extend((joi: Joi.Root) => {
-  //   return {
-  //     base: joi.alternatives().try(joi.string(), joi.number()),
-  //     messages: {
-  //       'bigIntishPositive.base': '{{#value}} is not a valid bigIntish',
-  //       'bigIntishPositive.greaterThanZero': '{{#value}} should be greater than 0',
-  //     },
-  //     type: 'bigIntishPositive',
-  //     validate (value: any, helpers: any) {
-  //       if (!isBigIntish(value)) {
-  //         return { errors: helpers.error('bigIntishPositive.base'), value, };
-  //       }
-  //       const bigValue = BigInt(value);
-  //       if (bigValue <= 0) {
-  //         return { errors: helpers.error('bigIntishPositive.greaterThanZero'), value, };
-  //       }
-  //     }
-  //   };
-  // })
 
 function isBigIntish(value: any) {
   try {

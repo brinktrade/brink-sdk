@@ -2,6 +2,7 @@ import { TokenStandard } from "@brinkninja/types";
 import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
 
+// Object.keys returns keys and values that's why we're filtering out the values using isNaN
 const tokenStandards = Object.keys(TokenStandard).filter(key => isNaN(Number(key)));
 
 export const TokenArgsSchema = joi.alternatives().try(

@@ -59,6 +59,7 @@ describe('Brink DSL Schema Tests', () => {
         price: 1400
       };
       const result = priceConditionSchema.validate(input);
+      console.log("***************", result.error);
       expect(result.error).to.be.undefined;
     });
   });
@@ -80,7 +81,7 @@ describe('Brink DSL Schema Tests', () => {
       const input = {
         type: 'interval',
         id: '12046233276741889253',
-        interval: 7200,
+        interval: 10000,
         startBlock: 19_000_000,
         maxIntervals: 7
       }
