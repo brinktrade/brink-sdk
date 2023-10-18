@@ -1,10 +1,13 @@
+import { TokenStandard } from "@brinkninja/types";
 import { joi } from "../../internal/joiExtended";
+
+const tokenStandards = Object.keys(TokenStandard).filter(key => isNaN(Number(key)));
 
 export const TokenArgsSchema = joi.alternatives().try(
   joi.ethereumAddress(),
   joi.object({
     address: joi.ethereumAddress().required(),
-    standard: joi.string().valid('ERC20', 'ERC721', 'ERC1155', 'ETH').optional(),
+    standard: joi.string().valid(...tokenStandards).optional(),
     idsMerkleRoot: joi.string().optional(),
     id: joi.bigIntish().optional(),
     disallowFlagged: joi.boolean().optional(),
