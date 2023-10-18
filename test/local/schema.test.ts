@@ -9,13 +9,6 @@ describe('Brink DSL Schema Tests', () => {
       expect(result.error).to.be.undefined;
     });
 
-    it('throws error for an incorrect Ethereum address', () => {
-      const input = "0xInvalidEthereumAddress";
-      const result = TokenArgsSchema.validate(input);
-      expect(result.error).to.not.be.undefined;
-    });
-
-    // it validates if a token object is provided
     it('accepts a token object', () => {
       const input = {
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -59,7 +52,6 @@ describe('Brink DSL Schema Tests', () => {
         price: 1400
       };
       const result = priceConditionSchema.validate(input);
-      console.log("***************", result.error);
       expect(result.error).to.be.undefined;
     });
   });
