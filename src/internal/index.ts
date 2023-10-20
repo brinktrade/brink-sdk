@@ -40,3 +40,5 @@ export * from './SolidityValidation'
 export * from './Validation'
 
 export { default as verifyParams } from './verifyParams'
+
+export * from './joiExtended'
