@@ -14,12 +14,15 @@ describe('ethereumAddress', () => {
     const input = "0x000000";
     const { error } = schema.validate(input);
     expect(error).to.exist;
+    expect(JSON.stringify(error)).to.include('ethereumAddress.base');
   });
 
   it('fails for a non-string Ethereum address', () => {
     const input = 12345678;
     const { error } = schema.validate(input);
     expect(error).to.exist;
+    console.log(error)
+    expect(JSON.stringify(error)).to.include('must be a string');
   });
 });
 
@@ -35,25 +38,24 @@ describe('bigIntish', () => {
 
     for (let input of inputs) {
       const { error } = schema.validate(input);
-      if (error) console.log("errrrrr", error);
       expect(error).to.be.undefined;
     }
   });
 
-  it('fails for incorrect bigIntish', () => {
-    const inputs = ["abcd", {}, [], null];
+  const invalidCases = [
+    { input: "abcd", matcher: 'bigIntish.base' },
+    { input: {}, matcher: 'must be one of [string, number]' },
+    { input: [], matcher: 'must be one of [string, number]' },
+    { input: null, matcher: 'must be one of [string, number]' },
+  ]
 
-    for (let input of inputs) {
+  invalidCases.forEach(({ input, matcher }) => {
+    it(`fails for incorrect bigIntish: ${input}`, () => {
       const { error } = schema.validate(input);
-      // console log if error is undefined
       expect(error).to.exist;
-    }
-  });
-
-  it('fails for bigIntish exceeding max uint256', () => {
-    const input = BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF") + BigInt(1);
-    const { error } = schema.validate(input);
-    expect(error).to.exist;
+      console.log(error)
+      expect(JSON.stringify(error)).to.include(matcher);
+    });
   });
 
   it('passes for bigIntish with min value', () => {
@@ -94,7 +96,7 @@ describe('uint', () => {
     const inputs = [
       "0",
       "1234567890",
-      "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE", // One less than 2^256
+      (BigInt(2**256)-1n).toString(),
     ];
 
     for (let input of inputs) {
@@ -103,18 +105,19 @@ describe('uint', () => {
     }
   });
 
-  it('fails for incorrect uint without size specified', () => {
-    const schema = joi.uint();
-    const inputs = [
-      "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" + "1", // One more than 2^256
-      "abcd", // Not a number
-      "-1",   // Negative number
-    ];
+  const invalidCases = [
+    { input: (BigInt(2**256)+1n).toString(), errorKey: 'uint.range' },
+    { input: "abcd", errorKey: 'bigIntish.base' },
+    { input: -1, errorKey: 'uint.range' },
+  ]
 
-    for (let input of inputs) {
+  invalidCases.forEach(({ input, errorKey }) => {
+    it(`fails for incorrect uint without size specified: ${input}`, () => {
+      const schema = joi.uint();
       const { error } = schema.validate(input);
       expect(error).to.exist;
-    }
+      expect(JSON.stringify(error)).to.contain(errorKey);
+    });
   });
 
   it('validates uint with size specified', () => {
@@ -136,5 +139,6 @@ describe('uint', () => {
     const input = "4294967296"; // One more than 2^32
     const { error } = schema.validate(input);
     expect(error).to.exist;
+    expect(JSON.stringify(error)).to.contain("uint.range");
   });
 });

@@ -1,4 +1,4 @@
-import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard, TwapFeePool } from "@brinkninja/types";
+import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types";
 import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
 
@@ -46,8 +46,7 @@ export const nonceConditionSchema = joi.object({
   state: joi.string().valid(...nonceStates).required(),
 });
 
-const priceOperators = Object.keys(PriceOperator).filter(key => isNaN(Number(key)));
-const twapFeePools = Object.keys(TwapFeePool).filter(key => isNaN(Number(key)));
+const priceOperators = Object.values(PriceOperator)
 
 export const priceConditionSchema = joi.object({
   type: joi.string().valid('price').required(),
@@ -55,8 +54,8 @@ export const priceConditionSchema = joi.object({
   operator: joi.string().valid(...priceOperators).required(),
   tokenA: TokenArgsSchema.required(),
   tokenB: TokenArgsSchema.required(),
-  twapInterval: joi.uint().optional(),
-  twapFeePool: joi.number().integer().valid(...twapFeePools).optional(),
+  twapInterval: joi.uint(32).optional(),
+  twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
 });
 
 const conditionSchemas = {
@@ -68,7 +67,7 @@ const conditionSchemas = {
 
 export const limitSwapActionSchema = joi.object({
   type: joi.string().valid('limitSwap').required(),
-  id: joi.bigIntish().required(),
+  id: joi.uint(64).required(),
   tokenIn: TokenArgsSchema.required(),
   tokenOut: TokenArgsSchema.required(),
   tokenInAmount: joi.uint().required(),
@@ -82,8 +81,8 @@ export const marketSwapActionSchema = joi.object({
   tokenOut: TokenArgsSchema.required(),
   tokenInAmount: joi.uint().required(),
   fee: joi.number().min(0).max(100).required(),
-  twapInterval: joi.uint().optional(),
-  twapFeePool: joi.number().integer().valid(twapFeePools).optional(),
+  twapInterval: joi.uint(32).optional(),
+  twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
 });
 
 const actionSchemas = {

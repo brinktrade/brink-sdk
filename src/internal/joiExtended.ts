@@ -27,7 +27,6 @@ export const joi = Joi
       base: joi.alternatives().try(joi.string(), joi.number()),
       messages: {
         'bigIntish.base': '{{#value}} is not a valid bigIntish',
-        'bigIntish.uint256': '{{#value}} should be uint256',
         'bigIntish.min': '{{#value}} is less than the minimum allowed value of {{#minValue}}',
         'bigIntish.max': '{{#value}} is greater than the maximum allowed value of {{#maxValue}}',
       },

@@ -11,7 +11,7 @@ import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 class SignedDeclaration {
   chainId: number
   signer: string
-  signatureType: SignatureType
+  signatureType: `${SignatureType}`
   signature: string
   declaration: Declaration
   declarationContract: string
