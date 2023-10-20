@@ -21,7 +21,6 @@ describe('ethereumAddress', () => {
     const input = 12345678;
     const { error } = schema.validate(input);
     expect(error).to.exist;
-    console.log(error)
     expect(JSON.stringify(error)).to.include('must be a string');
   });
 });
@@ -53,7 +52,6 @@ describe('bigIntish', () => {
     it(`fails for incorrect bigIntish: ${input}`, () => {
       const { error } = schema.validate(input);
       expect(error).to.exist;
-      console.log(error)
       expect(JSON.stringify(error)).to.include(matcher);
     });
   });
