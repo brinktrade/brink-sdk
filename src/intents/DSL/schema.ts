@@ -1,8 +1,7 @@
-import { TokenStandard } from "@brinkninja/types";
+import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard, TwapFeePool } from "@brinkninja/types";
 import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
 
-// Object.keys returns keys and values that's why we're filtering out the values using isNaN
 const tokenStandards = Object.keys(TokenStandard).filter(key => isNaN(Number(key)));
 
 export const TokenArgsSchema = joi.alternatives().try(
@@ -16,10 +15,11 @@ export const TokenArgsSchema = joi.alternatives().try(
   })
 );
 
+const runsTypes = Object.keys(RunsType).filter(key => isNaN(Number(key)));
 
 export const replaySchema = joi.object({
   nonce: joi.bigIntish().min(1).required(),
-  runs: joi.string().valid('ONCE', 'UNTIL_CANCELLED').required(),
+  runs: joi.string().valid(...runsTypes).required(),
 });
 
 export const intervalConditionSchema = joi.object({
@@ -30,26 +30,33 @@ export const intervalConditionSchema = joi.object({
   maxIntervals: joi.uint().optional(),
 });
 
+const blockStates = Object.keys(BlockState).filter(key => isNaN(Number(key)));
+
 export const blockConditionSchema = joi.object({
   type: joi.string().valid('block').required(),
   blockNumber: joi.uint().required(),
-  state: joi.string().valid('MINED', 'NOT_MINED').required()
+  state: joi.string().valid(...blockStates).required()
 });
+
+const nonceStates = Object.keys(NonceState).filter(key => isNaN(Number(key)));
 
 export const nonceConditionSchema = joi.object({
   type: joi.string().valid('nonce').required(),
   nonce: joi.bigIntish().min(1).required(),
-  state: joi.string().valid('USED', 'NOT_USED').required(),
+  state: joi.string().valid(...nonceStates).required(),
 });
+
+const priceOperators = Object.keys(PriceOperator).filter(key => isNaN(Number(key)));
+const twapFeePools = Object.keys(TwapFeePool).filter(key => isNaN(Number(key)));
 
 export const priceConditionSchema = joi.object({
   type: joi.string().valid('price').required(),
   price: joi.uint().required(),
-  operator: joi.string().valid('lt', 'gt').required(),
+  operator: joi.string().valid(...priceOperators).required(),
   tokenA: TokenArgsSchema.required(),
   tokenB: TokenArgsSchema.required(),
   twapInterval: joi.uint().optional(),
-  twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
+  twapFeePool: joi.number().integer().valid(...twapFeePools).optional(),
 });
 
 const conditionSchemas = {
@@ -76,7 +83,7 @@ export const marketSwapActionSchema = joi.object({
   tokenInAmount: joi.uint().required(),
   fee: joi.number().min(0).max(100).required(),
   twapInterval: joi.uint().optional(),
-  twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
+  twapFeePool: joi.number().integer().valid(twapFeePools).optional(),
 });
 
 const actionSchemas = {
