@@ -24,10 +24,10 @@ export const replaySchema = joi.object({
 
 export const intervalConditionSchema = joi.object({
   type: joi.string().valid('interval').required(),
-  id: joi.bigIntish().required(),
-  interval: joi.uint().required(),
-  startBlock: joi.uint().optional(),
-  maxIntervals: joi.uint().optional(),
+  id: joi.uint(64).required(),
+  interval: joi.uint(128).required(),
+  startBlock: joi.uint(128).optional(),
+  maxIntervals: joi.uint(16).optional(),
 });
 
 const blockStates = Object.keys(BlockState).filter(key => isNaN(Number(key)));
