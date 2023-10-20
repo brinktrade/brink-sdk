@@ -10,6 +10,7 @@ import {
 } from '../internal'
 import DeclarationIntent from './Intent'
 import { intentOrArraySchema } from './DSL/schema'
+import { bitToNonce } from '..'
 
 const { PRIMITIVES_01 } = Config
 
@@ -99,6 +100,10 @@ class Declaration {
       })
     })
     return bits
+  }
+
+  nonces ():{ bit: Bit, nonce: BigInt }[] {
+    return this.bits().map(bit => ({ bit, nonce: bitToNonce({ bit })}))
   }
 
   validate (): ValidationResult {
