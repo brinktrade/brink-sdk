@@ -1,6 +1,4 @@
-import { BigNumber } from 'ethers';
 import Joi from 'joi';
-import { isNumber } from 'lodash';
 import web3Utils from 'web3-utils';
 
 const DEFAULT_UINT_SIZE = 256;
