@@ -1,8 +1,9 @@
 import { BigNumber } from 'ethers';
 import Joi from 'joi';
+import { isNumber } from 'lodash';
 import web3Utils from 'web3-utils';
 
-const MAX_UINT256 = BigInt(2**256 - 1);
+const DEFAULT_UINT_SIZE = 256;
 
 export const joi = Joi
   // validates ethereum address
@@ -34,10 +35,6 @@ export const joi = Joi
       validate (value: any, helpers: any) {
         if (!isBigIntish(value)) {
           return { errors: helpers.error('bigIntish.base'), value, };
-        }
-
-        if (BigInt(value) > MAX_UINT256) {
-          return { errors: helpers.error('bigIntish.uint256'), value, };
         }
       },
       rules: {
@@ -85,6 +82,49 @@ export const joi = Joi
             return value
           }
         },
+      }
+    };
+  })
+
+  .extend((joi: any) => {
+    return {
+      base: joi.bigIntish(),
+      messages: {
+        'uint.base': '{{#value}} is not a valid uint',
+        'uint.range': '{{#value}} is out of the range for uint{{#size}}',
+      },
+      type: 'uint',
+      // this is necessary to go through a rule because top level extensions can't parse arguments in the validate function.
+      args(base: any, size: any) {
+        // @ts-ignore
+        return base.size(size);
+      },
+      validate(value: any, helpers: any, args: any) {
+        const size: number = helpers.schema.$_getFlag("size") || DEFAULT_UINT_SIZE;
+        const maxValue = BigInt(2**size - 1);
+
+        const baseSchema = joi.bigIntish().min(0).max(maxValue.toString());
+        const { error } = baseSchema.validate(value);
+
+        if (error) {
+          return { errors: helpers.error('uint.range', { size }), value, };
+        }
+      },
+      rules: {
+        size: {
+          method(size: any): any {
+            // @ts-ignore: Unreachable code error
+            return this.$_setFlag("size", size);
+          },
+          args: [
+            {
+              name: 'sizeValue',
+              ref: true,
+              assert: (size: any) => Number.isInteger(size) && [8, 16, 32, 64, 128, 256].includes(size),
+              message: 'must be a number or string representing an integer'
+            }
+          ]
+        }
       }
     };
   })

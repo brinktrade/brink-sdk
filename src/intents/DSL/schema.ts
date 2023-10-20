@@ -25,14 +25,14 @@ export const replaySchema = joi.object({
 export const intervalConditionSchema = joi.object({
   type: joi.string().valid('interval').required(),
   id: joi.bigIntish().required(),
-  interval: joi.bigIntish().required(),
-  startBlock: joi.bigIntish().optional(),
-  maxIntervals: joi.bigIntish().optional(),
+  interval: joi.uint().required(),
+  startBlock: joi.uint().optional(),
+  maxIntervals: joi.uint().optional(),
 });
 
 export const blockConditionSchema = joi.object({
   type: joi.string().valid('block').required(),
-  blockNumber: joi.bigIntish().required(),
+  blockNumber: joi.uint().required(),
   state: joi.string().valid('MINED', 'NOT_MINED').required()
 });
 
@@ -44,11 +44,11 @@ export const nonceConditionSchema = joi.object({
 
 export const priceConditionSchema = joi.object({
   type: joi.string().valid('price').required(),
-  price: joi.bigIntish().min(0).required(),
+  price: joi.uint().required(),
   operator: joi.string().valid('lt', 'gt').required(),
   tokenA: TokenArgsSchema.required(),
   tokenB: TokenArgsSchema.required(),
-  twapInterval: joi.bigIntish().min(0).optional(),
+  twapInterval: joi.uint().optional(),
   twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
 });
 
@@ -64,8 +64,8 @@ export const limitSwapActionSchema = joi.object({
   id: joi.bigIntish().required(),
   tokenIn: TokenArgsSchema.required(),
   tokenOut: TokenArgsSchema.required(),
-  tokenInAmount: joi.bigIntish().min(0).required(),
-  tokenOutAmount: joi.bigIntish().min(0).required(),
+  tokenInAmount: joi.uint().required(),
+  tokenOutAmount: joi.uint().required(),
 });
 
 export const marketSwapActionSchema = joi.object({
@@ -73,9 +73,9 @@ export const marketSwapActionSchema = joi.object({
   owner: joi.ethereumAddress().required(),
   tokenIn: TokenArgsSchema.required(),
   tokenOut: TokenArgsSchema.required(),
-  tokenInAmount: joi.bigIntish().min(0).required(),
+  tokenInAmount: joi.uint().required(),
   fee: joi.number().min(0).max(100).required(),
-  twapInterval: joi.bigIntish().min(0).optional(),
+  twapInterval: joi.uint().optional(),
   twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
 });
 
@@ -86,7 +86,7 @@ const actionSchemas = {
 
 export const intentSegmentSchema = joi.object({
   replay: replaySchema.optional(),
-  expiryBlock: joi.bigIntish().optional(),
+  expiryBlock: joi.uint().optional(),
   conditions: joi.array().items(generateConditional(conditionSchemas)).optional(),
   actions: joi.array().items(generateConditional(actionSchemas)).required(),
 });

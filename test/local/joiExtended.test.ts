@@ -87,3 +87,54 @@ describe('bigIntish', () => {
     }
   });
 });
+
+describe('uint', () => {
+  it('validates correct uint without size specified', () => {
+    const schema = joi.uint();
+    const inputs = [
+      "0",
+      "1234567890",
+      "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE", // One less than 2^256
+    ];
+
+    for (let input of inputs) {
+      const { error } = schema.validate(input);
+      expect(error).to.be.undefined;
+    }
+  });
+
+  it('fails for incorrect uint without size specified', () => {
+    const schema = joi.uint();
+    const inputs = [
+      "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" + "1", // One more than 2^256
+      "abcd", // Not a number
+      "-1",   // Negative number
+    ];
+
+    for (let input of inputs) {
+      const { error } = schema.validate(input);
+      expect(error).to.exist;
+    }
+  });
+
+  it('validates uint with size specified', () => {
+    const schema = joi.uint(32); // 2^32 = 4294967296, so max valid value = 4294967295
+    const inputs = [
+      "0",
+      "1234567890",
+      "4294967295"
+    ];
+
+    for (let input of inputs) {
+      const { error } = schema.validate(input);
+      expect(error).to.be.undefined;
+    }
+  });
+
+  it('fails for uint exceeding size specified', () => {
+    const schema = joi.uint(32);
+    const input = "4294967296"; // One more than 2^32
+    const { error } = schema.validate(input);
+    expect(error).to.exist;
+  });
+});
