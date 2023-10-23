@@ -12,9 +12,14 @@ import {
 import Segment from './Segments/Segment'
 import InputTokenSegment from './Segments/InputTokenSegment'
 import { createSegment, invalidResult, validResult, groupAndSumTokenAmounts, bitJSONToBit } from '../internal'
+import { bitToNonce } from '..'
 
 export type IntentConstructorArgs = {
   segments: SegmentJSON[]
+}
+export interface BitNoncePair {
+  bit: Bit
+  nonce: BigInt
 }
 
 class Intent {
@@ -65,6 +70,10 @@ class Intent {
       }
     })
     return bits
+  }
+
+  nonces (): BitNoncePair[] {    
+    return this.bits().map(bit => ({ bit, nonce: bitToNonce({ bit })}))
   }
 
   async toJSON (): Promise<IntentJSON> {
