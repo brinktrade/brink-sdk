@@ -4,16 +4,23 @@ import { joi } from "../../internal/joiExtended";
 
 const tokenStandards = Object.keys(TokenStandard).filter(key => isNaN(Number(key)));
 
-export const TokenArgsSchema = joi.alternatives().try(
+const tokenArgs = {
+  address: joi.ethereumAddress().required(),
+  standard: joi.string().valid(...tokenStandards).optional(),
+  idsMerkleRoot: joi.string().optional(),
+  id: joi.bigIntish().optional(),
+  disallowFlagged: joi.boolean().optional(),
+}
+
+export const TokenSchema = joi.alternatives().try(
   joi.ethereumAddress(),
-  joi.object({
-    address: joi.ethereumAddress().required(),
-    standard: joi.string().valid(...tokenStandards).optional(),
-    idsMerkleRoot: joi.string().optional(),
-    id: joi.bigIntish().optional(),
-    disallowFlagged: joi.boolean().optional(),
-  })
+  joi.object(tokenArgs)
 );
+
+const tokenWithDecimalsArgs = {
+  ...tokenArgs,
+  decimals: joi.uint().required()
+}
 
 const runsTypes = Object.keys(RunsType).filter(key => isNaN(Number(key)));
 
@@ -52,8 +59,8 @@ export const priceConditionSchema = joi.object({
   type: joi.string().valid('price').required(),
   price: joi.uint().required(),
   operator: joi.string().valid(...priceOperators).required(),
-  tokenA: TokenArgsSchema.required(),
-  tokenB: TokenArgsSchema.required(),
+  tokenA: joi.object(tokenWithDecimalsArgs).required(),
+  tokenB: joi.object(tokenWithDecimalsArgs).required(),
   twapInterval: joi.uint(32).optional(),
   twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
 });
@@ -68,8 +75,8 @@ const conditionSchemas = {
 export const limitSwapActionSchema = joi.object({
   type: joi.string().valid('limitSwap').required(),
   id: joi.uint(64).required(),
-  tokenIn: TokenArgsSchema.required(),
-  tokenOut: TokenArgsSchema.required(),
+  tokenIn: TokenSchema.required(),
+  tokenOut: TokenSchema.required(),
   tokenInAmount: joi.uint().required(),
   tokenOutAmount: joi.uint().required(),
 });
@@ -77,8 +84,8 @@ export const limitSwapActionSchema = joi.object({
 export const marketSwapActionSchema = joi.object({
   type: joi.string().valid('marketSwap').required(),
   owner: joi.ethereumAddress().required(),
-  tokenIn: TokenArgsSchema.required(),
-  tokenOut: TokenArgsSchema.required(),
+  tokenIn: TokenSchema.required(),
+  tokenOut: TokenSchema.required(),
   tokenInAmount: joi.uint().required(),
   fee: joi.number().min(0).max(100).required(),
   twapInterval: joi.uint(32).optional(),
