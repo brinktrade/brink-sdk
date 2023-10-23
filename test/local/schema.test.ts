@@ -1,11 +1,11 @@
-import { intentOrArraySchema, intentSegmentSchema, intervalConditionSchema, limitSwapActionSchema, marketSwapActionSchema, nonceConditionSchema, priceConditionSchema, replaySchema, TokenArgsSchema } from "@brink-sdk/intents/DSL/schema";
+import { intentOrArraySchema, intentSegmentSchema, intervalConditionSchema, limitSwapActionSchema, marketSwapActionSchema, nonceConditionSchema, priceConditionSchema, replaySchema, TokenSchema } from "@brink-sdk/intents/DSL/schema";
 import { expect } from 'chai';
 
 describe('Brink DSL Schema Tests', () => {
-  describe('TokenArgsSchema', () => {
+  describe('TokenSchema', () => {
     it('validates a correct Ethereum address', () => {
       const input = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-      const result = TokenArgsSchema.validate(input);
+      const result = TokenSchema.validate(input);
       expect(result.error).to.be.undefined;
     });
 
@@ -17,7 +17,7 @@ describe('Brink DSL Schema Tests', () => {
         id: 1,
         disallowFlagged: true
       };
-      const result = TokenArgsSchema.validate(input);
+      const result = TokenSchema.validate(input);
       expect(result.error).to.be.undefined;
     });
   });
@@ -47,12 +47,33 @@ describe('Brink DSL Schema Tests', () => {
       const input = {
         type: 'price',
         operator: 'lt',
-        tokenA: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-        tokenB: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+        tokenA: {
+          address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+          decimals: 18,
+        },
+        tokenB: {
+          address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+          decimals: 18,
+
+        },
         price: 1400
       };
       const result = priceConditionSchema.validate(input);
       expect(result.error).to.be.undefined;
+    });
+
+    it('throws an error when passing an address', () => {
+      const input = {
+        type: 'price',
+        operator: 'lt',
+        tokenA: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+        tokenB: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+        price: 1400
+      };
+      const { error } = priceConditionSchema.validate(input);
+
+      expect(error).to.exist;
+      expect(JSON.stringify(error)).to.include('must be of type object');
     });
   });
 
@@ -78,7 +99,6 @@ describe('Brink DSL Schema Tests', () => {
         maxIntervals: 7
       }
       const result = intervalConditionSchema.validate(input);
-      console.log(result.error)
       expect(result.error).to.be.undefined;
     });
   });
@@ -124,8 +144,15 @@ describe('Brink DSL Schema Tests', () => {
         conditions: [{
           type: 'price',
           operator: 'lt',
-          tokenA: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
-          tokenB: '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
+          tokenA: {
+            address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+            decimals: 18,
+          },
+          tokenB: {
+            address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+            decimals: 18,
+
+          },
           price: 1400.00
         }],
         actions: [{
@@ -137,8 +164,9 @@ describe('Brink DSL Schema Tests', () => {
           owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A'
         }]
       };
-      const result = intentSegmentSchema.validate(input);
-      expect(result.error).to.be.undefined;
+      const { error } = intentSegmentSchema.validate(input);
+
+      expect(error).to.be.undefined;
     });
   });
 
