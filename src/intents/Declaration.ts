@@ -102,10 +102,10 @@ class Declaration {
     return bits
   }
 
-  nonces (): BitNoncePair[] {
+  bitNoncePairs (): BitNoncePair[] {
     const bitNoncePairs: BitNoncePair[] = []
     this.intents.forEach(intent => {
-      intent.nonces().forEach((pair) => {
+      intent.bitNoncePairs().forEach((pair) => {
         if(!bitNoncePairs.find(existingPair => existingPair.nonce === pair.nonce)) {
           bitNoncePairs.push(pair)
         }

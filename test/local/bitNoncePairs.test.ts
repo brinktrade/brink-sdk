@@ -8,10 +8,10 @@ import {
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
-describe('Intent.nonces()', function () {
+describe('Intent.bitNoncePairs()', function () {
   it('should return bits and nonce pair for declaration, deduplicated', async function () {
     const declaration = new Declaration(declarationWithBits)
-    const nonces = declaration.intents[1].nonces()
+    const nonces = declaration.intents[1].bitNoncePairs()
     expect(nonces.length).to.equal(1)
     expect(nonces[0].bit.index).to.equal(1n)
     expect(nonces[0].bit.value).to.equal(1n)
@@ -22,7 +22,7 @@ describe('Intent.nonces()', function () {
 describe('Declaration.nonces()', function () {
   it('should return bits and nonce for declaration, deduplicated', async function () {
     const declaration = new Declaration(declarationWithBits)
-    const nonces = declaration.nonces()
+    const nonces = declaration.bitNoncePairs()
     expect(nonces.length).to.equal(2)
     expect(nonces[0].bit.index).to.equal(0n)
     expect(nonces[0].bit.value).to.equal(1n)
@@ -34,13 +34,13 @@ describe('Declaration.nonces()', function () {
 
   it('should return empty array when declaration has no bits', async function () {
     const declaration = new Declaration(declarationWithoutBits)
-    const nonces = declaration.nonces()
+    const nonces = declaration.bitNoncePairs()
     expect(nonces.length).to.equal(0)
   })
 
   it('should return bits and nonce for declaration, deduplicated', async function () {
     const declaration = new Declaration(declarationWithMixedBits)
-    const nonces = declaration.nonces()
+    const nonces = declaration.bitNoncePairs()
     expect(nonces.length).to.equal(2)
     expect(nonces[0].bit.index).to.equal(0n)
     expect(nonces[0].bit.value).to.equal(1n)

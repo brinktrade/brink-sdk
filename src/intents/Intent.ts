@@ -72,7 +72,7 @@ class Intent {
     return bits
   }
 
-  nonces (): BitNoncePair[] {    
+  bitNoncePairs (): BitNoncePair[] {    
     return this.bits().map(bit => ({ bit, nonce: bitToNonce({ bit })}))
   }
 
