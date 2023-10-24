@@ -30,6 +30,13 @@ class Declaration {
     let declarationArgs: DeclarationArgs = { intents: [] }
 
     if ('intents' in inputArgs && 'actions' in inputArgs?.intents[0]) {
+      inputArgs.intents.forEach(intentInput => {
+        const { error } = intentOrArraySchema.validate(intentInput)
+        if (error) {
+          throw new Error(error.message)
+        }
+      });
+
       declarationArgs = declarationDefinitionArgsToIntentArgs(inputArgs as DeclarationDefinitionArgs);
     } else if ('intents' in inputArgs && 'segments' in (inputArgs.intents[0])) {
       declarationArgs = inputArgs as DeclarationArgs;
