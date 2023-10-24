@@ -1,6 +1,6 @@
 {
   "name": "@brinkninja/sdk",
-  "version": "5.0.0-beta.35",
+  "version": "5.0.0-beta.36",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
     "@openzeppelin/contracts": "4.3.3",
