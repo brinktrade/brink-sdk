@@ -1,6 +1,6 @@
 import Config from '../Config'
 import { DeclarationArgs, DeclarationJSON, ValidationResult, TokenAmount, Bit, DeclarationDefinitionArgs, IntentDefinitionArgs } from '@brinkninja/types'
-import Intent from './Intent'
+import Intent, { BitNoncePair } from './Intent'
 import {
   EthereumJsVm as evm,
   invalidResult,
@@ -10,6 +10,7 @@ import {
 } from '../internal'
 import DeclarationIntent from './Intent'
 import { intentOrArraySchema } from './DSL/schema'
+import { bitToNonce } from '..'
 
 const { PRIMITIVES_01 } = Config
 
@@ -106,6 +107,18 @@ class Declaration {
       })
     })
     return bits
+  }
+
+  bitNoncePairs (): BitNoncePair[] {
+    const bitNoncePairs: BitNoncePair[] = []
+    this.intents.forEach(intent => {
+      intent.bitNoncePairs().forEach((pair) => {
+        if(!bitNoncePairs.find(existingPair => existingPair.nonce === pair.nonce)) {
+          bitNoncePairs.push(pair)
+        }
+      })
+    })
+    return bitNoncePairs
   }
 
   validate (): ValidationResult {
