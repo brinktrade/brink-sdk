@@ -108,6 +108,7 @@ describe('Brink DSL Schema Tests', () => {
       const input = {
         type: 'limitSwap',
         id: 123456789,
+        owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
         tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
         tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
         tokenInAmount: '7500000000',
@@ -184,6 +185,7 @@ describe('Brink DSL Schema Tests', () => {
             tokenOut: '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
             tokenInAmount: '1000000000000000000',
             tokenOutAmount: '2200000000000000000000',
+            owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
             id: "12345"
           }]
         },
@@ -198,6 +200,7 @@ describe('Brink DSL Schema Tests', () => {
             tokenOut: '0x6B175474E89094C44Da98b954EedeAC495271d0F', //DAI
             tokenInAmount: '1000000000000000000',
             tokenOutAmount: '40000000000000000000000',
+            owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
             id: "123456"
           }]
         }
