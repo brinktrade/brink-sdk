@@ -1,3 +1,4 @@
+import { padLeft } from 'web3-utils'
 import { convertToX96HexPrice } from '@brink-sdk/internal';
 import { expect } from 'chai';
 import { limitSwapAction } from '../../../src'; // Assuming your implementation is in this path
@@ -22,7 +23,7 @@ describe('limitSwapAction', function () {
     expect(primitives[0].params.tokenOut).to.deep.include({ address: WETH_ADDRESS});
     expect(primitives[0].params.tokenInAmount).to.equal(1000000);
     const priceCurve = primitives[0].params.priceCurve as any;
-    const expectedPrice = convertToX96HexPrice(1000000n, 1n);
+    const expectedPrice = padLeft(convertToX96HexPrice(1000000n, 1n), 64)
     expect(priceCurve.params).to.equal(expectedPrice);
 
     const fillStateParams = primitives[0].params.fillStateParams as any;
