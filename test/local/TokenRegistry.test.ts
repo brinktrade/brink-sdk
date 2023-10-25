@@ -8,20 +8,20 @@ describe('TokenRegistry', () => {
   });
 
   it('retrieves token details when a symbol is provided', () => {
-    const result = tokenRegistry.get("AAVE");
+    const result = tokenRegistry.get("AAVE", 2);
     expect(result.address).to.equal("0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9");
     expect(result.decimals).to.equal(18);
   });
 
   it('retrieves token details when an address is provided', () => {
     const inputAddress = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
-    const result = tokenRegistry.get(inputAddress);
+    const result = tokenRegistry.get(inputAddress, 2);
     expect(result.address).to.equal(inputAddress);
     expect(result.decimals).to.equal(18);
   });
 
   it('does not require decimals if token address from list is provided', () => {
-    const result = tokenRegistry.get({ address: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9" });
+    const result = tokenRegistry.get({ address: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9" }, 2);
     expect(result.decimals).to.equal(18);
   });
 
@@ -30,22 +30,22 @@ describe('TokenRegistry', () => {
       address: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
       decimals: 17
     };
-    expect(() => tokenRegistry.get(input)).to.throw('decimals must be 18 for the given address');
+    expect(() => tokenRegistry.get(input, 2)).to.throw('Decimals must be 18 for the given address');
   });
 
   it('uses decimals from list if not provided in TokenInput and token is on the list', () => {
     const input = { address: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9" };
-    const result = tokenRegistry.get(input);
+    const result = tokenRegistry.get(input, 2);
     expect(result.decimals).to.equal(18);
   });
 
   // Negative scenarios or edge cases:
   it('throws error for unrecognized token symbol', () => {
-    expect(() => tokenRegistry.get("UNRECOGNIZED")).to.throw(`Token not found for input "UNRECOGNIZED"`);
+    expect(() => tokenRegistry.get("UNRECOGNIZED", 1)).to.throw(`Token not found for input "UNRECOGNIZED"`);
   });
 
   it('throws error for unrecognized token address without decimals', () => {
-    expect(() => tokenRegistry.get({ address: "0xUnrecognizedAddress" })).to.throw('Token not found and decimals not provided');
+    expect(() => tokenRegistry.get({ address: "0xUnrecognizedAddress" }, 2)).to.throw('Token not found for address "0xUnrecognizedAddress" and decimals not provided');
   });
 });
 
@@ -81,7 +81,7 @@ const rawTokenJson = `[
       }
     },
     {
-      "chainId": 1,
+      "chainId": 2,
       "address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
       "name": "Aave",
       "symbol": "AAVE",

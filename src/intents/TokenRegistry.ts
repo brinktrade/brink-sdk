@@ -1,15 +1,13 @@
-type TokenInput = {
-  address: string;
-  decimals?: number;
-}
+type Input = string | { address: string; decimals?: number };
 
 type TokenMetadata = {
   address: string;
   symbol: string;
   decimals: number;
+  chainId: number;
 };
 
-type TokenReturn = {
+type TokenDetails = {
   address: string;
   decimals: number;
 };
@@ -23,25 +21,33 @@ export class TokenRegistry {
     this.symbolMap = new Map();
 
     for (const token of tokens) {
-      const normalizedAddress = token.address.toLowerCase();
-      const normalizedSymbol = token.symbol.toLowerCase();
+      const normalizedAddress = this.createKey(token.address, token.chainId);
+      const normalizedSymbol = this.createKey(token.symbol, token.chainId);
 
       this.addressMap.set(normalizedAddress, token);
       this.symbolMap.set(normalizedSymbol, token);
     }
   }
 
-  get(input: string | TokenInput): TokenReturn {
-    if (typeof input === 'string') {
-      return this.getByString(input);
+  get(input: Input, chainId: number): TokenDetails {
+    if (typeof input === "string") {
+      return this.getByString(input, chainId);
     } else {
-      return this.getByTokenArgs(input);
+      return this.getByTokenArgs(input, chainId);
     }
   }
 
-  private getByString(input: string): TokenReturn {
-    const normalizedInput = input.toLowerCase();
-    const token = this.addressMap.get(normalizedInput) || this.symbolMap.get(normalizedInput);
+  private normalize(value: string): string {
+    return value.toLowerCase().trim();
+  }
+
+  private createKey(value: string, chainId: number): string {
+    return `${this.normalize(value)}-${chainId}`;
+  }
+
+  private getByString(input: string, chainId: number): TokenDetails {
+    const key = this.createKey(input, chainId);
+    const token = this.addressMap.get(key) || this.symbolMap.get(key);
 
     if (!token) throw new Error(`Token not found for input "${input}". Ensure the input is a valid address or symbol.`);
 
@@ -51,15 +57,15 @@ export class TokenRegistry {
     };
   }
 
-  private getByTokenArgs({ address, decimals }: TokenInput): TokenReturn {
-    const normalizedAddress = address.toLowerCase();
-    const token = this.addressMap.get(normalizedAddress);
+  private getByTokenArgs({ address, decimals }: { address: string; decimals?: number }, chainId: number): TokenDetails {
+    const key = this.createKey(address, chainId);
+    const token = this.addressMap.get(key);
 
     if (!token) {
-      if (decimals === undefined) throw new Error('Token not found and decimals not provided');
+      if (decimals === undefined) throw new Error(`Token not found for address "${address}" and decimals not provided`);
       return { address, decimals };
     } else if (decimals !== undefined && token.decimals !== decimals) {
-      throw new Error(`decimals must be ${token.decimals} for the given address`);
+      throw new Error(`Decimals must be ${token.decimals} for the given address`);
     } else {
       return {
         address: token.address,
