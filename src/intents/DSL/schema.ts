@@ -79,6 +79,7 @@ export const limitSwapActionSchema = joi.object({
   tokenOut: TokenSchema.required(),
   tokenInAmount: joi.uint().required(),
   tokenOutAmount: joi.uint().required(),
+  owner: joi.ethereumAddress().required(),
 });
 
 export const marketSwapActionSchema = joi.object({
