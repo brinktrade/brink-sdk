@@ -1,3 +1,4 @@
+import { padLeft } from 'web3-utils'
 import { LimitSwapActionArgs, SegmentArgs, SegmentParamValue } from '@brinkninja/types'
 import { convertToX96HexPrice, toBigint, toTokenArgs } from '../../../internal'
 import { InvalidInputError } from '../errors';
@@ -25,7 +26,7 @@ function limitSwapAction ({
     throw new InvalidInputError(`Failed to convert tokenInAmount or tokenOutAmount to bigint: ${error}`)
   }
 
-  const hexPrice = convertToX96HexPrice(tokenInAmountBN, tokenOutAmountBN)
+  const hexPrice = padLeft(convertToX96HexPrice(tokenInAmountBN, tokenOutAmountBN), 64)
   const priceCurveParams = { address: FLAT_PRICE_CURVE_ADDRESS, params: hexPrice }
   
   const tokenInArgs = toTokenArgs(tokenIn)
