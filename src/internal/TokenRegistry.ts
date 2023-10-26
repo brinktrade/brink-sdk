@@ -1,4 +1,4 @@
-type Input = string | { address: string; decimals?: number };
+import { Tokens } from ".";
 
 type TokenMetadata = {
   address: string;
@@ -12,7 +12,9 @@ type TokenDetails = {
   decimals: number;
 };
 
-export class TokenRegistry {
+export default class TokenRegistry {
+  private static instance: TokenRegistry;
+
   private addressMap: Map<string, TokenMetadata>;
   private symbolMap: Map<string, TokenMetadata>;
 
@@ -29,12 +31,12 @@ export class TokenRegistry {
     }
   }
 
-  get(input: Input, chainId: number): TokenDetails {
-    if (typeof input === "string") {
-      return this.getByString(input, chainId);
-    } else {
-      return this.getByTokenArgs(input, chainId);
+  static getInstance(): TokenRegistry {
+    if (!TokenRegistry.instance) {
+      const tokens: TokenMetadata[] = Tokens.tokens
+      TokenRegistry.instance = new TokenRegistry(tokens);
     }
+    return TokenRegistry.instance;
   }
 
   private normalize(value: string): string {
@@ -45,11 +47,11 @@ export class TokenRegistry {
     return `${this.normalize(value)}-${chainId}`;
   }
 
-  private getByString(input: string, chainId: number): TokenDetails {
-    const key = this.createKey(input, chainId);
+  getByAddressOrSymbol(addressOrSymBol: string, chainId: number): TokenDetails {
+    const key = this.createKey(addressOrSymBol, chainId);
     const token = this.addressMap.get(key) || this.symbolMap.get(key);
 
-    if (!token) throw new Error(`Token not found for input "${input}". Ensure the input is a valid address or symbol.`);
+    if (!token) throw new Error(`Token not found for input "${addressOrSymBol}". Ensure the input is a valid address or symbol.`);
 
     return {
       address: token.address,
@@ -57,7 +59,7 @@ export class TokenRegistry {
     };
   }
 
-  private getByTokenArgs({ address, decimals }: { address: string; decimals?: number }, chainId: number): TokenDetails {
+  getByTokenArgs({ address, decimals }: { address: string; decimals?: number }, chainId: number): TokenDetails {
     const key = this.createKey(address, chainId);
     const token = this.addressMap.get(key);
 
@@ -65,7 +67,7 @@ export class TokenRegistry {
       if (decimals === undefined) throw new Error(`Token not found for address "${address}" and decimals not provided`);
       return { address, decimals };
     } else if (decimals !== undefined && token.decimals !== decimals) {
-      throw new Error(`Decimals must be ${token.decimals} for the given address`);
+      throw new Error(`Decimals must be ${token.decimals} for the given address. You provided ${decimals}.`);
     } else {
       return {
         address: token.address,

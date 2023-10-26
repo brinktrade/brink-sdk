@@ -1,9 +1,7 @@
-import { SegmentArgs, BigIntish, PriceOperator, PriceConditionArgs } from '@brinkninja/types'
-import { FeeAmount } from '@uniswap/v3-sdk'
+import { SegmentArgs, PriceOperator, PriceConditionArgs } from '@brinkninja/types'
 import Token from '../../Token'
 import { priceToTwapValue, UniV3Twap } from '../../../oracles'
-import { bigintToFeeAmount, toBigint } from '../../../internal'
-
+import { bigintToFeeAmount, toBigint, toTokenWithDecimalsArgs } from '../../../internal'
 
 const DEFAULT_TIME_INTERVAL = BigInt(60)
 
@@ -15,13 +13,15 @@ function priceCondition ({
   twapInterval = DEFAULT_TIME_INTERVAL,
   twapFeePool,
 }: PriceConditionArgs): SegmentArgs[] {
+  const chainId = 1 // TODO: get from context
+
   const twapFeePoolBN = twapFeePool ? toBigint(twapFeePool) : undefined
 
   const fee = twapFeePoolBN ? bigintToFeeAmount(twapFeePoolBN) : undefined
 
   const twap = new UniV3Twap({
-    tokenA: new Token(tokenA),
-    tokenB: new Token(tokenB),
+    tokenA: new Token(toTokenWithDecimalsArgs(tokenA, chainId)),
+    tokenB: new Token(toTokenWithDecimalsArgs(tokenB, chainId)),
     interval: twapInterval,
     fee: fee,
   })

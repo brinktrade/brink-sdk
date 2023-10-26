@@ -10,7 +10,7 @@ export { default as convertToX96HexPrice } from './convertToX96HexPrice'
 
 export { default as bigintToHex } from './bigintToHex'
 
-export { default as toTokenArgs } from './toTokenArgs'
+export { toTokenArgs, toTokenWithDecimalsArgs } from './toTokenArgs'
 
 export * from './constants'
 
@@ -42,3 +42,7 @@ export * from './Validation'
 export { default as verifyParams } from './verifyParams'
 
 export * from './joiExtended'
+
+export { default as TokenRegistry } from './TokenRegistry'
+
+export { default as Tokens } from './tokens.json'

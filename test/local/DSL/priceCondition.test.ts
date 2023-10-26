@@ -6,9 +6,8 @@ describe('priceCondition', function () {
   const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f'
 
   const tokenArgs = {
-      tokenA: {address: USDC_ADDRESS, decimals: 2},
-      tokenB: {address: DAI_ADDRESS, decimals: 2},
-      tokenB_decimals: 2,
+      tokenA: {address: USDC_ADDRESS, decimals: 6},
+      tokenB: {address: DAI_ADDRESS, decimals: 18},
   }
 
   it('should return requireUint256LowerBound segment when operator is lt', function () {

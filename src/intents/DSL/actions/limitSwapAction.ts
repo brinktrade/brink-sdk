@@ -13,6 +13,7 @@ function limitSwapAction ({
   tokenInAmount,
   tokenOutAmount
 }: LimitSwapActionArgs): SegmentArgs[] {
+  const chainId = 1 // TODO: get from context
   if (tokenOutAmount === undefined) {
     throw new InvalidInputError('tokenOutAmount is required')
   }
@@ -29,8 +30,8 @@ function limitSwapAction ({
   const hexPrice = padLeft(convertToX96HexPrice(tokenInAmountBN, tokenOutAmountBN), 64)
   const priceCurveParams = { address: FLAT_PRICE_CURVE_ADDRESS, params: hexPrice }
   
-  const tokenInArgs = toTokenArgs(tokenIn)
-  const tokenOutArgs = toTokenArgs(tokenOut)
+  const tokenInArgs = toTokenArgs(tokenIn, chainId)
+  const tokenOutArgs = toTokenArgs(tokenOut, chainId)
 
   const fillStateParams = {
     id: BigInt(id),

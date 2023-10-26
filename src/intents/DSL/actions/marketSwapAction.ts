@@ -15,12 +15,13 @@ function marketSwapAction ({
   twapInterval = DEFAULT_TIME_INTERVAL,
   twapFeePool = 0
 }: MarketSwapActionArgs): SegmentArgs[] {
+  const chainId = 1 // TODO: get from context
   const twapFeePoolBN = twapFeePool ? toBigint(twapFeePool) : undefined
   const twapFeePoolFeeAmount = twapFeePoolBN ? bigintToFeeAmount(twapFeePoolBN) : undefined
   const tokenInAmountBN = toBigint(tokenInAmount)
 
-  const tokenInArgs = toTokenArgs(tokenIn)
-  const tokenOutArgs = toTokenArgs(tokenOut)
+  const tokenInArgs = toTokenArgs(tokenIn, chainId)
+  const tokenOutArgs = toTokenArgs(tokenOut, chainId)
 
   const twap = new UniV3Twap({
     tokenA: new Token(tokenInArgs),
