@@ -1,10 +1,13 @@
 name: Release and Publish
 
-# This workflow triggers on pushes to the master branch
-on:
-  push:
-    branches:
-      - master
+# # This workflow triggers on pushes to the master branch
+# on:
+#   push:
+#     branches:
+#       - v5
+
+on: [push, pull_request]
+
 
 jobs:
   build-and-publish:
@@ -50,12 +53,27 @@ jobs:
         git tag v${{ steps.pkg_version.outputs.version }}
         git push origin v${{ steps.pkg_version.outputs.version }}
 
-    # Authenticates with npm registry using the NPM_TOKEN secret. This is necessary for publishing.
-    - name: Authenticate with NPM registry
-      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+    - name: Check if version exists on npm
+      id: check_npm_version
+      run: |
+        NPM_VERSIONS=$(npm view brink-sdk versions)
+        echo "List of versions on npm: $NPM_VERSIONS"
 
-    # Publishes the project to npm
-    - name: Publish to npm
-      run: npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        CURRENT_VERSION=${{ steps.pkg_version.outputs.version }}
+        echo "Current version: $CURRENT_VERSION"
+
+        VERSION_EXISTS=$(echo $NPM_VERSIONS | grep -w $CURRENT_VERSION | wc -l)
+        echo "Version exists (0 for No, 1 for Yes): $VERSION_EXISTS"
+
+        echo "::set-output name=exists::$VERSION_EXISTS"
+
+    # # Authenticates with npm registry using the NPM_TOKEN secret. This is necessary for publishing.
+    # - name: Authenticate with NPM registry
+    #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+    # # Publishes the project to npm
+    # - name: Publish to npm
+    #   if: steps.check_npm_version.outputs.exists == '0'
+    #   run: npm publish
+    #   env:
+    #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
