@@ -1,0 +1,82 @@
+name: Release and Publish
+
+# This workflow triggers on pushes to the master branch
+on:
+  push:
+    branches:
+      - v5
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest  # Specifies the type of runner (virtual machine) to use
+
+    steps:
+    # Checks out your repository under $GITHUB_WORKSPACE
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Sets up the specified Node.js version and npm registry URL
+    - name: Setup Node.js 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        registry-url: 'https://registry.npmjs.org'
+
+    # Installs your project dependencies using Yarn
+    - name: Install dependencies
+      run: yarn install
+
+    # Builds the project so that it's ready for publication
+    - name: Build project
+      run: yarn build
+
+    # Reads the package name from your package.json.
+    - name: Get package name from package.json
+      id: pkg_name
+      run: echo "::set-output name=package_name::$(node -p "require('./package.json').name")"
+
+    # Reads the version from your package.json. This is later used to determine if a new tag is needed.
+    - name: Get version from package.json
+      id: pkg_version
+      run: echo "::set-output name=version::$(node -p "require('./package.json').version")"
+
+    # Checks if a git tag with the current version already exists
+    - name: Check if tag exists
+      id: check_tag
+      run: |
+        TAG_EXISTS=$(git ls-remote --tags origin refs/tags/v${{ steps.pkg_version.outputs.version }} | wc -l)
+        echo "::set-output name=exists::$TAG_EXISTS"
+
+    # If the tag does not already exist, it's created and pushed. This ensures each version is tagged correctly.
+    - name: Create and push tag if it doesn't exist
+      if: steps.check_tag.outputs.exists == '0'
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+        git tag v${{ steps.pkg_version.outputs.version }}
+        git push origin v${{ steps.pkg_version.outputs.version }}
+
+    # Authenticates with npm registry using the NPM_TOKEN secret. This is necessary for publishing.
+    - name: Authenticate with NPM registry
+      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+    - name: Check if version exists on npm
+      id: check_npm_version
+      run: |
+        NPM_VERSIONS=$(npm view ${{ steps.pkg_name.outputs.package_name }} versions)
+        echo "List of versions on npm: $NPM_VERSIONS"
+
+        CURRENT_VERSION=${{ steps.pkg_version.outputs.version }}
+        echo "Current version: $CURRENT_VERSION"
+
+        VERSION_EXISTS=$(echo $NPM_VERSIONS | grep -w $CURRENT_VERSION | wc -l)
+        echo "Version exists (0 for No, 1 for Yes): $VERSION_EXISTS"
+
+        echo "::set-output name=exists::$VERSION_EXISTS"
+
+    # Publishes the project to npm
+    - name: Publish to npm
+      if: steps.check_npm_version.outputs.exists == '0'
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
