@@ -1,6 +1,6 @@
 {
   "name": "@brinkninja/sdk",
-  "version": "5.0.0-beta.39",
+  "version": "5.0.0-beta.41",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
     "@openzeppelin/contracts": "4.3.3",
@@ -42,6 +42,7 @@
     "joi": "^17.11.0",
     "lodash": "^4.17.15",
     "module-alias": "^2.2.2",
+    "standard-version": "^9.5.0",
     "web3-eth-abi": "^1.7.3",
     "web3-utils": "^1.7.3"
   },
@@ -78,7 +79,8 @@
     "test": "yarn test-local && yarn test-fork",
     "test-local": "rm -rf dist && tsc && hardhat test --config hardhat.local.config.ts",
     "test-fork": "rm -rf dist && tsc && hardhat test --config hardhat.fork.config.ts",
-    "build": "rm -rf dist && tsc --project tsconfig.build.json"
+    "build": "rm -rf dist && tsc --project tsconfig.build.json",
+    "release": "standard-version --skip.changelog --skip.commit --skip.tag"
   },
   "_moduleAliases": {
     "@brink-sdk": "dist/src"
