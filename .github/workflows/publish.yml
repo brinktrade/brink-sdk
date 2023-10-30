@@ -1,10 +1,12 @@
 name: Release and Publish
 
-# This workflow triggers on pushes to the master branch
-on:
-  push:
-    branches:
-      - v5
+# # This workflow triggers on pushes to the master branch
+# on:
+#   push:
+#     branches:
+#       - v5
+on: [push, pull_request]
+
 
 jobs:
   build-and-publish:
