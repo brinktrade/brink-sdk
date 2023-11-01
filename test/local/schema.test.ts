@@ -1,5 +1,6 @@
-import { intentOrArraySchema, intentSegmentSchema, intervalConditionSchema, limitSwapActionSchema, marketSwapActionSchema, nonceConditionSchema, priceConditionSchema, replaySchema, TokenSchema } from "@brink-sdk/intents/DSL/schema";
+import { toTokenWithDecimalsSchema, toTokenSchema, intentOrArraySchema, singleIntentSchema, intervalConditionSchema, limitSwapActionSchema, marketSwapActionSchema, nonceConditionSchema, priceConditionSchema, replaySchema, TokenSchema } from "@brink-sdk/intents/DSL/schema";
 import { expect } from 'chai';
+import { DAI_TOKEN, USDC_TOKEN } from "../helpers/tokens";
 
 describe('Brink DSL Schema Tests', () => {
   describe('TokenSchema', () => {
@@ -22,6 +23,33 @@ describe('Brink DSL Schema Tests', () => {
     });
   });
 
+  describe('toTokenWithDecimalsSchema', () => {
+    it('validates a input value and transform to token args', () => {
+      const input = USDC_TOKEN.address;
+
+      const { error, value } = toTokenWithDecimalsSchema.validate(input, { context: { chainId: 1 } });
+
+      expect(error).to.be.undefined;
+      expect(value).to.deep.equal({
+        address: USDC_TOKEN.address,
+        decimals: USDC_TOKEN.decimals,
+      });
+    })
+  })
+
+  describe('toTokenSchema', () => {
+    it('validates a input value and transform to token args', () => {
+      const input = USDC_TOKEN.address;
+
+      const { error, value } = toTokenSchema.validate(input, { context: { chainId: 1 } });
+
+      expect(error).to.be.undefined;
+      expect(value).to.deep.equal({
+        address: USDC_TOKEN.address,
+      });
+    });
+  })
+
   describe('replaySchema', () => {
     it('validates a correct replay object', () => {
       const input = {
@@ -37,7 +65,7 @@ describe('Brink DSL Schema Tests', () => {
         nonce: 555,
         runs: 'ALWAYS'
       };
-      const result = replaySchema.validate(input);
+      const result = replaySchema.validate(input, { context: { chainId: 1 } });
       expect(result.error).to.not.be.undefined;
     });
   });
@@ -48,17 +76,18 @@ describe('Brink DSL Schema Tests', () => {
         type: 'price',
         operator: 'lt',
         tokenA: {
-          address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-          decimals: 18,
+          address: USDC_TOKEN.address,
+          decimals: USDC_TOKEN.decimals,
         },
         tokenB: {
-          address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-          decimals: 18,
+          address: DAI_TOKEN.address,
+          decimals: DAI_TOKEN.decimals,
 
         },
         price: 1400
       };
-      const result = priceConditionSchema.validate(input);
+      const result = priceConditionSchema.validate(input, { context: { chainId: 1 } });
+      console.log("@@@@@@@WHY FAI???", result.error)
       expect(result.error).to.be.undefined;
     });
 
@@ -129,12 +158,12 @@ describe('Brink DSL Schema Tests', () => {
         type: 'limitSwap',
         id: 123456789,
         owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
-        tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-        tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+        tokenIn: USDC_TOKEN.address,
+        tokenOut: DAI_TOKEN.address, // WETH
         tokenInAmount: '7500000000',
         tokenOutAmount: '5500000000000000000'
       }
-      const result = limitSwapActionSchema.validate(input);
+      const result = limitSwapActionSchema.validate(input, { context: { chainId: 1 } })
       expect(result.error).to.be.undefined;
     });
   });
@@ -143,13 +172,13 @@ describe('Brink DSL Schema Tests', () => {
     it('validates a correct market swap action', () => {
       const input = {
         type: 'marketSwap',
-        tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-        tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+        tokenIn: USDC_TOKEN.address,
+        tokenOut: DAI_TOKEN.address,
         tokenInAmount: 7500_000000,
         fee: 1.5,
         owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A'
       }
-      const result = marketSwapActionSchema.validate(input);
+      const result = marketSwapActionSchema.validate(input, { context: { chainId: 1 } });
       expect(result.error).to.be.undefined;
     });
   });
@@ -157,6 +186,7 @@ describe('Brink DSL Schema Tests', () => {
   describe('intentSegmentSchema', () => {
     it('validates a correct intent segment', () => {
       const input = {
+        chainId: 1,
         replay: {
           nonce: 555,
           runs: 'ONCE'
@@ -166,26 +196,27 @@ describe('Brink DSL Schema Tests', () => {
           type: 'price',
           operator: 'lt',
           tokenA: {
-            address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-            decimals: 18,
+            address: USDC_TOKEN.address,
+            decimals: USDC_TOKEN.decimals,
           },
           tokenB: {
-            address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-            decimals: 18,
+            address: DAI_TOKEN.address,
+            decimals: DAI_TOKEN.decimals,
 
           },
           price: 1400.00
         }],
         actions: [{
           type: 'marketSwap',
-          tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-          tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+          tokenIn: USDC_TOKEN.address,
+          tokenOut: DAI_TOKEN.address, // WETH
           tokenInAmount: 7500_000000,
           fee: 1.5,
           owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A'
         }]
       };
-      const { error } = intentSegmentSchema.validate(input);
+      const { error } = singleIntentSchema.validate(input, { context: { chainId: 1 } })
+      console.log(error);
 
       expect(error).to.be.undefined;
     });
@@ -193,41 +224,43 @@ describe('Brink DSL Schema Tests', () => {
 
   describe('intentOrArraySchema', () => {
     it('validates a correct array of intent segments', () => {
-      const input = [
-        {
-          replay: {
-            nonce: 1,
-            runs: 'ONCE'
+      const input = {
+        chainId: 1, 
+        intents: [
+          {
+            replay: {
+              nonce: 1,
+              runs: 'ONCE'
+            },
+            actions: [{
+              type: 'limitSwap',
+              tokenIn: USDC_TOKEN.address,
+              tokenOut: DAI_TOKEN.address,
+              tokenInAmount: '1000000000000000000',
+              tokenOutAmount: '2200000000000000000000',
+              owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+              id: "12345"
+            }]
           },
-          actions: [{
-            type: 'limitSwap',
-            tokenIn: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
-            tokenOut: '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-            tokenInAmount: '1000000000000000000',
-            tokenOutAmount: '2200000000000000000000',
-            owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
-            id: "12345"
-          }]
-        },
-        {
-          replay: {
-            nonce: 2,
-            runs: 'ONCE'
-          },
-          actions: [{
-            type: 'limitSwap',
-            tokenIn: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', // WBTC
-            tokenOut: '0x6B175474E89094C44Da98b954EedeAC495271d0F', //DAI
-            tokenInAmount: '1000000000000000000',
-            tokenOutAmount: '40000000000000000000000',
-            owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
-            id: "123456"
-          }]
-        }
-      ];
-      const result = intentOrArraySchema.validate(input);
+          {
+            replay: {
+              nonce: 2,
+              runs: 'ONCE'
+            },
+            actions: [{
+              type: 'limitSwap',
+              tokenIn: USDC_TOKEN.address,
+              tokenOut: DAI_TOKEN.address,
+              tokenInAmount: '1000000000000000000',
+              tokenOutAmount: '40000000000000000000000',
+              owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+              id: "123456"
+            }]
+          }
+        ]
+      };
+      const result = intentOrArraySchema.validate(input, { context: { chainId: 1 } });
       expect(result.error).to.be.undefined;
     });
   })
 });
-

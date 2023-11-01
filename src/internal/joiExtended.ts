@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import web3Utils from 'web3-utils';
+import { toTokenArgs, toTokenWithDecimalsArgs } from './toTokenArgs';
 
 const DEFAULT_UINT_SIZE = 256;
 
@@ -125,6 +126,79 @@ export const joi = Joi
       }
     };
   })
+
+  .extend((joi: Joi.Root) => {
+    return {
+      type: 'token',
+      base: joi.any(),
+      messages: {
+        'token.transform': 'Transformation failed for {{#label}}'
+      },
+      rules: {
+        transform: {
+          method: function(): any {
+            // @ts-ignore
+            return this.$_addRule('transform');
+          },
+          validate: function(value: any, helpers: any) {
+            const chainIdd = joi.ref('chainId')
+          const chainId = 1;
+
+            if (!chainId) {
+              return helpers.error('token.transform', { label: helpers.state.path });
+            }
+            try {
+              return toTokenWithDecimalsArgs(value, chainId);
+            } catch (e) {
+            throw e
+              // return helpers.error('token.transform', { label: helpers.state.path });
+            }
+          }
+        }
+      }
+    };
+  })
+
+
+  // .extend((joi: Joi.Root) => {
+  //   return {
+  //     type: 'token',
+  //     base: joi.any(),
+  //     messages: {
+  //       'token.transform': 'Transformation failed for {{#label}}'
+  //     },
+  //     rules: {
+  //       transform: {
+  //         method: function(): any {
+  //           // @ts-ignore
+  //           return this.$_addRule('transform');
+  //         },
+  //         validate: function(value: any, helpers: any) {
+  //           const findChainId = (ancestors: any) => {
+  //             for (let ancestor of ancestors) {
+  //               if (ancestor && ancestor.chainId) {
+  //                 return ancestor.chainId;
+  //               }
+  //             }
+  //             return null;
+  //           };
+
+  //           const chainId = findChainId(helpers.state.ancestors);
+  //         console.log("@@@@@CHAINID", chainId)
+  //           if (!chainId) {
+  //             return helpers.error('token.transform', { label: helpers.state.path });
+  //           }
+  //           try {
+  //             return toTokenWithDecimalsArgs(value, chainId);
+  //           } catch (e) {
+  //           throw e
+  //             // return helpers.error('token.transform', { label: helpers.state.path });
+  //           }
+  //         }
+  //       }
+  //     }
+  //   };
+  // })
 
 function isBigIntish(value: any) {
   try {
