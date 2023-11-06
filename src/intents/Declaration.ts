@@ -36,14 +36,12 @@ class Declaration {
         throw new Error('chainId must be provided')
       }
       const chainId = inputArgs.chainId
-      inputArgs.intents.forEach(intentInput => {
-        const { error } = intentOrArraySchema.validate(intentInput, { context: {chainId: chainId }})
-        if (error) {
-          throw new Error(error.message)
-        }
-      });
+      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: {chainId: chainId }})
+      if (error) {
+        throw new Error(error.message)
+      }
 
-      declarationArgs = declarationDefinitionArgsToIntentArgs(inputArgs as DeclarationDefinitionArgs);
+      declarationArgs = declarationDefinitionArgsToIntentArgs(value as DeclarationDefinitionArgs);
     } else if ('intents' in inputArgs && 'segments' in (inputArgs.intents[0])) {
       declarationArgs = inputArgs as DeclarationArgs;
     } else if ('actions' in inputArgs) {
@@ -55,12 +53,12 @@ class Declaration {
         throw new Error('chainId must be provided')
       }
 
-      const { error } = intentOrArraySchema.validate(inputArgs, { context: {chainId: chainId }})
+      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: {chainId: chainId }})
       if (error) {
         throw new Error(error.message)
       }
 
-      declarationArgs = declarationDefinitionArgsToIntentArgs({ chainId: chainId, intents: [inputArgs as IntentDefinitionArgs] }); // TODO: fetch chainId
+      declarationArgs = declarationDefinitionArgsToIntentArgs({ chainId: chainId, intents: [value as IntentDefinitionArgs] }); // TODO: fetch chainId
     }
 
     this.intents = (declarationArgs?.intents).map(intentArgs => new Intent(intentArgs))

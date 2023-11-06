@@ -1,10 +1,21 @@
-import { MarketSwapActionArgs, SegmentArgs, TokenJSON } from '@brinkninja/types'
+import { MarketSwapActionArgs, SegmentArgs, TokenArgs, TokenJSON } from '@brinkninja/types'
 import { bigintToFeeAmount, toBigint, toTokenArgs } from '../../../internal'
 import { UniV3Twap } from '../../../oracles'
 import Token from '../../Token'
 
 const DEFAULT_TIME_INTERVAL = BigInt(60)
 const DEFAULT_FEE_MIN = BigInt(0)
+
+// The `MarketSwapActionFunctionArgs` interface is specifically tailored for the `marketSwapAction` function,
+// ensuring that the parameters it receives are of the correct type after the Joi validation has occurred.
+// The need for this interface arises because, within the system's flow, `tokenIn` and `tokenOut` start as
+// types that can either be a simple string or a more complex object (`TokenArgs`). However,
+// once the Joi validation step is completed, these parameters are no longer simple strings; they are
+// always objects with additional attributes necessary for the `marketSwapAction` function to operate correctly.
+interface MarketSwapActionFunctionArgs extends Omit<MarketSwapActionArgs, 'tokenA' | 'tokenB'> {
+  tokenIn: TokenArgs;
+  tokenOut: TokenArgs;
+}
 
 function marketSwapAction ({
   owner,
@@ -14,18 +25,16 @@ function marketSwapAction ({
   fee,
   twapInterval = DEFAULT_TIME_INTERVAL,
   twapFeePool = 0
-}: MarketSwapActionArgs): SegmentArgs[] {
-  const chainId = 1 // TODO: get from context
+}: MarketSwapActionFunctionArgs): SegmentArgs[] {
   const twapFeePoolBN = twapFeePool ? toBigint(twapFeePool) : undefined
   const twapFeePoolFeeAmount = twapFeePoolBN ? bigintToFeeAmount(twapFeePoolBN) : undefined
   const tokenInAmountBN = toBigint(tokenInAmount)
 
-  const tokenInArgs = toTokenArgs(tokenIn, chainId)
-  const tokenOutArgs = toTokenArgs(tokenOut, chainId)
-
+  console.log("@@@@@tokenIn", tokenIn)
+  console.log("@@@@@tokenOut", tokenOut)
   const twap = new UniV3Twap({
-    tokenA: new Token(tokenInArgs),
-    tokenB: new Token(tokenOutArgs),
+    tokenA: new Token(tokenIn),
+    tokenB: new Token(tokenOut),
     interval: twapInterval,
     fee: twapFeePoolFeeAmount,
   })
@@ -40,8 +49,8 @@ function marketSwapAction ({
     params: {
       oracle: oracle,
       signer: owner,
-      tokenIn: tokenInArgs as TokenJSON,
-      tokenOut: tokenOutArgs as TokenJSON,
+      tokenIn: tokenIn as TokenJSON,
+      tokenOut: tokenOut as TokenJSON,
       tokenInAmount: tokenInAmountBN,
       feePercent: toBigint(fee * 10 ** 4),
       feeMin: DEFAULT_FEE_MIN,

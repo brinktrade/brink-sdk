@@ -1,9 +1,6 @@
 import { expect } from 'chai';
 import { marketSwapAction, UniV3Twap, Token } from '../../../src';
-
-const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
-const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+import { DAI_TOKEN, USDC_TOKEN, WETH_TOKEN } from "../../helpers/tokens";
 
 describe('marketSwapAction', function () {
 
@@ -11,8 +8,8 @@ describe('marketSwapAction', function () {
     const primitives = marketSwapAction({
       type: 'marketSwap',
       owner: '0xOwnerAddress',
-      tokenIn: USDC_ADDRESS,
-      tokenOut: WETH_ADDRESS,
+      tokenIn: USDC_TOKEN,
+      tokenOut: WETH_TOKEN,
       tokenInAmount: 1000000,
       fee: 0.5,
       twapFeePool: 500
@@ -20,15 +17,15 @@ describe('marketSwapAction', function () {
 
     expect(primitives[0].functionName).to.equal('marketSwapExactInput');
     expect(primitives[0].params.signer).to.equal('0xOwnerAddress');
-    expect(primitives[0].params.tokenIn).to.deep.include({ address: USDC_ADDRESS });
-    expect(primitives[0].params.tokenOut).to.deep.include({ address: WETH_ADDRESS });
+    expect(primitives[0].params.tokenIn).to.deep.include({ address: USDC_TOKEN.address });
+    expect(primitives[0].params.tokenOut).to.deep.include({ address: WETH_TOKEN.address });
     expect(primitives[0].params.tokenInAmount).to.equal(1000000n);
     expect(primitives[0].params.feePercent).to.equal(5000n);
     expect(primitives[0].params.feeMin).to.equal(0n);
 
     const twap = new UniV3Twap({
-      tokenA: new Token({ address: USDC_ADDRESS }),
-      tokenB: new Token({ address: WETH_ADDRESS }),
+      tokenA: new Token({ address: USDC_TOKEN.address }),
+      tokenB: new Token({ address: WETH_TOKEN.address }),
       interval: BigInt(60),
       fee: 500,
     });
@@ -39,23 +36,23 @@ describe('marketSwapAction', function () {
     const primitives = marketSwapAction({
       type: 'marketSwap',
       owner: '0xOwnerAddress',
-      tokenIn: USDC_ADDRESS,
-      tokenOut: DAI_ADDRESS,
+      tokenIn: USDC_TOKEN,
+      tokenOut: DAI_TOKEN,
       tokenInAmount: 2000000,
       fee: 0.1,
     });
 
     expect(primitives[0].functionName).to.equal('marketSwapExactInput');
     expect(primitives[0].params.signer).to.equal('0xOwnerAddress');
-    expect(primitives[0].params.tokenIn).to.deep.include({ address: USDC_ADDRESS });
-    expect(primitives[0].params.tokenOut).to.deep.include({ address: DAI_ADDRESS });
+    expect(primitives[0].params.tokenIn).to.deep.include({ address: USDC_TOKEN.address });
+    expect(primitives[0].params.tokenOut).to.deep.include({ address: DAI_TOKEN.address });
     expect(primitives[0].params.tokenInAmount).to.equal(2000000n);
     expect(primitives[0].params.feePercent).to.equal(1000n);
     expect(primitives[0].params.feeMin).to.equal(0n);
 
     const twap = new UniV3Twap({
-      tokenA: new Token({ address: USDC_ADDRESS }),
-      tokenB: new Token({ address: DAI_ADDRESS }),
+      tokenA: new Token({ address: USDC_TOKEN.address }),
+      tokenB: new Token({ address: DAI_TOKEN.address }),
       interval: BigInt(60),
       fee: undefined,
     });
@@ -66,8 +63,8 @@ describe('marketSwapAction', function () {
     const primitives = marketSwapAction({
       type: 'marketSwap',
       owner: '0xOwnerAddress',
-      tokenIn: WETH_ADDRESS,
-      tokenOut: DAI_ADDRESS,
+      tokenIn: WETH_TOKEN,
+      tokenOut: DAI_TOKEN,
       tokenInAmount: 1,
       fee: 0.2,
       twapInterval: BigInt(2000),
@@ -75,15 +72,15 @@ describe('marketSwapAction', function () {
 
     expect(primitives[0].functionName).to.equal('marketSwapExactInput');
     expect(primitives[0].params.signer).to.equal('0xOwnerAddress');
-    expect(primitives[0].params.tokenIn).to.deep.include({ address: WETH_ADDRESS });
-    expect(primitives[0].params.tokenOut).to.deep.include({ address: DAI_ADDRESS });
+    expect(primitives[0].params.tokenIn).to.deep.include({ address: WETH_TOKEN.address });
+    expect(primitives[0].params.tokenOut).to.deep.include({ address: DAI_TOKEN.address });
     expect(primitives[0].params.tokenInAmount).to.equal(1n);
     expect(primitives[0].params.feePercent).to.equal(2000n);
     expect(primitives[0].params.feeMin).to.equal(0n);
 
     const twap = new UniV3Twap({
-      tokenA: new Token({ address: WETH_ADDRESS }),
-      tokenB: new Token({ address: DAI_ADDRESS }),
+      tokenA: new Token({ address: WETH_TOKEN.address }),
+      tokenB: new Token({ address: DAI_TOKEN.address }),
       interval: BigInt(2000),
       fee: undefined,
     });
@@ -103,8 +100,8 @@ describe('marketSwapAction', function () {
           marketSwapAction({
             type: 'marketSwap',
             owner: '0xOwnerAddress',
-            tokenIn: USDC_ADDRESS,
-            tokenOut: DAI_ADDRESS,
+            tokenIn: USDC_TOKEN,
+            tokenOut: DAI_TOKEN,
             tokenInAmount: testCase.tokenInAmount,
             fee: testCase.fee
           });
