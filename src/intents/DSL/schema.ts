@@ -12,15 +12,20 @@ const tokenArgs = {
   disallowFlagged: joi.boolean().optional(),
 }
 
-export const TokenSchema = joi.alternatives().try(
-  joi.ethereumAddress(),
-  joi.object(tokenArgs)
-);
-
 const tokenWithDecimalsArgs = {
   ...tokenArgs,
   decimals: joi.uint().required()
 }
+
+export const TokenSchema = joi.alternatives().try(
+  joi.string(),
+  joi.object(tokenArgs)
+);
+
+export const TokenWithDecimalsSchema = joi.alternatives().try(
+  joi.string(),
+  joi.object(tokenWithDecimalsArgs)
+);
 
 const runsTypes = Object.keys(RunsType).filter(key => isNaN(Number(key)));
 
@@ -56,7 +61,6 @@ export const nonceConditionSchema = joi.object({
 const priceOperators = Object.values(PriceOperator)
 
 const toTokenWithDecimals = (value: any, helpers: any) => {
-  console.log("@@@@@VALUE", value)
   const chainId = helpers.prefs.context.chainId;
 
   try {
@@ -80,7 +84,7 @@ const toToken = (value: any, helpers: any) => {
   }
 };
 
-export const toTokenWithDecimalsSchema = TokenSchema.custom(toTokenWithDecimals, 'toTokenArgsWithDecimals');
+export const toTokenWithDecimalsSchema = TokenWithDecimalsSchema.custom(toTokenWithDecimals, 'toTokenArgsWithDecimals');
 export const toTokenSchema = TokenSchema.custom(toToken, 'toTokenArgsWithDecimals');
 
 export const priceConditionSchema = joi.object({
@@ -126,23 +130,19 @@ const actionSchemas = {
   marketSwap: marketSwapActionSchema,
 };
 
-const baseIntentSchema = {
+const chainIdSchema = joi.number().integer() // .valid(1);
+
+export const singleIntentSchema = joi.object({
   replay: replaySchema.optional(),
   expiryBlock: joi.uint().optional(),
   conditions: joi.array().items(generateConditional(conditionSchemas)).optional(),
   actions: joi.array().items(generateConditional(actionSchemas)).required(),
-}
-
-const chainIdSchema = joi.number().integer() // .valid(1);
-
-export const singleIntentSchema = joi.object({
-  ...baseIntentSchema,
-  chainId: chainIdSchema.required(),
+  chainId: chainIdSchema.optional(),
 })
 
 export const multiIntentSchema = joi.object({
   chainId: chainIdSchema.required(),
-  intents: joi.array().items(joi.object(baseIntentSchema)).required(),
+  intents: joi.array().items(singleIntentSchema).required(),
 })
 
 export const intentOrArraySchema = joi.alternatives().try(

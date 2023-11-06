@@ -87,7 +87,6 @@ describe('Brink DSL Schema Tests', () => {
         price: 1400
       };
       const result = priceConditionSchema.validate(input, { context: { chainId: 1 } });
-      console.log("@@@@@@@WHY FAI???", result.error)
       expect(result.error).to.be.undefined;
     });
 
