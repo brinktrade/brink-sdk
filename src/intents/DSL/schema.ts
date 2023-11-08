@@ -1,4 +1,4 @@
-import { toTokenArgs, toTokenWithDecimalsArgs } from "@brink-sdk/internal";
+import { toTokenArgs, toTokenWithDecimalsArgs } from "../../internal";
 import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types"; import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
 
