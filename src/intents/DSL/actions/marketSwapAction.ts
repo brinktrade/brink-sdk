@@ -30,8 +30,6 @@ function marketSwapAction ({
   const twapFeePoolFeeAmount = twapFeePoolBN ? bigintToFeeAmount(twapFeePoolBN) : undefined
   const tokenInAmountBN = toBigint(tokenInAmount)
 
-  console.log("@@@@@tokenIn", tokenIn)
-  console.log("@@@@@tokenOut", tokenOut)
   const twap = new UniV3Twap({
     tokenA: new Token(tokenIn),
     tokenB: new Token(tokenOut),
