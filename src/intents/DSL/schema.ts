@@ -57,7 +57,7 @@ const priceOperators = Object.values(PriceOperator)
 
 export const priceConditionSchema = joi.object({
   type: joi.string().valid('price').required(),
-  price: joi.uint().required(),
+  price: joi.number().required(),
   operator: joi.string().valid(...priceOperators).required(),
   tokenA: joi.object(tokenWithDecimalsArgs).required(),
   tokenB: joi.object(tokenWithDecimalsArgs).required(),
