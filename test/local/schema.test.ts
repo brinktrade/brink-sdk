@@ -62,6 +62,26 @@ describe('Brink DSL Schema Tests', () => {
       expect(result.error).to.be.undefined;
     });
 
+    it('valides a correct price with decimals', () => {
+      const input = {
+        type: 'price',
+        operator: 'lt',
+        tokenA: {
+          address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+          decimals: 18,
+        },
+        tokenB: {
+          address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+          decimals: 18,
+
+        },
+        price: 0.5
+      };
+      const result = priceConditionSchema.validate(input);
+      expect(result.error).to.be.undefined;
+
+    })
+
     it('throws an error when passing an address', () => {
       const input = {
         type: 'price',

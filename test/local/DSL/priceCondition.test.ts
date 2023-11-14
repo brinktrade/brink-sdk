@@ -53,6 +53,27 @@ describe('priceCondition', function () {
     expect(segments[0].params.oracle).to.deep.equal({ address: twap.address, params: twap.params })
   })
 
+  it('should work with price as decimals', function () {
+    const segments = priceCondition({
+      ...tokenArgs,
+      type: 'price',
+      operator: 'gt',
+      price: 0.5
+    })
+
+    expect(segments.length).to.equal(1)
+    expect(segments[0].functionName).to.equal('requireUint256UpperBound')
+    expect(segments[0].params.upperBound).to.equal(getTwapValue(0.5))
+
+    const twap = new UniV3Twap({
+      tokenA: new Token({address: USDC_ADDRESS}),
+      tokenB: new Token({address: DAI_ADDRESS}),
+      interval: BigInt(60),
+    })
+
+    expect(segments[0].params.oracle).to.deep.equal({ address: twap.address, params: twap.params })
+  })
+
   function getTwapValue(price: number): bigint {
     return priceToTwapValue({
       price: price,
