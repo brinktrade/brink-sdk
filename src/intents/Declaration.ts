@@ -57,7 +57,7 @@ class Declaration {
         throw new Error(error.message)
       }
 
-      declarationArgs = declarationDefinitionArgsToIntentArgs({ chainId, intents: [value as IntentDefinitionArgs] }); // TODO: fetch chainId
+      declarationArgs = declarationDefinitionArgsToIntentArgs({ chainId, intents: [value as IntentDefinitionArgs] });
     }
 
     this.intents = (declarationArgs?.intents).map(intentArgs => new Intent(intentArgs))

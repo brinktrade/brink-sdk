@@ -8,7 +8,7 @@ export function toTokenArgs(token: string | TokenArgs, chainId: number ) : Token
   const registry = TokenRegistry.getInstance();
 
   if (typeof token === 'string') {
-    const tokenDetails = registry.getByAddressOrSymbol(token, chainId)
+    const tokenDetails = registry.getByAddressOrSymbol({ addressOrSymbol: token, chainId })
     return { address: tokenDetails.address }
   } else {
     const tokenDetails = registry.getByTokenArgs(token, chainId)
@@ -23,7 +23,7 @@ export function toTokenWithDecimalsArgs(token: string | TokenArgs, chainId: numb
   const registry = TokenRegistry.getInstance();
 
   if (typeof token === 'string') {
-    const tokenDetails = registry.getByAddressOrSymbol(token, chainId)
+    const tokenDetails = registry.getByAddressOrSymbol({ addressOrSymbol: token, chainId })
     return { address: tokenDetails.address, decimals: tokenDetails.decimals }
   } else {
     const tokenDetails = registry.getByTokenArgs(token, chainId)

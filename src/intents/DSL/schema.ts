@@ -1,4 +1,4 @@
-import { toTokenArgs, toTokenWithDecimalsArgs } from "../../internal";
+import { toTokenArgs, toTokenWithDecimalsArgs, toBigint } from "../../internal";
 import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types"
 import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
@@ -64,25 +64,17 @@ const priceOperators = Object.values(PriceOperator)
 const toTokenWithDecimals = (value: any, helpers: any) => {
   const chainId = helpers.prefs.context.chainId;
 
-  try {
-    const ret = toTokenWithDecimalsArgs(value, chainId);
+  const ret = toTokenWithDecimalsArgs(value, chainId);
     
-    return ret
-  } catch (e) {
-    throw e
-  }
+  return ret
 };
 
 const toToken = (value: any, helpers: any) => {
   const chainId = helpers.prefs.context.chainId;
 
-  try {
-    const ret = toTokenArgs(value, chainId);
-    
-    return ret
-  } catch (e) {
-    throw e
-  }
+  const ret = toTokenArgs(value, chainId);
+
+  return ret
 };
 
 export const toTokenWithDecimalsSchema = TokenWithDecimalsSchema.custom(toTokenWithDecimals, 'toTokenArgsWithDecimals');

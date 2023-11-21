@@ -1,16 +1,12 @@
 import { SegmentArgs, PriceOperator, PriceConditionArgs, TokenWithDecimalsArgs } from '@brinkninja/types'
 import Token from '../../Token'
 import { priceToTwapValue, UniV3Twap } from '../../../oracles'
-import { bigintToFeeAmount, toBigint, toTokenWithDecimalsArgs } from '../../../internal'
+import { bigintToFeeAmount, toBigint } from '../../../internal'
 
 const DEFAULT_TIME_INTERVAL = BigInt(60)
-
-// The `PriceConditionFunctionArgs` interface is specifically tailored for the `priceCondition` function,
-// ensuring that the parameters it receives are of the correct type after the Joi validation has occurred.
-// The need for this interface arises because, within the system's flow, `tokenA` and `tokenB` start as
-// types that can either be a simple string or a more complex object (`TokenWithDecimalsArgs`). However,
-// once the Joi validation step is completed, these parameters are no longer simple strings; they are
-// always objects with additional attributes necessary for the `priceCondition` function to operate correctly.
+//
+// tokenA and tokenB can be given as either a token symbol string or TokenArgs object. 
+// If they are given as a token symbol string, Joi validation transforms them to a TokenWithDecimalsArgs object
 interface PriceConditionFunctionArgs extends Omit<PriceConditionArgs, 'tokenA' | 'tokenB'> {
   tokenA: TokenWithDecimalsArgs;
   tokenB: TokenWithDecimalsArgs;

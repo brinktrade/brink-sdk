@@ -9,21 +9,21 @@ describe('TokenRegistry', () => {
 
   describe('getByAddressOrSymbol', () => {
     it('retrieves token details when a symbol is provided', () => {
-      const result = tokenRegistry.getByAddressOrSymbol("AAVE", 2);
+      const result = tokenRegistry.getByAddressOrSymbol({ addressOrSymbol: "AAVE", chainId: 2 });
       expect(result.address).to.equal("0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9");
       expect(result.decimals).to.equal(18);
     });
 
     it('retrieves token details when an address is provided', () => {
       const inputAddress = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
-      const result = tokenRegistry.getByAddressOrSymbol(inputAddress, 2);
+      const result = tokenRegistry.getByAddressOrSymbol({ addressOrSymbol: inputAddress, chainId: 2 });
       expect(result.address).to.equal(inputAddress);
       expect(result.decimals).to.equal(18);
     });
 
     // Negative scenarios or edge cases:
     it('throws error for unrecognized token symbol', () => {
-      expect(() => tokenRegistry.getByAddressOrSymbol("UNRECOGNIZED", 1)).to.throw(`Token not found for input "UNRECOGNIZED"`);
+      expect(() => tokenRegistry.getByAddressOrSymbol({ addressOrSymbol: "UNRECOGNIZED", chainId: 1 })).to.throw(`Token not found for input "UNRECOGNIZED"`);
     });
   });
 

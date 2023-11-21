@@ -5,13 +5,9 @@ import { InvalidInputError } from '../errors';
 
 const FLAT_PRICE_CURVE_ADDRESS = '0xC509733B8dDdbab9369A96F6F216d6E59DB3900f';
 
-// The `LimitSwapActionFunctionArgs` interface is specifically tailored for the `limitSwapAction` function,
-// ensuring that the parameters it receives are of the correct type after the Joi validation has occurred.
-// The need for this interface arises because, within the system's flow, `tokenIn` and `tokenOut` start as
-// types that can either be a simple string or a more complex object (`TokenArgs`). However,
-// once the Joi validation step is completed, these parameters are no longer simple strings; they are
-// always objects with additional attributes necessary for the `limitSwapAction` function to operate correctly.
-interface LimitSwapActionFunctionArgs extends Omit<LimitSwapActionArgs, 'tokenA' | 'tokenB'> {
+// tokenIn and tokenOut can be given as either a token symbol string or TokenArgs object. 
+// If they are given as a token symbol string, Joi validation transforms them to a TokenArgs object
+interface LimitSwapActionFunctionArgs extends Omit<LimitSwapActionArgs, 'tokenIn' | 'tokenOut'> {
   tokenIn: TokenArgs;
   tokenOut: TokenArgs;
 }
