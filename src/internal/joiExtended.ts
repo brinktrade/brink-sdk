@@ -127,37 +127,31 @@ export const joi = Joi
     };
   })
 
-  .extend((joi: Joi.Root) => {
-    return {
-      type: 'token',
-      base: joi.any(),
-      messages: {
-        'token.transform': 'Transformation failed for {{#label}}'
-      },
-      rules: {
-        transform: {
-          method: function(): any {
-            // @ts-ignore
-            return this.$_addRule('transform');
-          },
-          validate: function(value: any, helpers: any) {
-            const chainIdd = joi.ref('chainId')
-          const chainId = 1;
+  // .extend((joi: Joi.Root) => {
+  //   return {
+  //     type: 'token',
+  //     base: joi.any(),
+  //     messages: {
+  //       'token.transform': 'Transformation failed for {{#label}}'
+  //     },
+  //     rules: {
+  //       transform: {
+  //         method: function(): any {
+  //           // @ts-ignore
+  //           return this.$_addRule('transform');
+  //         },
+  //         validate: function(value: any, helpers: any) {
+  //         const chainId = joi.ref('chainId')
 
-            if (!chainId) {
-              return helpers.error('token.transform', { label: helpers.state.path });
-            }
-            try {
-              return toTokenWithDecimalsArgs(value, chainId);
-            } catch (e) {
-            throw e
-              // return helpers.error('token.transform', { label: helpers.state.path });
-            }
-          }
-        }
-      }
-    };
-  })
+  //           if (!chainId) {
+  //             return helpers.error('token.transform', { label: helpers.state.path });
+  //           }
+  //         return toTokenWithDecimalsArgs(value, chainId);
+  //         }
+  //       }
+  //     }
+  //   };
+  // })
 
 function isBigIntish(value: any) {
   try {

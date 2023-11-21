@@ -1,5 +1,6 @@
 import { toTokenArgs, toTokenWithDecimalsArgs } from "../../internal";
-import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types"; import Joi from "joi";
+import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types"
+import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
 
 const tokenStandards = Object.keys(TokenStandard).filter(key => isNaN(Number(key)));
