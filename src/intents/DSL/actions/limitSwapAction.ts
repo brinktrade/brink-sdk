@@ -25,7 +25,6 @@ function limitSwapAction ({
   tokenInAmount,
   tokenOutAmount
 }: LimitSwapActionFunctionArgs): SegmentArgs[] {
-  const chainId = 1 // TODO: get from context
   if (tokenOutAmount === undefined) {
     throw new InvalidInputError('tokenOutAmount is required')
   }
