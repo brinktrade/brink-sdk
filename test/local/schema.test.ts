@@ -105,12 +105,11 @@ describe('Brink DSL Schema Tests', () => {
         },
         price: 0.5
       };
-      const result = priceConditionSchema.validate(input);
+      const result = priceConditionSchema.validate(input, { context: {chainId: 1 }});
       expect(result.error).to.be.undefined;
-
     })
 
-    it('throws an error when passing an address', () => {
+    it('validates when passing an address', () => {
       const input = {
         type: 'price',
         operator: 'lt',
@@ -118,10 +117,9 @@ describe('Brink DSL Schema Tests', () => {
         tokenB: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
         price: 1400
       };
-      const { error } = priceConditionSchema.validate(input);
+      const { error } = priceConditionSchema.validate(input, { context: { chainId: 1 } });
 
-      expect(error).to.exist;
-      expect(JSON.stringify(error)).to.include('must be of type object');
+      expect(error).to.be.undefined;
     });
   });
 
