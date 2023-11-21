@@ -63,6 +63,10 @@ const priceOperators = Object.values(PriceOperator)
 
 const toTokenWithDecimals = (value: any, helpers: any) => {
   const chainId = helpers.prefs.context.chainId;
+  if (!chainId) {
+    throw new Error('ChainId not found in context');
+  }
+
 
   const ret = toTokenWithDecimalsArgs(value, chainId);
     
@@ -71,6 +75,9 @@ const toTokenWithDecimals = (value: any, helpers: any) => {
 
 const toToken = (value: any, helpers: any) => {
   const chainId = helpers.prefs.context.chainId;
+  if (!chainId) {
+    throw new Error('ChainId not found in context');
+  }
 
   const ret = toTokenArgs(value, chainId);
 
