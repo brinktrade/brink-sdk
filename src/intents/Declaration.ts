@@ -31,12 +31,11 @@ class Declaration {
     let declarationArgs: DeclarationArgs = { intents: [] }
 
     if ('intents' in inputArgs && 'actions' in inputArgs?.intents[0]) {
-
       if (!('chainId' in inputArgs)) {
         throw new Error('chainId must be provided')
       }
       const chainId = inputArgs.chainId
-      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: {chainId: chainId }})
+      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: { chainId }})
       if (error) {
         throw new Error(error.message)
       }
@@ -53,12 +52,12 @@ class Declaration {
         throw new Error('chainId must be provided')
       }
 
-      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: {chainId: chainId }})
+      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: { chainId }})
       if (error) {
         throw new Error(error.message)
       }
 
-      declarationArgs = declarationDefinitionArgsToIntentArgs({ chainId: chainId, intents: [value as IntentDefinitionArgs] }); // TODO: fetch chainId
+      declarationArgs = declarationDefinitionArgsToIntentArgs({ chainId, intents: [value as IntentDefinitionArgs] }); // TODO: fetch chainId
     }
 
     this.intents = (declarationArgs?.intents).map(intentArgs => new Intent(intentArgs))
