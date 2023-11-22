@@ -4,13 +4,14 @@ import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
 
 const tokenStandards = Object.keys(TokenStandard).filter(key => isNaN(Number(key)));
+const emptyValues = [null, 'null', '%00', '\u0000']; 
 
 const tokenArgs = {
   address: joi.ethereumAddress().required(),
-  standard: joi.string().valid(...tokenStandards).optional(),
-  idsMerkleRoot: joi.string().optional(),
-  id: joi.bigIntish().optional(),
-  disallowFlagged: joi.boolean().optional(),
+  standard: joi.string().valid(...tokenStandards).empty(emptyValues),
+  idsMerkleRoot: joi.string().empty(emptyValues),
+  id: joi.bigIntish().empty(emptyValues),
+  disallowFlagged: joi.boolean().empty(emptyValues),
 }
 
 const tokenWithDecimalsArgs = {
@@ -39,8 +40,8 @@ export const intervalConditionSchema = joi.object({
   type: joi.string().valid('interval').required(),
   id: joi.uint(64).required(),
   interval: joi.uint(128).required(),
-  startBlock: joi.uint(128).optional(),
-  maxIntervals: joi.uint(16).optional(),
+  startBlock: joi.uint(128).empty(emptyValues),
+  maxIntervals: joi.uint(16).empty(emptyValues),
 });
 
 const blockStates = Object.keys(BlockState).filter(key => isNaN(Number(key)));
@@ -93,8 +94,8 @@ export const priceConditionSchema = joi.object({
   operator: joi.string().valid(...priceOperators).required(),
   tokenA: toTokenWithDecimalsSchema.required(),
   tokenB: toTokenWithDecimalsSchema.required(),
-  twapInterval: joi.uint(32).optional(),
-  twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
+  twapInterval: joi.uint(32).empty(emptyValues),
+  twapFeePool: joi.number().integer().valid(500, 3000, 10000).empty(emptyValues),
 });
 
 const conditionSchemas = {
@@ -121,8 +122,8 @@ export const marketSwapActionSchema = joi.object({
   tokenOut: toTokenSchema.required(),
   tokenInAmount: joi.uint().required(),
   fee: joi.number().min(0).max(100).required(),
-  twapInterval: joi.uint(32).optional(),
-  twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
+  twapInterval: joi.uint(32).empty(emptyValues),
+  twapFeePool: joi.number().integer().valid(500, 3000, 10000).empty(emptyValues),
 });
 
 const actionSchemas = {
@@ -134,8 +135,9 @@ const chainIdSchema = joi.number().integer() // .valid(1);
 
 export const singleIntentSchema = joi.object({
   replay: replaySchema.optional(),
-  expiryBlock: joi.uint().optional(),
-  conditions: joi.array().items(generateConditional(conditionSchemas)).optional(),
+  // @ts-ignore
+  expiryBlock: joi.uint().empty(emptyValues),
+  conditions: joi.array().items(generateConditional(conditionSchemas)).empty(emptyValues),
   actions: joi.array().items(generateConditional(actionSchemas)).required(),
   chainId: chainIdSchema.optional(),
 })
