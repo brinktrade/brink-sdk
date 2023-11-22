@@ -135,7 +135,6 @@ const chainIdSchema = joi.number().integer() // .valid(1);
 
 export const singleIntentSchema = joi.object({
   replay: replaySchema.optional(),
-  // @ts-ignore
   expiryBlock: joi.uint().empty(emptyValues),
   conditions: joi.array().items(generateConditional(conditionSchemas)).empty(emptyValues),
   actions: joi.array().items(generateConditional(actionSchemas)).required(),

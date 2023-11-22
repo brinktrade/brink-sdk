@@ -88,6 +88,7 @@ describe('DeclarationDefinitionArgs', function () {
 
   describe('with optional values as null', function () {
     const singleSegmentIntent: IntentDefinitionArgs = {
+      chainId: 1,
       replay: {
         nonce: 123,
         runs: 'UNTIL_CANCELLED'
@@ -100,8 +101,8 @@ describe('DeclarationDefinitionArgs', function () {
       actions: [{
         type: 'marketSwap',
         owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
-        tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-        tokenOut: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+        tokenIn: USDC_TOKEN.address,
+        tokenOut: WETH_TOKEN.address,
         tokenInAmount: 15_000,
         fee: 2.5
       }]
