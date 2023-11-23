@@ -1,11 +1,16 @@
-import { SegmentArgs, BigIntish, PriceOperator, PriceConditionArgs } from '@brinkninja/types'
-import { FeeAmount } from '@uniswap/v3-sdk'
+import { SegmentArgs, PriceOperator, PriceConditionArgs, TokenWithDecimalsArgs } from '@brinkninja/types'
 import Token from '../../Token'
 import { priceToTwapValue, UniV3Twap } from '../../../oracles'
 import { bigintToFeeAmount, toBigint } from '../../../internal'
 
-
 const DEFAULT_TIME_INTERVAL = BigInt(60)
+//
+// tokenA and tokenB can be given as either a token symbol string or TokenArgs object. 
+// If they are given as a token symbol string, Joi validation transforms them to a TokenWithDecimalsArgs object
+interface PriceConditionFunctionArgs extends Omit<PriceConditionArgs, 'tokenA' | 'tokenB'> {
+  tokenA: TokenWithDecimalsArgs;
+  tokenB: TokenWithDecimalsArgs;
+}
 
 function priceCondition ({
   operator,
@@ -14,7 +19,7 @@ function priceCondition ({
   price,
   twapInterval = DEFAULT_TIME_INTERVAL,
   twapFeePool,
-}: PriceConditionArgs): SegmentArgs[] {
+}: PriceConditionFunctionArgs): SegmentArgs[] {
   const twapFeePoolBN = twapFeePool ? toBigint(twapFeePool) : undefined
 
   const fee = twapFeePoolBN ? bigintToFeeAmount(twapFeePoolBN) : undefined

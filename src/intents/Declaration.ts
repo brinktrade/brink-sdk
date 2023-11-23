@@ -31,30 +31,33 @@ class Declaration {
     let declarationArgs: DeclarationArgs = { intents: [] }
 
     if ('intents' in inputArgs && 'actions' in inputArgs?.intents[0]) {
-      inputArgs.intents.forEach(intentInput => {
-        const { error } = intentOrArraySchema.validate(intentInput)
-        if (error) {
-          throw new Error(error.message)
-        }
-      });
+      if (!('chainId' in inputArgs)) {
+        throw new Error('chainId must be provided')
+      }
+      const chainId = inputArgs.chainId
+      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: { chainId }})
+      if (error) {
+        throw new Error(error.message)
+      }
 
-      declarationArgs = declarationDefinitionArgsToIntentArgs(inputArgs as DeclarationDefinitionArgs);
+      declarationArgs = declarationDefinitionArgsToIntentArgs(value as DeclarationDefinitionArgs);
     } else if ('intents' in inputArgs && 'segments' in (inputArgs.intents[0])) {
       declarationArgs = inputArgs as DeclarationArgs;
     } else if ('actions' in inputArgs) {
-      const { error } = intentOrArraySchema.validate(inputArgs)
+      if (!('chainId' in inputArgs)) {
+        throw new Error('chainId must be provided')
+      }
+      const chainId = inputArgs.chainId
+      if (!chainId) {
+        throw new Error('chainId must be provided')
+      }
+
+      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: { chainId }})
       if (error) {
         throw new Error(error.message)
       }
 
-      declarationArgs = declarationDefinitionArgsToIntentArgs({ intents: [inputArgs as IntentDefinitionArgs] });
-    } else if ( Array.isArray(inputArgs) && 'actions' in inputArgs[0]) {
-      const { error } = intentOrArraySchema.validate(inputArgs)
-      if (error) {
-        throw new Error(error.message)
-      }
-
-      declarationArgs = declarationDefinitionArgsToIntentArgs({ intents: inputArgs as IntentDefinitionArgs[] });
+      declarationArgs = declarationDefinitionArgsToIntentArgs({ chainId, intents: [value as IntentDefinitionArgs] });
     }
 
     this.intents = (declarationArgs?.intents).map(intentArgs => new Intent(intentArgs))

@@ -1,4 +1,5 @@
-import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types";
+import { toTokenArgs, toTokenWithDecimalsArgs, toBigint } from "../../internal";
+import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types"
 import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
 
@@ -12,15 +13,20 @@ const tokenArgs = {
   disallowFlagged: joi.boolean().optional(),
 }
 
-export const TokenSchema = joi.alternatives().try(
-  joi.ethereumAddress(),
-  joi.object(tokenArgs)
-);
-
 const tokenWithDecimalsArgs = {
   ...tokenArgs,
   decimals: joi.uint().required()
 }
+
+export const TokenSchema = joi.alternatives().try(
+  joi.string(),
+  joi.object(tokenArgs)
+);
+
+export const TokenWithDecimalsSchema = joi.alternatives().try(
+  joi.string(),
+  joi.object(tokenWithDecimalsArgs)
+);
 
 const runsTypes = Object.keys(RunsType).filter(key => isNaN(Number(key)));
 
@@ -55,12 +61,38 @@ export const nonceConditionSchema = joi.object({
 
 const priceOperators = Object.values(PriceOperator)
 
+const toTokenWithDecimals = (value: any, helpers: any) => {
+  const chainId = helpers.prefs.context.chainId;
+  if (!chainId) {
+    throw new Error('ChainId not found in context');
+  }
+
+
+  const ret = toTokenWithDecimalsArgs(value, chainId);
+    
+  return ret
+};
+
+const toToken = (value: any, helpers: any) => {
+  const chainId = helpers.prefs.context.chainId;
+  if (!chainId) {
+    throw new Error('ChainId not found in context');
+  }
+
+  const ret = toTokenArgs(value, chainId);
+
+  return ret
+};
+
+export const toTokenWithDecimalsSchema = TokenWithDecimalsSchema.custom(toTokenWithDecimals, 'toTokenArgsWithDecimals');
+export const toTokenSchema = TokenSchema.custom(toToken, 'toTokenArgsWithDecimals');
+
 export const priceConditionSchema = joi.object({
   type: joi.string().valid('price').required(),
   price: joi.number().required(),
   operator: joi.string().valid(...priceOperators).required(),
-  tokenA: joi.object(tokenWithDecimalsArgs).required(),
-  tokenB: joi.object(tokenWithDecimalsArgs).required(),
+  tokenA: toTokenWithDecimalsSchema.required(),
+  tokenB: toTokenWithDecimalsSchema.required(),
   twapInterval: joi.uint(32).optional(),
   twapFeePool: joi.number().integer().valid(500, 3000, 10000).optional(),
 });
@@ -75,8 +107,8 @@ const conditionSchemas = {
 export const limitSwapActionSchema = joi.object({
   type: joi.string().valid('limitSwap').required(),
   id: joi.uint(64).required(),
-  tokenIn: TokenSchema.required(),
-  tokenOut: TokenSchema.required(),
+  tokenIn: toTokenSchema.required(),
+  tokenOut: toTokenSchema.required(),
   tokenInAmount: joi.uint().required(),
   tokenOutAmount: joi.uint().required(),
   owner: joi.ethereumAddress().required(),
@@ -85,8 +117,8 @@ export const limitSwapActionSchema = joi.object({
 export const marketSwapActionSchema = joi.object({
   type: joi.string().valid('marketSwap').required(),
   owner: joi.ethereumAddress().required(),
-  tokenIn: TokenSchema.required(),
-  tokenOut: TokenSchema.required(),
+  tokenIn: toTokenSchema.required(),
+  tokenOut: toTokenSchema.required(),
   tokenInAmount: joi.uint().required(),
   fee: joi.number().min(0).max(100).required(),
   twapInterval: joi.uint(32).optional(),
@@ -98,16 +130,24 @@ const actionSchemas = {
   marketSwap: marketSwapActionSchema,
 };
 
-export const intentSegmentSchema = joi.object({
+const chainIdSchema = joi.number().integer() // .valid(1);
+
+export const singleIntentSchema = joi.object({
   replay: replaySchema.optional(),
   expiryBlock: joi.uint().optional(),
   conditions: joi.array().items(generateConditional(conditionSchemas)).optional(),
   actions: joi.array().items(generateConditional(actionSchemas)).required(),
-});
+  chainId: chainIdSchema.optional(),
+})
+
+export const multiIntentSchema = joi.object({
+  chainId: chainIdSchema.required(),
+  intents: joi.array().items(singleIntentSchema).required(),
+})
 
 export const intentOrArraySchema = joi.alternatives().try(
-  intentSegmentSchema,
-  joi.array().items(intentSegmentSchema)
+  singleIntentSchema,
+  multiIntentSchema
 );
 
 

@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import web3Utils from 'web3-utils';
+import { toTokenArgs, toTokenWithDecimalsArgs } from './toTokenArgs';
 
 const DEFAULT_UINT_SIZE = 256;
 

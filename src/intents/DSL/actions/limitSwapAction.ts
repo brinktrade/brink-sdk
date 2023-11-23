@@ -1,9 +1,17 @@
 import { padLeft } from 'web3-utils'
-import { LimitSwapActionArgs, SegmentArgs, SegmentParamValue } from '@brinkninja/types'
+import { LimitSwapActionArgs, SegmentArgs, SegmentParamValue, TokenArgs } from '@brinkninja/types'
 import { convertToX96HexPrice, toBigint, toTokenArgs } from '../../../internal'
 import { InvalidInputError } from '../errors';
 
 const FLAT_PRICE_CURVE_ADDRESS = '0xC509733B8dDdbab9369A96F6F216d6E59DB3900f';
+
+// tokenIn and tokenOut can be given as either a token symbol string or TokenArgs object. 
+// If they are given as a token symbol string, Joi validation transforms them to a TokenArgs object
+interface LimitSwapActionFunctionArgs extends Omit<LimitSwapActionArgs, 'tokenIn' | 'tokenOut'> {
+  tokenIn: TokenArgs;
+  tokenOut: TokenArgs;
+}
+
 
 function limitSwapAction ({
   id,
@@ -12,7 +20,7 @@ function limitSwapAction ({
   tokenOut,
   tokenInAmount,
   tokenOutAmount
-}: LimitSwapActionArgs): SegmentArgs[] {
+}: LimitSwapActionFunctionArgs): SegmentArgs[] {
   if (tokenOutAmount === undefined) {
     throw new InvalidInputError('tokenOutAmount is required')
   }
@@ -29,9 +37,6 @@ function limitSwapAction ({
   const hexPrice = padLeft(convertToX96HexPrice(tokenInAmountBN, tokenOutAmountBN), 64)
   const priceCurveParams = { address: FLAT_PRICE_CURVE_ADDRESS, params: hexPrice }
   
-  const tokenInArgs = toTokenArgs(tokenIn)
-  const tokenOutArgs = toTokenArgs(tokenOut)
-
   const fillStateParams = {
     id: BigInt(id),
     sign: true,
@@ -43,8 +48,8 @@ function limitSwapAction ({
     params: {
       priceCurve: priceCurveParams,
       signer: owner,
-      tokenIn: tokenInArgs as SegmentParamValue,
-      tokenOut: tokenOutArgs as SegmentParamValue,
+      tokenIn: tokenIn as SegmentParamValue,
+      tokenOut: tokenOut as SegmentParamValue,
       tokenInAmount: tokenInAmount,
       fillStateParams
     }
