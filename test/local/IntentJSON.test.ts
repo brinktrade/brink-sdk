@@ -85,6 +85,49 @@ describe('DeclarationDefinitionArgs', function () {
       expect(segmentFound).to.equal(true)
     })
   })
+
+  describe('with optional values as null', function () {
+    const singleSegmentIntent: IntentDefinitionArgs = {
+      chainId: 1,
+      replay: {
+        nonce: 123,
+        runs: 'UNTIL_CANCELLED'
+      },
+      conditions: [{
+        type: 'block',
+        state: 'MINED',
+        blockNumber: 20_000_000
+      }],
+      actions: [{
+        type: 'marketSwap',
+        owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+        tokenIn: USDC_TOKEN.address,
+        tokenOut: WETH_TOKEN.address,
+        tokenInAmount: 15_000,
+        fee: 2.5
+      }]
+    }
+    it('should accept { expiryBlock: null }', async function () {
+      const declaration1 = new Declaration({...singleSegmentIntent, expiryBlock: null })
+      const declarationJSON = await declaration1.toJSON()
+
+      let segmentFound = false
+      for (const segment of declarationJSON.intents[0].segments) {
+        if (segment.functionName === 'requireBlockNotMined') segmentFound = true
+      }
+      expect(segmentFound).to.equal(false)
+    })
+    it('should accept { expiryBlock: "null" }', async function () {
+      const declaration1 = new Declaration({...singleSegmentIntent, expiryBlock: 'null' })
+      const declarationJSON = await declaration1.toJSON()
+
+      let segmentFound = false
+      for (const segment of declarationJSON.intents[0].segments) {
+        if (segment.functionName === 'requireBlockNotMined') segmentFound = true
+      }
+      expect(segmentFound).to.equal(false)
+    })
+  })
 })
 
 const singleSegmentIntent: IntentDefinitionArgs = {

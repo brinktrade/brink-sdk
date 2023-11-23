@@ -21,7 +21,7 @@ function limitSwapAction ({
   tokenInAmount,
   tokenOutAmount
 }: LimitSwapActionFunctionArgs): SegmentArgs[] {
-  if (tokenOutAmount === undefined) {
+  if (!tokenOutAmount) {
     throw new InvalidInputError('tokenOutAmount is required')
   }
 

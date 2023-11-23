@@ -19,9 +19,10 @@ function marketSwapAction ({
   tokenOut,
   tokenInAmount,
   fee,
-  twapInterval = DEFAULT_TIME_INTERVAL,
+  twapInterval,
   twapFeePool = 0
 }: MarketSwapActionFunctionArgs): SegmentArgs[] {
+  if(!twapInterval) twapInterval = DEFAULT_TIME_INTERVAL
   const twapFeePoolBN = twapFeePool ? toBigint(twapFeePool) : undefined
   const twapFeePoolFeeAmount = twapFeePoolBN ? bigintToFeeAmount(twapFeePoolBN) : undefined
   const tokenInAmountBN = toBigint(tokenInAmount)

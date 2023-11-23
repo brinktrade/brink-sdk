@@ -6,9 +6,11 @@ const DEFAULT_START_BLOCK = 0
 function intervalCondition ({
   id,
   interval,
-  startBlock = DEFAULT_START_BLOCK,
-  maxIntervals = DEFAULT_MAX_INTERVALS
-}: IntervalConditionArgs): SegmentArgs[] {
+  startBlock,
+  maxIntervals
+}: IntervalConditionArgs): SegmentArgs[] { 
+  if(!startBlock) startBlock = DEFAULT_START_BLOCK
+  if(!maxIntervals) maxIntervals = DEFAULT_MAX_INTERVALS
   return [
     {
       functionName: 'blockInterval',
