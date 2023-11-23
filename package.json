@@ -21,7 +21,7 @@
     "@brinkninja/config": "^2.11.0",
     "@brinkninja/core": "^1.0.0",
     "@brinkninja/strategies": "^0.3.6",
-    "@brinkninja/types": "0.10.5",
+    "@brinkninja/types": "0.11.0",
     "@brinkninja/utils": "^0.5.2",
     "@brinkninja/verifiers": "^1.4.0",
     "@brinkninja/verifiers-v2": "^1.3.0",
