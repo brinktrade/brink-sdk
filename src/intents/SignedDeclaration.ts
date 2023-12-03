@@ -22,7 +22,7 @@ class SignedDeclaration {
     this.signatureType = signedDeclaration.signatureType || 'EIP712'
     this.signature = signedDeclaration.signature
     this.declaration = new Declaration(signedDeclaration.declaration)
-    this.declarationContract = signedDeclaration.declarationContract || Config['STRATEGY_TARGET_01'] as string
+    this.declarationContract = signedDeclaration.declarationContract
   }
 
   async validate (): Promise<ValidationResult> {

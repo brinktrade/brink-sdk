@@ -5,8 +5,8 @@ import { Transaction } from '@ethereumjs/tx'
 import { EVMResult } from '@ethereumjs/evm'
 import { VM } from '@ethereumjs/vm'
 import config from '../Config'
-import DeclarationBuilder01 from './contracts/StrategyBuilder01.json'
-import SegmentBuilder01 from './contracts/PrimitiveBuilder01.json'
+import IntentBuilder01 from './contracts/IntentBuilder01.json'
+import SegmentBuilder01 from './contracts/SegmentBuilder01.json'
 import UnsignedDataBuilder01 from './contracts/UnsignedDataBuilder01.json'
 import FlatPriceCurve from './contracts/FlatPriceCurve.json'
 import LinearPriceCurve from './contracts/LinearPriceCurve.json'
@@ -29,7 +29,7 @@ export const signatureTypeMap: { [key in SignatureType]: SignatureTypeEnum } = {
 }
 
 type EvmContractName =
-  'DeclarationBuilder' |
+  'IntentBuilder' |
   'SegmentBuilder' |
   'UnsignedDataBuilder' |
   'FlatPriceCurve' |
@@ -45,16 +45,13 @@ const signer = new ethers.Wallet(privateKey)
 
 export class EthereumJsVm {
 
-  readonly _declarationContractAddress: string
-  readonly _segmentsContractAddress: string
-
   _common: Common
   _vm!: VM
   _vmInitializing: boolean = false
   _vmInitialized: boolean = false
 
   _nonce: number = 0
-  DeclarationBuilder!: ethers.Contract
+  IntentBuilder!: ethers.Contract
   SegmentBuilder!: ethers.Contract
   UnsignedDataBuilder!: ethers.Contract
   FlatPriceCurve!: ethers.Contract
@@ -62,13 +59,7 @@ export class EthereumJsVm {
   QuadraticPriceCurve!: ethers.Contract
   SwapIO!: ethers.Contract
 
-  constructor (
-    declarationContractAddress: string,
-    segmentsContractAddress: string
-  ) {
-    this._declarationContractAddress = declarationContractAddress
-    this._segmentsContractAddress = segmentsContractAddress
-
+  constructor () {
     this._common = new Common({ chain: Chain.Mainnet })
   }
 
@@ -84,7 +75,7 @@ export class EthereumJsVm {
       this._vmInitializing = true
       this._vm = await VM.create({ common: this._common })
       
-      this.DeclarationBuilder = await this._deployContract(DeclarationBuilder01, this._declarationContractAddress, this._segmentsContractAddress)
+      this.IntentBuilder = await this._deployContract(IntentBuilder01)
       this.SegmentBuilder = await this._deployContract(SegmentBuilder01)
       this.UnsignedDataBuilder = await this._deployContract(UnsignedDataBuilder01)
       this.FlatPriceCurve = await this._deployContract(FlatPriceCurve)
@@ -132,6 +123,7 @@ export class EthereumJsVm {
 
   async DeclarationData (
     intents: IntentJSON [] = [],
+    segmentsContract: string,
     beforeCalls: CallStruct[] = [],
     afterCalls: CallStruct[] = []
   ): Promise<string> {
@@ -140,9 +132,10 @@ export class EthereumJsVm {
     )
 
     const declarationIData: string = await this.callContractFn(
-      'DeclarationBuilder',
-      'strategyData(bytes[][],(address,bytes)[],(address,bytes)[])',
+      'IntentBuilder',
+      'declarationData(bytes[][],address,(address,bytes)[],(address,bytes)[])',
       intentsBytesArray,
+      segmentsContract,
       beforeCalls,
       afterCalls
     )
@@ -155,19 +148,21 @@ export class EthereumJsVm {
     return `0x${cleanDynamicBytes(declarationIDataTrimmed)}`
   }
 
-  async declarationIMessageHash (
+  async declarationMessageHash (
     signatureType: SignatureType,
     data: string,
     account: string,
-    chainId: BigIntish
+    chainId: BigIntish,
+    intentTarget: string
   ): Promise<string> {
     const messageHash: string = await this.callContractFn(
-      'DeclarationBuilder',
+      'IntentBuilder',
       `getMessageHash`,
       signatureTypeMap[signatureType],
       data,
       account,
-      BigInt(chainId)
+      BigInt(chainId),
+      intentTarget
     )
     return `0x${messageHash}`
   }
@@ -255,7 +250,4 @@ function cleanDynamicBytes (bytes: string): string {
   return bytes.slice(128)
 }
 
-export default new EthereumJsVm(
-  config['STRATEGY_TARGET_01'] as string,
-  config['PRIMITIVES_01'] as string,
-)
+export default new EthereumJsVm()

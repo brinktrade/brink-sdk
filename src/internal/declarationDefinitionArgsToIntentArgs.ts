@@ -1,7 +1,7 @@
-import { DeclarationArgs, DeclarationDefinitionArgs, IntentArgs } from '@brinkninja/types'
+import { DeclarationDefinitionArgs, IntentArgs } from '@brinkninja/types'
 import { intentDefinitionArgsToIntentArgs } from '.'
 
-function declarationDefinitionArgsToIntentArgs (declaration: DeclarationDefinitionArgs): DeclarationArgs {
+function declarationDefinitionArgsToIntentArgs (declaration: DeclarationDefinitionArgs): IntentArgs[] {
   if (declaration.replay) {
     throw new Error(`Intent replay not implemented. Set replay for individual segments`)
   }
@@ -10,9 +10,7 @@ function declarationDefinitionArgsToIntentArgs (declaration: DeclarationDefiniti
     throw new Error(`Intent expiryBlock not implemented. Set expiryBlock for individual segments`)
   }
 
-  const intents: IntentArgs[] = declaration.intents.map(intentDefinitionArgsToIntentArgs)
-
-  return { intents }
+  return declaration.intents.map(intentDefinitionArgsToIntentArgs)
 }
 
 export default declarationDefinitionArgsToIntentArgs
