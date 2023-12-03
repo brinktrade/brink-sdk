@@ -20,7 +20,7 @@ import fundWithERC20 from '../helpers/fundWithERC20'
 const legacyStrategyConstants = require('@brinkninja/strategies/constants.js')
 
 describe('executeIntent with marketSwapExactInput', function () {
-  it.only('should execute a simple market swap intent', async function () {
+  it('should execute a simple market swap intent', async function () {
     const deployTx = await deployAccount({ signer: this.signerAddress })
     await this.defaultSigner.sendTransaction(deployTx)
 
