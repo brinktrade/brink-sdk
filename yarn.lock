@@ -36,14 +36,15 @@
   dependencies:
     "@brinkninja/range-orders" "^0.2.0"
 
-"@brinkninja/config@^2.11.0":
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/@brinkninja/config/-/config-2.11.0.tgz#4df8094e30e4a8b934e63685cab219b6928ede24"
-  integrity sha512-EZXux+/s00VXMBUyOxJfDMuUXPqrx3+DpDlFQD2Rh+jq/rS2EDWk0COsy/SSoikwnlBDoe5/hRIMv2FpJ5n87Q==
+"@brinkninja/config@2.16.0":
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/@brinkninja/config/-/config-2.16.0.tgz#f79e73c11cc8427a85d06e83916614a801ec96dc"
+  integrity sha512-km9NdTpX7VWIP/vKIPAay/legnioYelBx/7c0rriy6uiZwFGLDUG95VuTrFX1nhjM8g/GKrPA8cSiQ1VnJWbbw==
   dependencies:
     "@brinkninja/1inch-adapter" "^1.0.0"
     "@brinkninja/adapters" "^1.0.0"
     "@brinkninja/core" "^1.0.0"
+    "@brinkninja/intents" "0.6.0"
     "@brinkninja/nft-adapter" "^1.0.0"
     "@brinkninja/strategies" "^0.3.4"
     "@brinkninja/strategy-adapters" "^0.1.0"
@@ -58,6 +59,16 @@
   resolved "https://registry.yarnpkg.com/@brinkninja/core/-/core-1.0.0.tgz#070990e33516a466145266b3286d35e9d38cef18"
   integrity sha512-QM7yXeIwhmiFdNyy4Rpmjn+rmIrbqv219H/1qtEOkiabsnbbuSbUdL5iqE3fikxripsNELJG9BSPtERepl72kg==
 
+"@brinkninja/intents@0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@brinkninja/intents/-/intents-0.6.0.tgz#0457cfcd8be387ec0907471a69027012e7c29f1b"
+  integrity sha512-/7vbbaxK2nrk+YvucZqG66PBMUHoSKfw5Yrziq+sY58vJvq4LUezTM12ew2QR0hZKR/iXLFASIIbj8zqaOHU+g==
+
+"@brinkninja/intents@0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@brinkninja/intents/-/intents-0.7.0.tgz#a711134deec00489441e91b4a5cc24bcca4a4bfc"
+  integrity sha512-WtKIWYhnMFe+4NCc718SeSDZrOb/+4pK5Xn8LbPWiS5yXXvGFqsnvgbH+/69alkCj+RWIQaobx6nB6o7xuXC5g==
+
 "@brinkninja/nft-adapter@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@brinkninja/nft-adapter/-/nft-adapter-1.0.0.tgz#572d65dc6dfd6e9612b4b9130572e064f8b5b309"
@@ -71,15 +82,15 @@
     "@uniswap/v3-core" "^1.0.0-rc.1"
     "@uniswap/v3-periphery" "^1.0.0-beta.19"
 
+"@brinkninja/strategies@0.3.6":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@brinkninja/strategies/-/strategies-0.3.6.tgz#4bbf606cc5f37e16cbcef9b352b0682d167344e0"
+  integrity sha512-zY6Cihl8mB4q181ub3ic4r8Tqk9vHFMp+G8ThZvxY6tVoy5vtR63kKl9vKhoT2z5KQ7Vf1j+WYaxUJRXYnVi2A==
+
 "@brinkninja/strategies@^0.3.4":
   version "0.3.4"
   resolved "https://registry.yarnpkg.com/@brinkninja/strategies/-/strategies-0.3.4.tgz#201c42b1ec10d2600fc0dc6c602d050ae2e79db4"
   integrity sha512-ypUQgv6nhvw7+cuIedlo/WwvwPDM6xSdsz8IWMvivjzaJu7NGnsKoMmG7b9v9nb6zYuNeIHVBlChdiuMRsd75w==
-
-"@brinkninja/strategies@^0.3.6":
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/@brinkninja/strategies/-/strategies-0.3.6.tgz#4bbf606cc5f37e16cbcef9b352b0682d167344e0"
-  integrity sha512-zY6Cihl8mB4q181ub3ic4r8Tqk9vHFMp+G8ThZvxY6tVoy5vtR63kKl9vKhoT2z5KQ7Vf1j+WYaxUJRXYnVi2A==
 
 "@brinkninja/strategy-adapters@^0.1.0":
   version "0.1.0"
@@ -90,10 +101,10 @@
     axios "^0.25.0"
     chai "^4.3.4"
 
-"@brinkninja/types@0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@brinkninja/types/-/types-0.11.0.tgz#4f6302640af59e9955d25efad0a7e2b67a3d0c4e"
-  integrity sha512-Cm+6smglyLvEIj3O/9//9ZSnP6gpRfZXHHPULtl6N50P1q/sqOGIiGGyWAS7O0Vv9l2OGEdNj22gmAQFQ7P3Kw==
+"@brinkninja/types@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@brinkninja/types/-/types-0.14.0.tgz#5aee13d13b3019a891cad35dcf41efbda99d9766"
+  integrity sha512-BRgEs1sa/aX8TDFn1ysH/nU3JlX4ERRtwR1znYghdqMLV1+77gozT+I/IUFhYWyNjZm1fqytutcXJmyL+jN8nQ==
   dependencies:
     standard-version "^9.5.0"
     typescript "^5.0.4"

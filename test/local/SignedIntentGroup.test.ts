@@ -1,17 +1,27 @@
 import { expect } from 'chai'
-import { Declaration, Token, TokenArgs, SegmentArgs } from '@brink-sdk'
+import {
+  Declaration,
+  Token,
+  TokenArgs,
+  SegmentArgs,
+  declarationEIP712TypedData,
+  SignedDeclaration,
+  DeclarationArgs
+} from '@brink-sdk'
+
+const { INTENT_TARGET_01, SEGMENTS_01 } = require('@brinkninja/config').mainnet
 
 describe('SignedDeclaration', function () {
   describe('validate()', function () {
     it('should return valid for a valid SignedDeclaration', async function () {
       const declarationData = await buildDeclaration()
-      const signedDeclaration = await this.signDeclaration(declarationData)
+      const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
       expect((await signedDeclaration.validate()).valid).to.equal(true)
     })
 
     it('SignedDeclaration where signer does not match signature recovered address should be invalid', async function () {
       const declarationData = await buildDeclaration()
-      let signedDeclaration = await this.signDeclaration(declarationData)
+      let signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
       signedDeclaration.signature = '0xa6d6160d57568bde2a1ca2f623cf8814e06d75ee174389e5325110f7029311c2192404dc20a07e9b71cc8747102612c081b4c20ed4f16b37cb3980dd7bd8df1c1b'
       const validationResult = await signedDeclaration.validate()
       expect(validationResult.valid).to.equal(false)
@@ -50,8 +60,35 @@ async function buildDeclaration () {
             } as SegmentArgs
           ]
         }
-      ]
+      ],
+      segmentsContract: SEGMENTS_01
     }
   )
   return await declaration1.toJSON()
+}
+
+async function signDeclaration (ethersAccountSigner: any, declaration: DeclarationArgs): Promise<SignedDeclaration> {
+  const chainId = 31337
+
+  const eip712TypedData = await declarationEIP712TypedData({
+    signer: ethersAccountSigner.address,
+    chainId,
+    declaration,
+    declarationContract: INTENT_TARGET_01
+  })
+
+  // sign the EIP712 TypedData with an ethers signer
+  const signature = await ethersAccountSigner._signTypedData(
+    eip712TypedData.domain,
+    eip712TypedData.types,
+    eip712TypedData.value
+  )
+
+  return new SignedDeclaration({
+    declaration,
+    signature,
+    chainId,
+    signer: ethersAccountSigner.address,
+    declarationContract: INTENT_TARGET_01
+  })
 }

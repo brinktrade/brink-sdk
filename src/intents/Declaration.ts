@@ -10,9 +10,6 @@ import {
 } from '../internal'
 import DeclarationIntent from './Intent'
 import { intentOrArraySchema } from './DSL/schema'
-import { bitToNonce } from '..'
-
-const { PRIMITIVES_01 } = Config
 
 class Declaration {
   intents: DeclarationIntent[]
@@ -28,7 +25,7 @@ class Declaration {
   public constructor (...arr: any[]) {
     const inputArgs: (DeclarationArgs | DeclarationDefinitionArgs | IntentDefinitionArgs | IntentDefinitionArgs[]) = arr[0] || {}
 
-    let declarationArgs: DeclarationArgs = { intents: [] }
+    let declarationArgs: DeclarationArgs = { intents: [], segmentsContract: '' }
 
     if ('intents' in inputArgs && 'actions' in inputArgs?.intents[0]) {
       if (!('chainId' in inputArgs)) {
@@ -40,7 +37,8 @@ class Declaration {
         throw new Error(error.message)
       }
 
-      declarationArgs = declarationDefinitionArgsToIntentArgs(value as DeclarationDefinitionArgs);
+      declarationArgs.intents = declarationDefinitionArgsToIntentArgs(value as DeclarationDefinitionArgs);
+      declarationArgs.segmentsContract = Config['SEGMENTS_01']
     } else if ('intents' in inputArgs && 'segments' in (inputArgs.intents[0])) {
       declarationArgs = inputArgs as DeclarationArgs;
     } else if ('actions' in inputArgs) {
@@ -57,16 +55,21 @@ class Declaration {
         throw new Error(error.message)
       }
 
-      declarationArgs = declarationDefinitionArgsToIntentArgs({ chainId, intents: [value as IntentDefinitionArgs] });
+      declarationArgs.intents = declarationDefinitionArgsToIntentArgs({ chainId, intents: [value as IntentDefinitionArgs] });
+      declarationArgs.segmentsContract = Config['SEGMENTS_01']
     }
 
     this.intents = (declarationArgs?.intents).map(intentArgs => new Intent(intentArgs))
     this.beforeCalls = declarationArgs?.beforeCalls || []
     this.afterCalls = declarationArgs?.afterCalls || []
-    this.segmentsContract = declarationArgs?.segmentsContract || PRIMITIVES_01
+    this.segmentsContract = declarationArgs?.segmentsContract
   }
 
   async toJSON (): Promise<DeclarationJSON> {
+    if (!this.segmentsContract) {
+      throw new Error('Segments contract address not set')
+    }
+
     const intents = await Promise.all(
       this.intents.map(async intent => await intent.toJSON())
     )
@@ -74,10 +77,11 @@ class Declaration {
     return {
       data: await evm.DeclarationData(
         intents,
+        this.segmentsContract,
         this.beforeCalls,
         this.afterCalls
       ),
-      segmentsContract: Config['PRIMITIVES_01'] as string,
+      segmentsContract: this.segmentsContract,
       intents,
       beforeCalls: this.beforeCalls,
       afterCalls: this.afterCalls

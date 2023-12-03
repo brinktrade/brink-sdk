@@ -5,9 +5,6 @@ import {
   getSignerAccount,
   deployAccount,
   loadBitmap,
-  declarationEIP712TypedData,
-  SignedDeclaration,
-  DeclarationArgs,
   BigIntish
 } from '@brink-sdk'
 import { use } from 'chai'
@@ -103,30 +100,6 @@ beforeEach(async function () {
     const rpcCall = loadBitmap({ signer: this.signerAddress, bitmapIndex })
     const bmp = await ethers.provider.send(rpcCall.method, rpcCall.params)
     return bmp
-  }
-
-  this.signDeclaration = async (declaration: DeclarationArgs): Promise<SignedDeclaration> => {
-    const chainId = 31337
-
-    const eip712TypedData = await declarationEIP712TypedData({
-      signer: this.signerAddress,
-      chainId,
-      declaration
-    })
-
-    // sign the EIP712 TypedData with an ethers signer
-    const signature = await this.ethersAccountSigner._signTypedData(
-      eip712TypedData.domain,
-      eip712TypedData.types,
-      eip712TypedData.value
-    )
-
-    return new SignedDeclaration({
-      declaration,
-      signature,
-      chainId,
-      signer: this.signerAddress
-    })
   }
 })
 

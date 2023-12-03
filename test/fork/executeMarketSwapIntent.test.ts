@@ -17,8 +17,10 @@ import {
 } from '@brink-sdk'
 import fundWithERC20 from '../helpers/fundWithERC20'
 
+const legacyStrategyConstants = require('@brinkninja/strategies/constants.js')
+
 describe('executeIntent with marketSwapExactInput', function () {
-  it('should execute a simple market swap intent', async function () {
+  it.only('should execute a simple market swap intent', async function () {
     const deployTx = await deployAccount({ signer: this.signerAddress })
     await this.defaultSigner.sendTransaction(deployTx)
 
@@ -41,6 +43,7 @@ describe('executeIntent with marketSwapExactInput', function () {
     // expect signer to have paid USDC and received WETH
     const signer_usdcBal_1 = await this.usdc.balanceOf(this.ethersAccountSigner.address)
     const signer_wethBal_1 = await this.weth.balanceOf(this.ethersAccountSigner.address)
+
     const signer_usdcBal_diff = BigInt(signer_usdcBal_1 - signer_usdcBal_0)
     const signer_wethBal_diff = BigInt(signer_wethBal_1 - signer_wethBal_0)
     expect(signer_usdcBal_diff.toString()).to.equal((-usdcInput).toString())
@@ -96,6 +99,7 @@ async function successfulExecuteDeclaration (this: TestContext): Promise<{
 
   // build the market swap declaration
   const declaration = new Declaration()
+  declaration.segmentsContract = legacyStrategyConstants.PRIMITIVES_01
   declaration.intents[0] = new DeclarationIntent()
   declaration.intents[0].segments[0] = new UseBit({ index: BigInt(0), value: BigInt(2**0) })
   declaration.intents[0].segments[1] = new MarketSwapExactInput({
@@ -114,7 +118,8 @@ async function successfulExecuteDeclaration (this: TestContext): Promise<{
   const { domain, types, value } = await declarationEIP712TypedData({
     signer: this.ethersAccountSigner.address,
     chainId,
-    declaration: declarationJSON as DeclarationArgs
+    declaration: declarationJSON as DeclarationArgs,
+    declarationContract: legacyStrategyConstants.STRATEGY_TARGET_01
   })
   const signature = await this.ethersAccountSigner._signTypedData(
     domain, types, value
@@ -123,7 +128,8 @@ async function successfulExecuteDeclaration (this: TestContext): Promise<{
     declaration: declarationJSON as DeclarationArgs,
     chainId,
     signature,
-    signer: this.ethersAccountSigner.address
+    signer: this.ethersAccountSigner.address,
+    declarationContract: legacyStrategyConstants.STRATEGY_TARGET_01
   })
 
   // fund and approve USDC

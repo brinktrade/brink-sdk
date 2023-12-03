@@ -17,6 +17,8 @@ import {
 } from '@brink-sdk'
 import { DAI_TOKEN as DAI_DETAILS, USDC_TOKEN as USDC_DETAILS, WETH_TOKEN as WETH_DETAILS } from "../helpers/tokens";
 
+const { SEGMENTS_01 } = require('@brinkninja/config').mainnet
+
 const { MAX_UINT256 } = require('@brinkninja/utils').constants
 
 const { TWAP_ADAPTER_02 } = Config
@@ -64,6 +66,7 @@ describe('Declarations', function () {
 
   it('should build declaration using Oracle segment param classes', async function () {
     const declaration1 = new Declaration()
+    declaration1.segmentsContract = SEGMENTS_01
 
     const usdc_weth_500_twap = new UniV3Twap({
       tokenA: USDC_TOKEN,
@@ -244,7 +247,8 @@ const validDeclaration1 = {
         } as SegmentArgs
       ]
     }
-  ]
+  ],
+  segmentsContract: SEGMENTS_01
 }
 
 const validLimitSwapExactInput = {
@@ -284,7 +288,8 @@ const validLimitSwapExactInput = {
         } as SegmentArgs
       ]
     }
-  ]
+  ],
+  segmentsContract: SEGMENTS_01
 }
 
 const validSwapOnBlockInterval = {
@@ -317,7 +322,8 @@ const validSwapOnBlockInterval = {
         } as SegmentArgs
       ]
     }
-  ]
+  ],
+  segmentsContract: SEGMENTS_01
 }
 
 const requireBitUsedDeclaration = {
@@ -348,7 +354,8 @@ const requireBitUsedDeclaration = {
         } as SegmentArgs
       ]
     }
-  ]
+  ],
+  segmentsContract: SEGMENTS_01
 }
 
 const requireBitNotUsedDeclaration = {
@@ -379,5 +386,6 @@ const requireBitNotUsedDeclaration = {
         } as SegmentArgs
       ]
     }
-  ]
+  ],
+  segmentsContract: SEGMENTS_01
 }
