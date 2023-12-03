@@ -7,6 +7,9 @@ export { default as LimitSwapExactInput } from './LimitSwapExactInput'
 export * from './MarketSwapExactInput'
 export { default as MarketSwapExactInput } from './MarketSwapExactInput'
 
+export * from './Swap01'
+export { default as Swap01 } from './Swap01'
+
 export * from './RequireBitUsed'
 export { default as RequireBitUsed } from './RequireBitUsed'
 
