@@ -167,6 +167,25 @@ export class EthereumJsVm {
     return `0x${messageHash}`
   }
 
+  async unsignedSwapData (
+    recipient: string,
+    tokenInIdsProof: IdsProof,
+    tokenOutIdsProof: IdsProof,
+    callData: CallStruct,
+    signature: string
+  ): Promise<string> {
+    const unsignedSwapData: string = await this.callContractFn(
+      'UnsignedDataBuilder',
+      'unsignedSwapData',
+      recipient,
+      tokenInIdsProof.toStruct(),
+      tokenOutIdsProof.toStruct(),
+      callData,
+      signature
+    )
+    return `0x${cleanDynamicBytes(unsignedSwapData)}`
+  }
+
   async unsignedMarketSwapData (
     recipient: string,
     tokenInIdsProof: IdsProof,
