@@ -27,6 +27,10 @@ export { default as groupAndSumTokenAmounts } from './groupAndSumTokenAmounts'
 
 export { default as declarationDefinitionArgsToIntentArgs } from './declarationDefinitionArgsToIntentArgs'
 
+export { default as decodeParams } from './decodeParams'
+
+export { default as encodeParams } from './encodeParams'
+
 export { default as intentDefinitionArgsToIntentArgs } from './intentDefinitionArgsToIntentArgs'
 
 export { default as priceCurveAddress } from './priceCurveAddress'

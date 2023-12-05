@@ -1,15 +1,14 @@
-import { TokenArgs, SegmentParamType } from '@brinkninja/types'
+import { TokenArgs, SegmentParamType, SwapAmountArgs } from '@brinkninja/types'
 import Token from '../Token'
 import Segment from './Segment'
+import { SwapAmount } from '../SwapAmount'
 
 export type Swap01Args = {
   signer: string
   tokenIn: TokenArgs
   tokenOut: TokenArgs
-  inputAmountContract: string
-  outputAmountContract: string
-  inputAmountParams: string
-  outputAmountParams: string
+  inputAmount: SwapAmountArgs
+  outputAmount: SwapAmountArgs
   solverValidator: string
 }
 
@@ -66,10 +65,8 @@ export default class Swap01 extends Segment {
     signer,
     tokenIn,
     tokenOut,
-    inputAmountContract,
-    outputAmountContract,
-    inputAmountParams,
-    outputAmountParams,
+    inputAmount,
+    outputAmount,
     solverValidator
   }: Swap01Args) {
     super({
@@ -80,10 +77,8 @@ export default class Swap01 extends Segment {
         signer,
         tokenIn: (new Token(tokenIn)).toJSON(),
         tokenOut: (new Token(tokenOut)).toJSON(),
-        inputAmountContract: inputAmountContract.toString(),
-        outputAmountContract: outputAmountContract.toString(),
-        inputAmountParams: inputAmountParams.toString(),
-        outputAmountParams: outputAmountParams.toString(),
+        inputAmount: (new SwapAmount(inputAmount)).toJSON(),
+        outputAmount: (new SwapAmount(outputAmount)).toJSON(),
         solverValidator: solverValidator.toString()
       },
       paramTypes: Swap01FunctionParams,
@@ -91,10 +86,10 @@ export default class Swap01 extends Segment {
         signer,
         (new Token(tokenIn)).toStruct(),
         (new Token(tokenOut)).toStruct(),
-        inputAmountContract.toString(),
-        outputAmountContract.toString(),
-        inputAmountParams.toString(),
-        outputAmountParams.toString(),
+        (new SwapAmount(inputAmount)).contractAddress,
+        (new SwapAmount(outputAmount)).contractAddress,
+        (new SwapAmount(inputAmount)).paramsBytesData,
+        (new SwapAmount(outputAmount)).paramsBytesData,
         solverValidator.toString()
       ]
     })
