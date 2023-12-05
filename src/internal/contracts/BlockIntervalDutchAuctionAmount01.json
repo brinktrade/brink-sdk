@@ -1,0 +1,117 @@
+[
+    {
+      "type": "function",
+      "name": "Q96",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getAmount",
+      "inputs": [
+        {
+          "name": "params",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getAuctionAmount",
+      "inputs": [
+        {
+          "name": "blockNumber",
+          "type": "uint128",
+          "internalType": "uint128"
+        },
+        {
+          "name": "previousAuctionFilledBlock",
+          "type": "uint128",
+          "internalType": "uint128"
+        },
+        {
+          "name": "oppositeTokenAmount",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "firstAuctionStartBlock",
+          "type": "uint128",
+          "internalType": "uint128"
+        },
+        {
+          "name": "auctionDelayBlocks",
+          "type": "uint128",
+          "internalType": "uint128"
+        },
+        {
+          "name": "auctionDurationBlocks",
+          "type": "uint128",
+          "internalType": "uint128"
+        },
+        {
+          "name": "startPercentE6",
+          "type": "int24",
+          "internalType": "int24"
+        },
+        {
+          "name": "endPercentE6",
+          "type": "int24",
+          "internalType": "int24"
+        },
+        {
+          "name": "priceX96",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "getBlockIntervalState",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "start",
+          "type": "uint128",
+          "internalType": "uint128"
+        },
+        {
+          "name": "counter",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "stateMutability": "view"
+    }
+  ]

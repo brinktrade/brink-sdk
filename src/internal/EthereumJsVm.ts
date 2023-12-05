@@ -12,6 +12,7 @@ import FlatPriceCurve from './contracts/FlatPriceCurve.json'
 import LinearPriceCurve from './contracts/LinearPriceCurve.json'
 import QuadraticPriceCurve from './contracts/QuadraticPriceCurve.json'
 import SwapIO from './contracts/SwapIO.json'
+import BlockIntervalDutchAuctionAmount01 from './contracts/BlockIntervalDutchAuctionAmount01.json'
 import IdsProof from '../intents/IdsProof'
 import {
   ContractCallParam,
@@ -58,6 +59,7 @@ export class EthereumJsVm {
   LinearPriceCurve!: ethers.Contract
   QuadraticPriceCurve!: ethers.Contract
   SwapIO!: ethers.Contract
+  BlockIntervalDutchAuctionAmount01!: ethers.Contract
 
   constructor () {
     this._common = new Common({ chain: Chain.Mainnet })
@@ -82,6 +84,7 @@ export class EthereumJsVm {
       this.LinearPriceCurve = await this._deployContract(LinearPriceCurve)
       this.QuadraticPriceCurve = await this._deployContract(QuadraticPriceCurve)
       this.SwapIO = await this._deployContract(SwapIO)
+      this.BlockIntervalDutchAuctionAmount01 = await this._deployContract(BlockIntervalDutchAuctionAmount01)
 
       this._vmInitializing = false
       this._vmInitialized = true
