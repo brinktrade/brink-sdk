@@ -12,6 +12,7 @@ import FlatPriceCurve from './contracts/FlatPriceCurve.json'
 import LinearPriceCurve from './contracts/LinearPriceCurve.json'
 import QuadraticPriceCurve from './contracts/QuadraticPriceCurve.json'
 import SwapIO from './contracts/SwapIO.json'
+import BlockIntervalDutchAuctionAmount01 from './contracts/BlockIntervalDutchAuctionAmount01.json'
 import IdsProof from '../intents/IdsProof'
 import {
   ContractCallParam,
@@ -35,7 +36,8 @@ type EvmContractName =
   'FlatPriceCurve' |
   'LinearPriceCurve' |
   'QuadraticPriceCurve' |
-  'SwapIO'
+  'SwapIO' |
+  'BlockIntervalDutchAuctionAmount01'
 
 // use this randomly generated private key to sign transactions the the VM running in SDK
 const caller = Address.fromString('0x21753FDE2F04Ad242cf3DE684129BE7B11817F09')
@@ -58,6 +60,7 @@ export class EthereumJsVm {
   LinearPriceCurve!: ethers.Contract
   QuadraticPriceCurve!: ethers.Contract
   SwapIO!: ethers.Contract
+  BlockIntervalDutchAuctionAmount01!: ethers.Contract
 
   constructor () {
     this._common = new Common({ chain: Chain.Mainnet })
@@ -82,6 +85,7 @@ export class EthereumJsVm {
       this.LinearPriceCurve = await this._deployContract(LinearPriceCurve)
       this.QuadraticPriceCurve = await this._deployContract(QuadraticPriceCurve)
       this.SwapIO = await this._deployContract(SwapIO)
+      this.BlockIntervalDutchAuctionAmount01 = await this._deployContract(BlockIntervalDutchAuctionAmount01)
 
       this._vmInitializing = false
       this._vmInitialized = true
@@ -184,6 +188,33 @@ export class EthereumJsVm {
       signature
     )
     return `0x${cleanDynamicBytes(unsignedSwapData)}`
+  }
+
+  async getAuctionAmount (
+    blockNumber: string,
+    previousAuctionFilledBlock: string,
+    oppositeTokenAmount: string,
+    firstAuctionStartBlock: string,
+    auctionDelayBlocks: string,
+    auctionDurationBlocks: string,
+    startPercentE6: string,
+    endPercentE6: string,
+    priceX96: string
+  ): Promise<bigint> {
+    const getAuctionAmountData: string = await this.callContractFn(
+      'BlockIntervalDutchAuctionAmount01',
+      'getAuctionAmount',
+      blockNumber,
+      previousAuctionFilledBlock,
+      oppositeTokenAmount,
+      firstAuctionStartBlock,
+      auctionDelayBlocks,
+      auctionDurationBlocks,
+      startPercentE6,
+      endPercentE6,
+      priceX96
+    )
+    return BigInt(`0x${getAuctionAmountData}`)
   }
 
   async unsignedMarketSwapData (
