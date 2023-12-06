@@ -1,4 +1,4 @@
-import { ethers, providers } from 'ethers'
+import { ethers } from 'ethers'
 import { Chain, Common } from '@ethereumjs/common'
 import { Address } from '@ethereumjs/util'
 import { Transaction } from '@ethereumjs/tx'
