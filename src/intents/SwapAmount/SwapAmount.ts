@@ -55,8 +55,9 @@ class SwapAmount {
     this.contractAddress = (swapAmountContractData as SwapAmountContractData).address
     this.paramTypes = (swapAmountContractData as SwapAmountContractData).paramTypes
 
+    let paramsUnformatted: ContractCallParam[] = []
     if (params) {
-      this.params = params
+      paramsUnformatted = params
       this.paramsBytesData = encodeParams({ params, paramTypes: this.paramTypes }).toLowerCase()
     }
 
@@ -64,9 +65,11 @@ class SwapAmount {
       if (this.paramsBytesData && this.paramsBytesData !== paramsBytesData.toLowerCase()) {
         throw new Error('SwapAmount: params provided do not match paramsBytesData')
       }
-      this.params = decodeParams({ data: paramsBytesData, paramTypes: this.paramTypes })
+      paramsUnformatted = decodeParams({ data: paramsBytesData, paramTypes: this.paramTypes })
       this.paramsBytesData = paramsBytesData.toLowerCase()
     }
+
+    this.params = formatParams(paramsUnformatted)
   }
 
   toJSON (): SwapAmountJSON {
@@ -115,6 +118,17 @@ const swapAmountContractMap: Record<SwapAmountContractName, SwapAmountContractDa
       { name: 'priceX96OracleParams', type: 'bytes' }
     ]
   }
+}
+
+// converts bigint's to strings
+function formatParams (paramsArray: ContractCallParam[]): ContractCallParam[] {
+  return paramsArray.map(p => {
+    if (p.toString) {
+      return p.toString().toLowerCase()
+    } else {
+      return p
+    }
+  })
 }
 
 export default SwapAmount
