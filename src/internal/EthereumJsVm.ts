@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { ethers, providers } from 'ethers'
 import { Chain, Common } from '@ethereumjs/common'
 import { Address } from '@ethereumjs/util'
 import { Transaction } from '@ethereumjs/tx'
@@ -36,7 +36,8 @@ type EvmContractName =
   'FlatPriceCurve' |
   'LinearPriceCurve' |
   'QuadraticPriceCurve' |
-  'SwapIO'
+  'SwapIO' |
+  'BlockIntervalDutchAuctionAmount01'
 
 // use this randomly generated private key to sign transactions the the VM running in SDK
 const caller = Address.fromString('0x21753FDE2F04Ad242cf3DE684129BE7B11817F09')
@@ -187,6 +188,33 @@ export class EthereumJsVm {
       signature
     )
     return `0x${cleanDynamicBytes(unsignedSwapData)}`
+  }
+
+  async getAuctionAmount (
+    blockNumber: string,
+    previousAuctionFilledBlock: string,
+    oppositeTokenAmount: string,
+    firstAuctionStartBlock: string,
+    auctionDelayBlocks: string,
+    auctionDurationBlocks: string,
+    startPercentE6: string,
+    endPercentE6: string,
+    priceX96: string
+  ): Promise<bigint> {
+    const getAuctionAmountData: string = await this.callContractFn(
+      'BlockIntervalDutchAuctionAmount01',
+      'getAuctionAmount',
+      blockNumber,
+      previousAuctionFilledBlock,
+      oppositeTokenAmount,
+      firstAuctionStartBlock,
+      auctionDelayBlocks,
+      auctionDurationBlocks,
+      startPercentE6,
+      endPercentE6,
+      priceX96
+    )
+    return BigInt(`0x${getAuctionAmountData}`)
   }
 
   async unsignedMarketSwapData (

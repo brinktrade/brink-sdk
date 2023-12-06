@@ -37,6 +37,9 @@ export { default as FillStateParams } from './FillStateParams'
 export * from './unsignedLimitSwapData'
 export { default as unsignedLimitSwapData } from './unsignedLimitSwapData'
 
+export * from './getBlockIntervalDutchAuctionAmount'
+export { default as getBlockIntervalDutchAuctionAmount } from './getBlockIntervalDutchAuctionAmount'
+
 export * from './unsignedMarketSwapData'
 export { default as unsignedMarketSwapData } from './unsignedMarketSwapData'
 

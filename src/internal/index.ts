@@ -35,8 +35,6 @@ export { default as sigToValidECDSA } from './sigToValidECDSA'
 
 export { default as bigintToFeeAmount } from './bigintToFeeAmount'
 
-export { default as getBlockIntervalDutchAuctionAmount } from './getBlockIntervalDutchAuctionAmount'
-
 export * from './SolidityValidation'
 
 export * from './Validation'
