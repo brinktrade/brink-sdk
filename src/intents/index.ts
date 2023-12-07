@@ -40,6 +40,9 @@ export { default as unsignedLimitSwapData } from './unsignedLimitSwapData'
 export * from './getBlockIntervalDutchAuctionAmount'
 export { default as getBlockIntervalDutchAuctionAmount } from './getBlockIntervalDutchAuctionAmount'
 
+export * from './unsignedSwapDataHash'
+export { default as unsignedSwapDataHash } from './unsignedSwapDataHash'
+
 export * from './unsignedMarketSwapData'
 export { default as unsignedMarketSwapData } from './unsignedMarketSwapData'
 

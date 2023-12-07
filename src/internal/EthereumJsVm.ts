@@ -13,6 +13,7 @@ import LinearPriceCurve from './contracts/LinearPriceCurve.json'
 import QuadraticPriceCurve from './contracts/QuadraticPriceCurve.json'
 import SwapIO from './contracts/SwapIO.json'
 import BlockIntervalDutchAuctionAmount01 from './contracts/BlockIntervalDutchAuctionAmount01.json'
+import Segments01 from './contracts/Segments01.json'
 import IdsProof from '../intents/IdsProof'
 import {
   ContractCallParam,
@@ -37,7 +38,8 @@ type EvmContractName =
   'LinearPriceCurve' |
   'QuadraticPriceCurve' |
   'SwapIO' |
-  'BlockIntervalDutchAuctionAmount01'
+  'BlockIntervalDutchAuctionAmount01' |
+  'Segments01'
 
 // use this randomly generated private key to sign transactions the the VM running in SDK
 const caller = Address.fromString('0x21753FDE2F04Ad242cf3DE684129BE7B11817F09')
@@ -61,6 +63,7 @@ export class EthereumJsVm {
   QuadraticPriceCurve!: ethers.Contract
   SwapIO!: ethers.Contract
   BlockIntervalDutchAuctionAmount01!: ethers.Contract
+  Segments01!: ethers.Contract
 
   constructor () {
     this._common = new Common({ chain: Chain.Mainnet })
@@ -86,6 +89,7 @@ export class EthereumJsVm {
       this.QuadraticPriceCurve = await this._deployContract(QuadraticPriceCurve)
       this.SwapIO = await this._deployContract(SwapIO)
       this.BlockIntervalDutchAuctionAmount01 = await this._deployContract(BlockIntervalDutchAuctionAmount01)
+      this.Segments01 = await this._deployContract(Segments01)
 
       this._vmInitializing = false
       this._vmInitialized = true
@@ -251,6 +255,18 @@ export class EthereumJsVm {
       callData
     )
     return `0x${cleanDynamicBytes(unsignedLimitSwapData)}`
+  }
+
+  async unsignedSwapDataHash(recipient: string, tokenInIdsProof: IdsProof, tokenOutIdsProof: IdsProof, fillCall: CallStruct): Promise<string> {
+    const unsignedSwapDataHash: string = await this.callContractFn(
+      'Segments01',
+      'unsignedSwapDataHash',
+      recipient,
+      tokenInIdsProof.toStruct(),
+      tokenOutIdsProof.toStruct(),
+      fillCall
+    )
+    return `0x${cleanDynamicBytes(unsignedSwapDataHash)}`
   }
 
   async unsignedData (intentIndex: number, unsignedCalls: string[]): Promise<string> {
