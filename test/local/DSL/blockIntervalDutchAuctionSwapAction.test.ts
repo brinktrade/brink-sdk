@@ -30,8 +30,6 @@ describe('blockIntervalDutchAuctionSwapAction', function () {
     const blockIntervalSegment = segmentsJSON[0]
     const swap01Segment = segmentsJSON[1]
 
-    console.log('declarationJSON: ', JSON.stringify(declarationJSON, null, 2))
-
     expect(blockIntervalSegment.functionName).to.equal('blockInterval')
     expect(blockIntervalSegment.params.id).to.equal(inputParams.intervalId.toString())
     expect(blockIntervalSegment.params.initialStart).to.equal('0')
