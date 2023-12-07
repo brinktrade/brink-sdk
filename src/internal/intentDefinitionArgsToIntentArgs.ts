@@ -7,7 +7,8 @@ import {
   BlockConditionArgs,
   IntervalConditionArgs,
   NonceConditionArgs,
-  PriceConditionArgs
+  PriceConditionArgs,
+  BlockIntervalDutchAuctionSwapActionArgs
 } from '@brinkninja/types'
 import { nonceToBit } from '../utils'
 import dslConditions from '../intents/DSL/conditions'
@@ -16,6 +17,7 @@ import dslActions from '../intents/DSL/actions'
 type ActionFnTypeName = {
   marketSwapAction: MarketSwapActionArgs
   limitSwapAction: LimitSwapActionArgs
+  blockIntervalDutchAuctionSwapAction: BlockIntervalDutchAuctionSwapActionArgs
 }
 
 type ConditionFnTypeName = {
