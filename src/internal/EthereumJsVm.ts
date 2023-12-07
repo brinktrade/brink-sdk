@@ -61,6 +61,7 @@ export class EthereumJsVm {
   QuadraticPriceCurve!: ethers.Contract
   SwapIO!: ethers.Contract
   BlockIntervalDutchAuctionAmount01!: ethers.Contract
+  Segments01!: ethers.Contract
 
   constructor () {
     this._common = new Common({ chain: Chain.Mainnet })
@@ -251,6 +252,18 @@ export class EthereumJsVm {
       callData
     )
     return `0x${cleanDynamicBytes(unsignedLimitSwapData)}`
+  }
+
+  async unsignedSwapDataHash(recipient: string, tokenInIdsProof: IdsProof, tokenOutIdsProof: IdsProof, fillCall: CallStruct): Promise<string> {
+    const unsignedSwapDataHash: string = await this.callContractFn(
+      'UnsignedDataBuilder',
+      'unsignedSwapDataHash',
+      recipient,
+      tokenInIdsProof.toStruct(),
+      tokenOutIdsProof.toStruct(),
+      fillCall
+    )
+    return `0x${unsignedSwapDataHash}`
   }
 
   async unsignedData (intentIndex: number, unsignedCalls: string[]): Promise<string> {
