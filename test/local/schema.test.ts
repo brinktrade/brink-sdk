@@ -1,4 +1,17 @@
-import { toTokenWithDecimalsSchema, toTokenSchema, intentOrArraySchema, singleIntentSchema, intervalConditionSchema, limitSwapActionSchema, marketSwapActionSchema, nonceConditionSchema, priceConditionSchema, replaySchema, TokenSchema } from "@brink-sdk/intents/DSL/schema";
+import {
+  toTokenWithDecimalsSchema,
+  toTokenSchema,
+  intentOrArraySchema,
+  singleIntentSchema,
+  intervalConditionSchema,
+  limitSwapActionSchema,
+  marketSwapActionSchema,
+  blockIntervalDutchAuctionSwapSchema,
+  nonceConditionSchema,
+  priceConditionSchema,
+  replaySchema,
+  TokenSchema
+} from "@brink-sdk/intents/DSL/schema";
 import { expect } from 'chai';
 import { DAI_TOKEN, USDC_TOKEN } from "../helpers/tokens";
 
@@ -176,6 +189,28 @@ describe('Brink DSL Schema Tests', () => {
         owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A'
       }
       const result = marketSwapActionSchema.validate(input, { context: { chainId: 1 } });
+      expect(result.error).to.be.undefined;
+    });
+  });
+
+  describe('blockIntervalDutchAuctionSwapSchema', () => {
+    it('validates a correct block interval dutch auction swap', () => {
+      const input = {
+        type: 'blockIntervalDutchAuctionSwap',
+        owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+        tokenIn: USDC_TOKEN.address,
+        tokenOut: DAI_TOKEN.address,
+        tokenInAmount: 500_000000,
+        intervalId: 12345,
+        firstAuctionStartBlock: 20_000_000,
+        auctionInterval: 10_000,
+        auctionDuration: 100,
+        startPercent: 50,
+        endPercent: -50,
+        twapFeePool: 3000,
+        maxAuctions: 5
+      }
+      const result = blockIntervalDutchAuctionSwapSchema.validate(input, { context: { chainId: 1 } });
       expect(result.error).to.be.undefined;
     });
   });

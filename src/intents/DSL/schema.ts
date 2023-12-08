@@ -126,9 +126,27 @@ export const marketSwapActionSchema = joi.object({
   twapFeePool: joi.number().integer().valid(500, 3000, 10000).empty(emptyValues),
 });
 
+export const blockIntervalDutchAuctionSwapSchema = joi.object({
+  type: joi.string().valid('blockIntervalDutchAuctionSwap').required(),
+  owner: joi.ethereumAddress().required(),
+  tokenIn: toTokenSchema.required(),
+  tokenOut: toTokenSchema.required(),
+  tokenInAmount: joi.uint().required(),
+  intervalId: joi.uint(64).required(),
+  firstAuctionStartBlock: joi.uint().required(),
+  auctionInterval: joi.uint().required(),
+  auctionDuration: joi.uint().required(),
+  startPercent: joi.number().min(0).max(100).required(),
+  endPercent: joi.number().max(0).required(),
+  maxAuctions: joi.uint().empty(emptyValues),
+  twapInterval: joi.uint(32).empty(emptyValues),
+  twapFeePool: joi.number().integer().valid(500, 3000, 10000).empty(emptyValues),
+})
+
 const actionSchemas = {
   limitSwap: limitSwapActionSchema,
   marketSwap: marketSwapActionSchema,
+  blockIntervalDutchAuctionSwap: blockIntervalDutchAuctionSwapSchema
 };
 
 const chainIdSchema = joi.number().integer() // .valid(1);
