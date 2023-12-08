@@ -46,5 +46,8 @@ export { default as unsignedSwapDataHash } from './unsignedSwapDataHash'
 export * from './unsignedMarketSwapData'
 export { default as unsignedMarketSwapData } from './unsignedMarketSwapData'
 
+export * from './unsignedSwapData'
+export { default as unsignedSwapData } from './unsignedSwapData'
+
 export * from './getBlockIntervalState'
 export { default as getBlockIntervalState } from './getBlockIntervalState'
