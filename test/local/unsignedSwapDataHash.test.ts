@@ -8,7 +8,7 @@ describe('unsignedSwapDataHash', () => {
       recipient: ERC20_ADAPTER,
       tokenInIdsProof: new IdsProof(),
       tokenOutIdsProof: new IdsProof(),
-      fillCall: {
+      callData: {
         targetContract: ERC20_ADAPTER,
         data: '0x'
       }

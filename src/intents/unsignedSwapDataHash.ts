@@ -6,14 +6,14 @@ export type unsignedSwapDataHashArgs = {
   recipient: string,
   tokenInIdsProof: IdsProof,
   tokenOutIdsProof: IdsProof,
-  fillCall: CallStruct
+  callData: CallStruct
 }
 
 export default async function unsignedSwapDataHash ({
   recipient,
   tokenInIdsProof,
   tokenOutIdsProof,
-  fillCall
+  callData
 }: unsignedSwapDataHashArgs): Promise<string> {
-  return await evm.unsignedSwapDataHash(recipient, tokenInIdsProof, tokenOutIdsProof, fillCall)
+  return await evm.unsignedSwapDataHash(recipient, tokenInIdsProof, tokenOutIdsProof, callData)
 }
