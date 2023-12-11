@@ -1,5 +1,5 @@
 import { toTokenArgs, toTokenWithDecimalsArgs, toBigint } from "../../internal";
-import { BlockState, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types"
+import { BlockState, DeclarationDefinitionArgs, IntentDefinitionArgs, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types"
 import Joi from "joi";
 import { joi } from "../../internal/joiExtended";
 
@@ -153,8 +153,8 @@ const chainIdSchema = joi.number().integer() // .valid(1);
 
 export const singleIntentSchema = joi.object({
   replay: replaySchema.optional(),
-  expiryBlock: joi.uint().empty(emptyValues),
-  conditions: joi.array().items(generateConditional(conditionSchemas)).empty(emptyValues),
+  expiryBlock: joi.uint().empty(emptyValues).optional(),
+  conditions: joi.array().items(generateConditional(conditionSchemas)).empty(emptyValues).optional(),
   actions: joi.array().items(generateConditional(actionSchemas)).required(),
   chainId: chainIdSchema.optional(),
 })
@@ -169,6 +169,18 @@ export const intentOrArraySchema = joi.alternatives().try(
   multiIntentSchema
 );
 
+export const validateDeclarationInput = (
+  inputArgs: DeclarationDefinitionArgs | IntentDefinitionArgs,
+  context: any
+) => {
+  if ((inputArgs as IntentDefinitionArgs).actions) {
+    return singleIntentSchema.validate(inputArgs, { context })
+  } else if ((inputArgs as DeclarationDefinitionArgs).intents) {
+    return multiIntentSchema.validate(inputArgs, { context })
+  } else {
+    return { error: { message: 'Invalid intent declaration'} }
+  }
+}
 
 type SchemaMap = {
   [type: string]: Joi.ObjectSchema;
