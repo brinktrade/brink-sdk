@@ -9,7 +9,7 @@ import {
   declarationDefinitionArgsToIntentArgs
 } from '../internal'
 import DeclarationIntent from './Intent'
-import { intentOrArraySchema } from './DSL/schema'
+import { validateDeclarationInput } from './DSL/schema'
 
 class Declaration {
   intents: DeclarationIntent[]
@@ -32,7 +32,7 @@ class Declaration {
         throw new Error('chainId must be provided')
       }
       const chainId = inputArgs.chainId
-      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: { chainId }})
+      const { error, value } = validateDeclarationInput(inputArgs, { chainId })
       if (error) {
         throw new Error(error.message)
       }
@@ -50,7 +50,7 @@ class Declaration {
         throw new Error('chainId must be provided')
       }
 
-      const { error, value } = intentOrArraySchema.validate(inputArgs, { context: { chainId }})
+      const { error, value } = validateDeclarationInput(inputArgs, { chainId })
       if (error) {
         throw new Error(error.message)
       }
@@ -142,7 +142,6 @@ class Declaration {
     return validResult()
   }
 }
-
 
 
 export default Declaration

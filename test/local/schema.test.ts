@@ -14,6 +14,7 @@ import {
 } from "@brink-sdk/intents/DSL/schema";
 import { expect } from 'chai';
 import { DAI_TOKEN, USDC_TOKEN } from "../helpers/tokens";
+import { Declaration } from "@brink-sdk"
 
 describe('Brink DSL Schema Tests', () => {
   describe('TokenSchema', () => {
@@ -169,7 +170,7 @@ describe('Brink DSL Schema Tests', () => {
         id: 123456789,
         owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
         tokenIn: USDC_TOKEN.address,
-        tokenOut: DAI_TOKEN.address, // WETH
+        tokenOut: DAI_TOKEN.address,
         tokenInAmount: '7500000000',
         tokenOutAmount: '5500000000000000000'
       }
@@ -248,8 +249,6 @@ describe('Brink DSL Schema Tests', () => {
         }]
       };
       const { error } = singleIntentSchema.validate(input, { context: { chainId: 1 } })
-      console.log(error);
-
       expect(error).to.be.undefined;
     });
   });
@@ -295,4 +294,162 @@ describe('Brink DSL Schema Tests', () => {
       expect(result.error).to.be.undefined;
     });
   })
+
+  describe('error messages', () => {
+    it('throws an error for missing params in intent object', () => {
+      expect(createDeclartion.bind(null, {
+        ...validIntentObj,
+        replay: {}
+      })).to.throw('"replay.nonce" is required')
+    })
+
+    it('throws an error for missing param in a sub-object of the intent object', () => {
+      expect(createDeclartion.bind(null, {
+        ...validIntentObj,
+        conditions: [{
+          type: 'price',
+          // operator: 'lt',
+          tokenA: {
+            address: USDC_TOKEN.address,
+            decimals: USDC_TOKEN.decimals,
+          },
+          tokenB: {
+            address: DAI_TOKEN.address,
+            decimals: DAI_TOKEN.decimals,
+      
+          },
+          price: 1400.00
+        }]
+      })).to.throw('"conditions[0].operator" is required')
+    })
+
+    it('throws an error for missing param in a sub-sub-object of the intent object', () => {
+      expect(createDeclartion.bind(null, {
+        ...validIntentObj,
+        conditions: [{
+          type: 'price',
+          operator: 'lt',
+          tokenA: {
+            // address: USDC_TOKEN.address,
+            decimals: USDC_TOKEN.decimals,
+          },
+          tokenB: {
+            address: DAI_TOKEN.address,
+            decimals: DAI_TOKEN.decimals,
+      
+          },
+          price: 1400.00
+        }]
+      })).to.throw('"conditions[0].tokenA.address" is required')
+    })
+
+    it('throws an error for missing params in a multi-intent object', () => {
+      expect(createDeclartion.bind(null, {
+        ...validMultiIntentObj,
+        intents: [
+          validMultiIntentObj.intents[0],
+          {
+            ...validMultiIntentObj.intents[1],
+            replay: {}
+          }
+        ]
+      })).to.throw('"intents[1].replay.nonce" is required')
+    })
+  })
 });
+
+const validIntentObj = {
+  chainId: 1,
+  replay: {
+    nonce: 1,
+    runs: 'ONCE'
+  },
+  expiryBlock: 21_000_000,
+  conditions: [{
+    type: 'price',
+    operator: 'lt',
+    tokenA: {
+      address: USDC_TOKEN.address,
+      decimals: USDC_TOKEN.decimals,
+    },
+    tokenB: {
+      address: DAI_TOKEN.address,
+      decimals: DAI_TOKEN.decimals,
+
+    },
+    price: 1400.00
+  }],
+  actions: [{
+    type: 'marketSwap',
+    tokenIn: USDC_TOKEN.address,
+    tokenOut: DAI_TOKEN.address, // WETH
+    tokenInAmount: 7500_000000,
+    fee: 1.5,
+    owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A'
+  }]
+}
+
+const validMultiIntentObj = {
+  chainId: 1,
+  intents: [{
+    replay: {
+      nonce: 1,
+      runs: 'ONCE'
+    },
+    expiryBlock: 21_000_000,
+    conditions: [{
+      type: 'price',
+      operator: 'lt',
+      tokenA: {
+        address: USDC_TOKEN.address,
+        decimals: USDC_TOKEN.decimals,
+      },
+      tokenB: {
+        address: DAI_TOKEN.address,
+        decimals: DAI_TOKEN.decimals,
+
+      },
+      price: 1400.00
+    }],
+    actions: [{
+      type: 'marketSwap',
+      tokenIn: USDC_TOKEN.address,
+      tokenOut: DAI_TOKEN.address, // WETH
+      tokenInAmount: 7500_000000,
+      fee: 1.5,
+      owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A'
+    }]
+  },{
+    replay: {
+      nonce: 2,
+      runs: 'ONCE'
+    },
+    expiryBlock: 21_000_000,
+    conditions: [{
+      type: 'price',
+      operator: 'lt',
+      tokenA: {
+        address: USDC_TOKEN.address,
+        decimals: USDC_TOKEN.decimals,
+      },
+      tokenB: {
+        address: DAI_TOKEN.address,
+        decimals: DAI_TOKEN.decimals,
+
+      },
+      price: 1400.00
+    }],
+    actions: [{
+      type: 'marketSwap',
+      tokenIn: USDC_TOKEN.address,
+      tokenOut: DAI_TOKEN.address,
+      tokenInAmount: 7500_000000,
+      fee: 1.5,
+      owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A'
+    }]
+  }]
+}
+
+function createDeclartion (d: any) {
+  return new Declaration(d)
+}
