@@ -27,14 +27,8 @@ describe('blockIntervalDutchAuctionSwapAction', function () {
     });
     const declarationJSON = await (new Declaration({ intents: [ { segments } ], segmentsContract: SEGMENTS_01 })).toJSON()
     const segmentsJSON = declarationJSON.intents[0].segments
-    const blockIntervalSegment = segmentsJSON[0]
-    const swap01Segment = segmentsJSON[1]
-
-    expect(blockIntervalSegment.functionName).to.equal('blockInterval')
-    expect(blockIntervalSegment.params.id).to.equal(inputParams.intervalId.toString())
-    expect(blockIntervalSegment.params.initialStart).to.equal('0')
-    expect(blockIntervalSegment.params.intervalMinSize).to.equal(inputParams.auctionInterval.toString())
-    expect(blockIntervalSegment.params.maxIntervals).to.equal(inputParams.maxAuctions.toString())
+    const swap01Segment = segmentsJSON[0]
+    const blockIntervalSegment = segmentsJSON[1]
 
     expect(swap01Segment.functionName).to.equal('swap01')
     expect(swap01Segment.params.signer).to.equal(inputParams.owner)
@@ -58,6 +52,12 @@ describe('blockIntervalDutchAuctionSwapAction', function () {
     expect(outputAmount.params[6]).to.equal((inputParams.endPercent * 10**4).toString())
     expect(outputAmount.params[7]).to.not.be.undefined
     expect(outputAmount.params[8]).to.not.be.undefined
+
+    expect(blockIntervalSegment.functionName).to.equal('blockInterval')
+    expect(blockIntervalSegment.params.id).to.equal(inputParams.intervalId.toString())
+    expect(blockIntervalSegment.params.initialStart).to.equal('0')
+    expect(blockIntervalSegment.params.intervalMinSize).to.equal(inputParams.auctionInterval.toString())
+    expect(blockIntervalSegment.params.maxIntervals).to.equal(inputParams.maxAuctions.toString())
   });
 
   it('should create correct block interval dutch auction swap action without providing twapFeePool', async function () {
@@ -80,7 +80,7 @@ describe('blockIntervalDutchAuctionSwapAction', function () {
     });
     const declarationJSON = await (new Declaration({ intents: [ { segments } ], segmentsContract: SEGMENTS_01 })).toJSON()
     const segmentsJSON = declarationJSON.intents[0].segments
-    const swap01Segment = segmentsJSON[1]
+    const swap01Segment = segmentsJSON[0]
 
     const twap = new UniV3Twap({
       tokenA: new Token({ address: USDC_TOKEN.address }),
@@ -115,7 +115,7 @@ describe('blockIntervalDutchAuctionSwapAction', function () {
     });
     const declarationJSON = await (new Declaration({ intents: [ { segments } ], segmentsContract: SEGMENTS_01 })).toJSON()
     const segmentsJSON = declarationJSON.intents[0].segments
-    const swap01Segment = segmentsJSON[1]
+    const swap01Segment = segmentsJSON[0]
 
     const twap = new UniV3Twap({
       tokenA: new Token({ address: USDC_TOKEN.address }),
@@ -127,5 +127,30 @@ describe('blockIntervalDutchAuctionSwapAction', function () {
     const outputAmount: any = swap01Segment.params.outputAmount
     expect(outputAmount.params[7]).to.equal(twap.address)
     expect(outputAmount.params[8]).to.equal(twap.params)
+  });
+
+  it('should create an intent declaration that is valid', async function () {
+    const inputParams = {
+      owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+      tokenIn: USDC_TOKEN,
+      tokenOut: WETH_TOKEN,
+      tokenInAmount: 525_000000,
+      intervalId: 12345,
+      firstAuctionStartBlock: 20_000_000,
+      auctionInterval: 10_000,
+      auctionDuration: 100,
+      startPercent: 50,
+      endPercent: -50,
+      twapFeePool: 500,
+      maxAuctions: 5
+    }
+    const segments = blockIntervalDutchAuctionSwapAction({
+      type: 'blockIntervalDutchAuctionSwap',
+      ...inputParams
+    });
+    const declaration = new Declaration({ intents: [ { segments } ], segmentsContract: SEGMENTS_01 })
+    const validationRes = await declaration.validate()
+    console.log('validationRes: ', validationRes)
+    expect(validationRes.valid).to.equal(true)
   });
 });

@@ -62,15 +62,6 @@ function blockIntervalDutchAuctionSwap ({
 
   return [
     {
-      functionName: 'blockInterval',
-      params: {
-        id: intervalId,
-        initialStart: 0, // start immediately .. if we want to delay or start earlier, `firstAuctionStartBlock` can be used for this
-        intervalMinSize: auctionInterval, // disallows execution until the auctionDelay period is over
-        maxIntervals: maxAuctions || 0
-      }
-    },
-    {
       functionName: 'swap01',
       params: {
         signer: owner,
@@ -79,6 +70,15 @@ function blockIntervalDutchAuctionSwap ({
         inputAmount,
         outputAmount,
         solverValidator: SOLVER_VALIDATOR_01
+      }
+    },
+    {
+      functionName: 'blockInterval',
+      params: {
+        id: intervalId,
+        initialStart: 0, // start immediately .. if we want to delay or start earlier, `firstAuctionStartBlock` can be used for this
+        intervalMinSize: auctionInterval, // disallows execution until the auctionDelay period is over
+        maxIntervals: maxAuctions || 0
       }
     }
   ]
