@@ -18,9 +18,6 @@ describe('Intent.bits()', function () {
     expect(bits[0].index).to.equal(1n)
     expect(bits[0].value).to.equal(1n)
   })
-})
-
-describe('Intent.bits()', function () {
   it('should return bits for the declaration, deduplicated', async function () {
     const declaration = new Declaration(declarationWithBits)
     const bits = declaration.bits()

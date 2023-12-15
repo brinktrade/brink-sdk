@@ -1,6 +1,6 @@
 import Config from '../Config'
 import { DeclarationArgs, DeclarationJSON, ValidationResult, TokenAmount, Bit, DeclarationDefinitionArgs, IntentDefinitionArgs } from '@brinkninja/types'
-import Intent, { BitNoncePair } from './Intent'
+import Intent from './Intent'
 import {
   EthereumJsVm as evm,
   invalidResult,
@@ -10,6 +10,13 @@ import {
 } from '../internal'
 import DeclarationIntent from './Intent'
 import { validateDeclarationInput } from './DSL/schema'
+
+export interface DeclarationNonce {
+  bit: Bit
+  nonce: BigInt
+  intentIndex: Number
+  segmentIndex: Number
+}
 
 class Declaration {
   intents: DeclarationIntent[]
@@ -102,30 +109,22 @@ class Declaration {
   }
 
   bits (): Bit[] {
-    const bits: Bit[] = []
-    this.intents.forEach(intent => {
-      intent.bits().forEach(bit => {
-        if (!bits.find(existingBit => (     
-          existingBit.index == bit.index &&
-          existingBit.value == bit.value
-        ))) {
-          bits.push(bit)
-        }
-      })
-    })
-    return bits
+    return this.nonces().map(n => n.bit)
   }
 
-  bitNoncePairs (): BitNoncePair[] {
-    const bitNoncePairs: BitNoncePair[] = []
-    this.intents.forEach(intent => {
-      intent.bitNoncePairs().forEach((pair) => {
-        if(!bitNoncePairs.find(existingPair => existingPair.nonce === pair.nonce)) {
-          bitNoncePairs.push(pair)
+  nonces (): DeclarationNonce[] {
+    const nonces: DeclarationNonce[] = []
+    this.intents.forEach((intent, i) => {
+      intent.nonces().forEach((intentNonce) => {
+        if(!nonces.find(n => n.nonce === intentNonce.nonce)) {
+          nonces.push({
+            ...intentNonce,
+            intentIndex: i  
+          })
         }
       })
     })
-    return bitNoncePairs
+    return nonces
   }
 
   validate (): ValidationResult {
