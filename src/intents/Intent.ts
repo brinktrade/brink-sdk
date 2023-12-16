@@ -1,3 +1,4 @@
+import { uniqWith, isEqual } from 'lodash'
 import {
   IntentArgs,
   IntentJSON,
@@ -58,7 +59,7 @@ class Intent {
   }
 
   bits (): Bit[] {
-    return this.nonces().map(n => n.bit)
+    return uniqWith(this.nonces().map(n => n.bit), isEqual)
   }
 
   nonces (): IntentNonce[] {
@@ -66,16 +67,11 @@ class Intent {
     this.segments.forEach((segment, i) => {
       if (segmentHasBitData(segment)) {
         const bit = bitJSONToBit(segment.paramsJSON as BitJSON)
-        if(!nonces.find(n => (     
-          n.bit.index == bit.index &&
-          n.bit.value == bit.value
-        ))) {
-          nonces.push({
-            bit,
-            nonce: bitToNonce({ bit }),
-            segmentIndex: i
-          })
-        }
+        nonces.push({
+          bit,
+          nonce: bitToNonce({ bit }),
+          segmentIndex: i
+        })
       }
     })
     return nonces

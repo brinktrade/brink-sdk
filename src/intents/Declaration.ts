@@ -1,3 +1,4 @@
+import { uniqWith, isEqual } from 'lodash'
 import Config from '../Config'
 import { DeclarationArgs, DeclarationJSON, ValidationResult, TokenAmount, Bit, DeclarationDefinitionArgs, IntentDefinitionArgs } from '@brinkninja/types'
 import Intent from './Intent'
@@ -109,19 +110,17 @@ class Declaration {
   }
 
   bits (): Bit[] {
-    return this.nonces().map(n => n.bit)
+    return uniqWith(this.nonces().map(n => n.bit), isEqual)
   }
 
   nonces (): DeclarationNonce[] {
     const nonces: DeclarationNonce[] = []
     this.intents.forEach((intent, i) => {
       intent.nonces().forEach((intentNonce) => {
-        if(!nonces.find(n => n.nonce === intentNonce.nonce)) {
-          nonces.push({
-            ...intentNonce,
-            intentIndex: i  
-          })
-        }
+        nonces.push({
+          ...intentNonce,
+          intentIndex: i  
+        })
       })
     })
     return nonces
