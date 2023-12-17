@@ -1,3 +1,4 @@
+import { uniqWith, isEqual } from 'lodash'
 import {
   IntentArgs,
   IntentJSON,
@@ -17,9 +18,10 @@ import { bitToNonce } from '..'
 export type IntentConstructorArgs = {
   segments: SegmentJSON[]
 }
-export interface BitNoncePair {
+export interface IntentNonce {
   bit: Bit
   nonce: BigInt
+  segmentIndex: Number
 }
 
 class Intent {
@@ -57,23 +59,22 @@ class Intent {
   }
 
   bits (): Bit[] {
-    const bits: Bit[] = []
-    this.segments.forEach(segment => {
-      if (segmentHasBitData(segment)) {
-        const bit = bitJSONToBit(segment.paramsJSON as BitJSON)
-        if(!bits.find(existingBit => (     
-          existingBit.index == bit.index &&
-          existingBit.value == bit.value
-        ))) {
-          bits.push(bit)
-        }
-      }
-    })
-    return bits
+    return uniqWith(this.nonces().map(n => n.bit), isEqual)
   }
 
-  bitNoncePairs (): BitNoncePair[] {    
-    return this.bits().map(bit => ({ bit, nonce: bitToNonce({ bit })}))
+  nonces (): IntentNonce[] {
+    const nonces: IntentNonce[] = []
+    this.segments.forEach((segment, i) => {
+      if (segmentHasBitData(segment)) {
+        const bit = bitJSONToBit(segment.paramsJSON as BitJSON)
+        nonces.push({
+          bit,
+          nonce: bitToNonce({ bit }),
+          segmentIndex: i
+        })
+      }
+    })
+    return nonces
   }
 
   async toJSON (): Promise<IntentJSON> {

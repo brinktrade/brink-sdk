@@ -11,16 +11,16 @@ const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
 describe('Intent.bits()', function () {
-  it('should return bits for declaration, deduplicated', async function () {
+  it('should return bits for intent, deduplicated', async function () {
     const declaration1 = new Declaration(declarationWithBits)
-    const bits = declaration1.intents[1].bits()
+    const bits = declaration1.intents[0].bits()
     expect(bits.length).to.equal(1)
-    expect(bits[0].index).to.equal(1n)
+    expect(bits[0].index).to.equal(0n)
     expect(bits[0].value).to.equal(1n)
   })
 })
 
-describe('Intent.bits()', function () {
+describe('Declaration.bits()', function () {
   it('should return bits for the declaration, deduplicated', async function () {
     const declaration = new Declaration(declarationWithBits)
     const bits = declaration.bits()
@@ -64,7 +64,8 @@ const declarationWithBits = {
             feePercent: BigInt(10000),
             feeMin: BigInt(0)
           }
-        } as SegmentArgs
+        } as SegmentArgs,
+        { functionName: 'useBit', params: { index: BigInt(0), value: BigInt(1) } } as SegmentArgs,
       ]
     },
     {
