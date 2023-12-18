@@ -150,7 +150,6 @@ describe('blockIntervalDutchAuctionSwapAction', function () {
     });
     const declaration = new Declaration({ intents: [ { segments } ], segmentsContract: SEGMENTS_01 })
     const validationRes = await declaration.validate()
-    console.log('validationRes: ', validationRes)
     expect(validationRes.valid).to.equal(true)
   });
 });
