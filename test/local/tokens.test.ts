@@ -4,10 +4,11 @@ import {
   TokenArgs,
   SegmentArgs,
   DeclarationArgs,
-  FillStateParamsArgs
+  FillStateParamsArgs,
+  SwapAmountArgs
 } from '@brink-sdk'
 
-const { SEGMENTS_01 } = require('@brinkninja/config').mainnet
+const { SEGMENTS_01 ,SOLVER_VALIDATOR_01 } = require('@brinkninja/config').mainnet
 
 const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F'
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
@@ -42,6 +43,15 @@ describe('Intent.tokens()', function () {
     expect(tokens[0].amount).to.equal(BigInt(2200_000000000000000000).toString())
     expect(tokens[1].token.address).to.equal(WETH_ADDRESS)
     expect(tokens[1].amount).to.equal(BigInt(1_000000000000000000).toString())
+  })
+
+  it('should return tokens for swap01 intent', async function () {
+    const d = new Declaration(declaration2)
+    const tokens = await d.intents[0].tokens()
+    expect(tokens[0].token.address).to.equal(DAI_ADDRESS)
+    expect(tokens[0].amount).to.equal(BigInt(3000_000000000000000000).toString())
+    expect(tokens[1].token.address).to.equal(WETH_ADDRESS)
+    expect(tokens[1].amount).to.be.undefined
   })
 })
 
@@ -110,6 +120,45 @@ const declaration1: DeclarationArgs = {
               sign: true,
               startX96: BigInt(0)
             } as FillStateParamsArgs
+          }
+        } as SegmentArgs
+      ]
+    }
+  ],
+  segmentsContract: SEGMENTS_01
+}
+
+const declaration2 = {
+  intents: [
+    {
+      segments: [
+        {
+          functionName: 'swap01',
+          params: {
+            signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+            tokenIn: { address: DAI_ADDRESS } as TokenArgs,
+            tokenOut: { address: WETH_ADDRESS } as TokenArgs,
+            inputAmount: {
+              contractName: 'FixedSwapAmount01' as unknown,
+              params: [
+                3000_000000000000000000n
+              ]
+            } as SwapAmountArgs,
+            outputAmount: {
+              contractName: 'BlockIntervalDutchAuctionAmount01' as unknown,
+              params: [
+                3000_000000000000000000n,
+                12345n,
+                19_000_000_000n,
+                15_000n,
+                1_000n,
+                100000n,
+                -100000n,
+                '0x3b28d6ee052b65Ed4d5230c1B2A9AbaEF031C648',
+                '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
+              ]
+            } as SwapAmountArgs,
+            solverValidator: SOLVER_VALIDATOR_01
           }
         } as SegmentArgs
       ]
