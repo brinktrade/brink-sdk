@@ -1,6 +1,6 @@
 import { TokenArgs, OracleJSON, SegmentParamType, BigIntish } from '@brinkninja/types'
 import Token from '../Token'
-import InputTokenSegment from './InputTokenSegment'
+import TokenSegment from './TokenSegment'
 
 export type MarketSwapExactInputArgs = {
   oracle: OracleJSON,
@@ -60,7 +60,7 @@ export const MarketSwapExactInputFunctionParams: SegmentParamType[] = [
   }
 ]
 
-export default class MarketSwapExactInput extends InputTokenSegment {
+export default class MarketSwapExactInput extends TokenSegment {
   public constructor ({
     oracle,
     signer,
@@ -97,8 +97,17 @@ export default class MarketSwapExactInput extends InputTokenSegment {
         feePercent,
         feeMin
       ],
-      inputTokenParam: 'tokenIn',
-      inputAmountParam: 'tokenInAmount'
+      tokenParams: [
+        {
+          tokenParam: 'tokenIn',
+          getTokenAmount: async (): Promise<string> => tokenInAmount?.toString(),
+          isInput: true
+        },
+        {
+          tokenParam: 'tokenOut',
+          isInput: false
+        },
+      ]
     })
   }
 }

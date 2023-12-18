@@ -1,6 +1,6 @@
 import { TokenArgs, SegmentParamType, SwapAmountArgs } from '@brinkninja/types'
 import Token from '../Token'
-import Segment from './Segment'
+import TokenSegment from './TokenSegment'
 import { SwapAmount } from '../SwapAmount'
 
 export type Swap01Args = {
@@ -60,7 +60,7 @@ export const Swap01FunctionParams: SegmentParamType[] = [
   }
 ]
 
-export default class Swap01 extends Segment {
+export default class Swap01 extends TokenSegment {
   public constructor ({
     signer,
     tokenIn,
@@ -91,7 +91,27 @@ export default class Swap01 extends Segment {
         (new SwapAmount(inputAmount)).paramsBytesData,
         (new SwapAmount(outputAmount)).paramsBytesData,
         solverValidator.toString()
+      ],
+      tokenParams: [
+        {
+          tokenParam: 'tokenIn',
+          getTokenAmount: async (): Promise<string | undefined> => tokenAmountFromSwapAmountArgs(inputAmount),
+          isInput: true
+        },
+        {
+          tokenParam: 'tokenOut',
+          getTokenAmount: async (): Promise<string | undefined> => tokenAmountFromSwapAmountArgs(outputAmount),
+          isInput: false
+        },
       ]
     })
   }
+}
+
+function tokenAmountFromSwapAmountArgs (swapAmountArgs: SwapAmountArgs): string | undefined {
+  const swapAmount = new SwapAmount(swapAmountArgs)
+  if (swapAmount.contractName == 'FixedSwapAmount01') {
+    return (swapAmount.params[0] as bigint).toString()
+  }
+  return
 }

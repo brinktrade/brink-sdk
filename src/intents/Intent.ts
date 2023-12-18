@@ -6,12 +6,13 @@ import {
   SegmentFunctionName,
   SegmentParamValue,
   SegmentJSON,
+  TokenJSON,
   TokenAmount,
   Bit,
   BitJSON
 } from '@brinkninja/types'
 import Segment from './Segments/Segment'
-import InputTokenSegment from './Segments/InputTokenSegment'
+import TokenSegment from './Segments/TokenSegment'
 import { createSegment, invalidResult, validResult, groupAndSumTokenAmounts, bitJSONToBit } from '../internal'
 import { bitToNonce } from '..'
 
@@ -22,6 +23,14 @@ export interface IntentNonce {
   bit: Bit
   nonce: BigInt
   segmentIndex: Number
+}
+
+export type IntentToken = {
+  token: TokenJSON
+  segmentIndex: Number
+  tokenParam: string
+  isInput: boolean
+  amount?: string
 }
 
 class Intent {
@@ -45,16 +54,41 @@ class Intent {
     })
   }
 
-  tokenInputs (): TokenAmount[] {
-    const tokenInputs: TokenAmount[] = []
-    this.segments.forEach(segment => {
-      if (segment instanceof InputTokenSegment) {
-        tokenInputs.push({
-          token: segment.inputToken,
-          amount: segment.inputAmount
+  async tokens (): Promise<IntentToken[]> {
+    let tkns: IntentToken[] = []
+    for (const [i, segment] of this.segments.entries()) {
+      if (segment instanceof TokenSegment) {
+        (await segment.tokens()).forEach(t => {
+          let tkn: IntentToken = {
+            token: t.tokenData,
+            segmentIndex: i,
+            tokenParam: t.tokenParam,
+            isInput: t.isInput
+          }
+          if (t.tokenAmount) {
+            tkn.amount = t.tokenAmount
+          }
+          tkns.push(tkn)
         })
       }
-    })
+    }
+    return tkns
+  }
+
+  async tokenInputs (): Promise<TokenAmount[]> {
+    const tokenInputs: TokenAmount[] = []
+    for (const [, segment] of this.segments.entries()) {
+      if (segment instanceof TokenSegment) {
+        (await segment.tokens()).forEach(t => {
+          if (t.isInput && t.tokenAmount) {
+            tokenInputs.push({
+              token: t.tokenData,
+              amount: t.tokenAmount
+            })
+          }
+        })
+      }
+    }
     return groupAndSumTokenAmounts(tokenInputs)
   }
 
