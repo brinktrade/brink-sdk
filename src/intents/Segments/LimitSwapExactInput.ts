@@ -1,7 +1,9 @@
 import { TokenArgs, SegmentParamType, BigIntish, PriceCurveJSON, FillStateParamsArgs } from '@brinkninja/types'
 import { FillStateParams } from '..'
+import { priceCurveType } from '../../internal'
 import Token from '../Token'
-import InputTokenSegment from './InputTokenSegment'
+import TokenSegment from './TokenSegment'
+import limitSwapExactInput_getOutput from '../../swaps/limitSwapExactInput_getOutput'
 
 export type LimitSwapExactInputArgs = {
   priceCurve: PriceCurveJSON
@@ -54,7 +56,7 @@ export const LimitSwapExactInputFunctionParams: SegmentParamType[] = [
   }
 ]
 
-export default class LimitSwapExactInput extends InputTokenSegment {
+export default class LimitSwapExactInput extends TokenSegment {
   public constructor ({
     priceCurve,
     signer,
@@ -88,8 +90,33 @@ export default class LimitSwapExactInput extends InputTokenSegment {
         priceCurve.params,
         (new FillStateParams(fillStateParams)).toStruct()
       ],
-      inputTokenParam: 'tokenIn',
-      inputAmountParam: 'tokenInAmount'
+      tokenParams: [
+        {
+          tokenParam: 'tokenIn',
+          getTokenAmount: async (): Promise<string> => tokenInAmount?.toString(),
+          isInput: true
+        },
+        {
+          tokenParam: 'tokenOut',
+          getTokenAmount: async (): Promise<string | undefined> => {
+            let amt
+            try {
+              const amtBN = await limitSwapExactInput_getOutput({
+                filledInput: 0,
+                totalInput: BigInt(tokenInAmount),
+                input: BigInt(tokenInAmount),
+                priceCurve: priceCurveType(priceCurve.address),
+                priceCurveParams: priceCurve.params
+              })
+              amt = amtBN.toString()
+            } catch (err) {
+              return
+            }
+            return amt
+          },
+          isInput: false
+        },
+      ]
     })
   }
 }

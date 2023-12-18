@@ -14,7 +14,7 @@ const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 describe('DeclarationIntent.inputTokens()', function () {
   it('should return tokenInputs for intent', async function () {
     const declaration1 = new Declaration(declarationForTokenInputs1)
-    const tokenInputs = declaration1.intents[0].tokenInputs()
+    const tokenInputs = await declaration1.intents[0].tokenInputs()
     expect(tokenInputs.length).to.equal(1)
     expect(tokenInputs[0].token.address).to.equal(USDC_ADDRESS)
     expect(tokenInputs[0].amount).to.equal(BigInt(1450000000).toString())
@@ -24,7 +24,7 @@ describe('DeclarationIntent.inputTokens()', function () {
 describe('Declaration.inputTokens()', function () {
   it('should return tokenInputs for the declaration with amounts summed', async function () {
     const declaration1 = new Declaration(declarationForTokenInputs1)
-    const tokenInputs = declaration1.tokenInputs()
+    const tokenInputs = await declaration1.tokenInputs()
     expect(tokenInputs.length).to.equal(2)
     expect(tokenInputs[0].token.address).to.equal(USDC_ADDRESS)
     expect(tokenInputs[0].amount).to.equal(BigInt(2450000000).toString())

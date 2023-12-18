@@ -35,6 +35,8 @@ export { default as intentDefinitionArgsToIntentArgs } from './intentDefinitionA
 
 export { default as priceCurveAddress } from './priceCurveAddress'
 
+export { default as priceCurveType } from './priceCurveType'
+
 export { default as sigToValidECDSA } from './sigToValidECDSA'
 
 export { default as bigintToFeeAmount } from './bigintToFeeAmount'

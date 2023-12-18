@@ -1,6 +1,15 @@
 import { uniqWith, isEqual } from 'lodash'
 import Config from '../Config'
-import { DeclarationArgs, DeclarationJSON, ValidationResult, TokenAmount, Bit, DeclarationDefinitionArgs, IntentDefinitionArgs } from '@brinkninja/types'
+import {
+  DeclarationArgs,
+  DeclarationJSON,
+  ValidationResult,
+  TokenAmount,
+  Bit,
+  DeclarationDefinitionArgs,
+  IntentDefinitionArgs,
+  TokenJSON
+} from '@brinkninja/types'
 import Intent from './Intent'
 import {
   EthereumJsVm as evm,
@@ -19,6 +28,15 @@ export interface DeclarationNonce {
   segmentIndex: Number
 }
 
+export type DeclarationToken = {
+  token: TokenJSON
+  segmentIndex: Number
+  intentIndex: Number
+  tokenParam: string
+  isInput: boolean
+  amount?: string
+}
+
 class Declaration {
   intents: DeclarationIntent[]
   beforeCalls: any[]
@@ -33,7 +51,8 @@ class Declaration {
   public constructor (...arr: any[]) {
     const inputArgs: (DeclarationArgs | DeclarationDefinitionArgs | IntentDefinitionArgs | IntentDefinitionArgs[]) = arr[0] || {}
 
-    let declarationArgs: DeclarationArgs = { intents: [], segmentsContract: '' }
+    let declarationArgs: DeclarationArgs = { intents: [],
+      segmentsContract: '' }
 
     if ('intents' in inputArgs && 'actions' in inputArgs?.intents[0]) {
       if (!('chainId' in inputArgs)) {
@@ -96,16 +115,29 @@ class Declaration {
     }
   }
 
-  tokenInputs (): TokenAmount[] {
+  async tokens (): Promise<DeclarationToken[]> {
+    const tokens: DeclarationToken[] = []
+    for (const [i, intent] of this.intents.entries()) {
+      (await intent.tokens()).forEach(token => {
+        tokens.push({
+          ...token,
+          intentIndex: i
+        })
+      })
+    }
+    return tokens
+  }
+
+  async tokenInputs (): Promise<TokenAmount[]> {
     const tokenInputs: TokenAmount[] = []
-    this.intents.forEach(intent => {
-      intent.tokenInputs().forEach(tokenInput => {
+    for (const [, intent] of this.intents.entries()) {
+      (await intent.tokenInputs()).forEach(tokenInput => {
         tokenInputs.push({
           token: tokenInput.token,
           amount: tokenInput.amount
         })
       })
-    })
+    }
     return groupAndSumTokenAmounts(tokenInputs)
   }
 
