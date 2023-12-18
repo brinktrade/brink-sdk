@@ -95,18 +95,12 @@ export default class Swap01 extends TokenSegment {
       tokenParams: [
         {
           tokenParam: 'tokenIn',
-          getTokenAmount: async (): Promise<string | undefined> => {
-            const swapAmount = new SwapAmount(inputAmount)
-            return tokenAmountFromSwapAmount(swapAmount)
-          },
+          getTokenAmount: async (): Promise<string | undefined> => tokenAmountFromSwapAmountArgs(inputAmount),
           isInput: true
         },
         {
           tokenParam: 'tokenOut',
-          getTokenAmount: async (): Promise<string | undefined> => {
-            const swapAmount = new SwapAmount(outputAmount)
-            return tokenAmountFromSwapAmount(swapAmount)
-          },
+          getTokenAmount: async (): Promise<string | undefined> => tokenAmountFromSwapAmountArgs(outputAmount),
           isInput: false
         },
       ]
@@ -114,7 +108,8 @@ export default class Swap01 extends TokenSegment {
   }
 }
 
-function tokenAmountFromSwapAmount (swapAmount: SwapAmount): string | undefined {
+function tokenAmountFromSwapAmountArgs (swapAmountArgs: SwapAmountArgs): string | undefined {
+  const swapAmount = new SwapAmount(swapAmountArgs)
   if (swapAmount.contractName == 'FixedSwapAmount01') {
     return (swapAmount.params[0] as bigint).toString()
   }
