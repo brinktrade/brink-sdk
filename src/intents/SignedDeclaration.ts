@@ -74,7 +74,6 @@ class SignedDeclaration {
   }
 
   async toJSON (): Promise<SignedDeclarationJSON> {
-    await this.validate()
 
     const declaration = await this.declaration.toJSON()
     const eip712Data = await this.EIP712Data(declaration.data)
