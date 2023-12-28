@@ -65,8 +65,8 @@ function blockIntervalDutchAuctionSwap ({
       functionName: 'swap01',
       params: {
         signer: owner,
-        tokenIn: tokenIn as SegmentParamValue,
-        tokenOut: tokenOut as SegmentParamValue,
+        tokenIn: { address: tokenIn.address } as SegmentParamValue,
+        tokenOut: { address: tokenOut.address } as SegmentParamValue,
         inputAmount,
         outputAmount,
         solverValidator: SOLVER_VALIDATOR_01

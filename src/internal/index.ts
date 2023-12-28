@@ -47,8 +47,6 @@ export * from './Validation'
 
 export { default as verifyParams } from './verifyParams'
 
-export * from './joiExtended'
-
 export { default as TokenRegistry } from './TokenRegistry'
 
 export { default as Tokens } from './tokens.json'

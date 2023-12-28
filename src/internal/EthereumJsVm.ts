@@ -121,7 +121,7 @@ export class EthereumJsVm {
     return factory.attach(result.createdAddress.toString())
   }
 
-  async segmentData (functionName: SegmentFunctionName, ...args: ContractCallParam[]): Promise<string> {
+  async segmentData (functionName: `${SegmentFunctionName}`, ...args: ContractCallParam[]): Promise<string> {
     const segmentData = await this.callContractFn('SegmentBuilder', functionName as unknown as string, ...args)
     return `0x${cleanDynamicBytes(segmentData)}`
   }

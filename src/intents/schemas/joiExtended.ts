@@ -1,6 +1,5 @@
 import Joi from 'joi';
 import web3Utils from 'web3-utils';
-import { toTokenArgs, toTokenWithDecimalsArgs } from './toTokenArgs';
 
 const DEFAULT_UINT_SIZE = 256;
 
@@ -23,7 +22,7 @@ export const joi = Joi
 
   .extend((joi: Joi.Root) => {
     return {
-      base: joi.alternatives().try(joi.string(), joi.number()),
+      // base: joi.alternatives().try(joi.string(), joi.number()),
       messages: {
         'bigIntish.base': '{{#value}} is not a valid bigIntish',
         'bigIntish.min': '{{#value}} is less than the minimum allowed value of {{#minValue}}',

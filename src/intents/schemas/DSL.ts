@@ -1,9 +1,9 @@
 import { toTokenArgs, toTokenWithDecimalsArgs, toBigint } from "../../internal";
-import { BlockState, DeclarationDefinitionArgs, IntentDefinitionArgs, NonceState, PriceOperator, RunsType, TokenStandard } from "@brinkninja/types"
+import { DeclarationDefinitionArgs, IntentDefinitionArgs } from "@brinkninja/types"
+import { blockStates, nonceStates, priceOperators, runsTypes, tokenStandards } from './constants'
 import Joi from "joi";
-import { joi } from "../../internal/joiExtended";
+import { joi } from "./joiExtended";
 
-const tokenStandards = Object.keys(TokenStandard).filter(key => isNaN(Number(key)));
 const emptyValues = [null, 'null', '%00', '\u0000']; 
 
 const tokenArgs = {
@@ -29,8 +29,6 @@ export const TokenWithDecimalsSchema = joi.alternatives().try(
   joi.object(tokenWithDecimalsArgs)
 );
 
-const runsTypes = Object.keys(RunsType).filter(key => isNaN(Number(key)));
-
 export const replaySchema = joi.object({
   nonce: joi.bigIntish().min(1).required(),
   runs: joi.string().valid(...runsTypes).required(),
@@ -44,23 +42,17 @@ export const intervalConditionSchema = joi.object({
   maxIntervals: joi.uint(16).empty(emptyValues),
 });
 
-const blockStates = Object.keys(BlockState).filter(key => isNaN(Number(key)));
-
 export const blockConditionSchema = joi.object({
   type: joi.string().valid('block').required(),
   blockNumber: joi.uint().required(),
   state: joi.string().valid(...blockStates).required()
 });
 
-const nonceStates = Object.keys(NonceState).filter(key => isNaN(Number(key)));
-
 export const nonceConditionSchema = joi.object({
   type: joi.string().valid('nonce').required(),
   nonce: joi.bigIntish().min(1).required(),
   state: joi.string().valid(...nonceStates).required(),
 });
-
-const priceOperators = Object.values(PriceOperator)
 
 const toTokenWithDecimals = (value: any, helpers: any) => {
   const chainId = helpers.prefs.context.chainId;
@@ -151,7 +143,7 @@ const actionSchemas = {
 
 const chainIdSchema = joi.number().integer() // .valid(1);
 
-export const singleIntentSchema = joi.object({
+export const singleIntentDSLSchema = joi.object({
   replay: replaySchema.optional(),
   expiryBlock: joi.uint().empty(emptyValues).optional(),
   conditions: joi.array().items(generateConditional(conditionSchemas)).empty(emptyValues).optional(),
@@ -159,14 +151,14 @@ export const singleIntentSchema = joi.object({
   chainId: chainIdSchema.optional(),
 })
 
-export const multiIntentSchema = joi.object({
+export const multiIntentDSLSchema = joi.object({
   chainId: chainIdSchema.required(),
-  intents: joi.array().items(singleIntentSchema).required(),
+  intents: joi.array().items(singleIntentDSLSchema).required(),
 })
 
 export const intentOrArraySchema = joi.alternatives().try(
-  singleIntentSchema,
-  multiIntentSchema
+  singleIntentDSLSchema,
+  multiIntentDSLSchema
 );
 
 export const validateDeclarationInput = (
@@ -174,9 +166,9 @@ export const validateDeclarationInput = (
   context: any
 ) => {
   if ((inputArgs as IntentDefinitionArgs).actions) {
-    return singleIntentSchema.validate(inputArgs, { context })
+    return singleIntentDSLSchema.validate(inputArgs, { context })
   } else if ((inputArgs as DeclarationDefinitionArgs).intents) {
-    return multiIntentSchema.validate(inputArgs, { context })
+    return multiIntentDSLSchema.validate(inputArgs, { context })
   } else {
     return { error: { message: 'Invalid intent declaration'} }
   }

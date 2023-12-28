@@ -47,7 +47,7 @@ class Intent {
     }
 
     this.segments = declarationIntentsArgs.segments.map((segmentData: {
-      functionName: SegmentFunctionName,
+      functionName: `${SegmentFunctionName}`,
       params: Record<string, SegmentParamValue>
     }) => {
       return createSegment(segmentData)

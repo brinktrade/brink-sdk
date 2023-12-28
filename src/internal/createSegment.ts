@@ -38,7 +38,7 @@ const segmentMapping: SegmentMapping = createMappingObject({
 })
 
 export interface CreateSegmentrArgs {
-  functionName: SegmentFunctionName,
+  functionName: `${SegmentFunctionName}`,
   params: Record<string, SegmentParamValue>
 }
 

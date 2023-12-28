@@ -1,4 +1,4 @@
-import { joi } from '@brink-sdk/internal';
+import { joi } from '@brink-sdk/intents/schemas/joiExtended';
 import { expect } from 'chai';
 
 describe('ethereumAddress', () => {
