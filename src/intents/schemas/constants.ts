@@ -8,4 +8,3 @@ export const nonceStates = Object.keys(NonceState).filter(key => isNaN(Number(ke
 export const priceOperators = Object.values(PriceOperator)
 export const signatureTypes = Object.keys(SignatureType).filter(key => isNaN(Number(key)));
 export const segmentFunctionNames = Object.keys(SegmentFunctionName).filter(key => isNaN(Number(key)));
-

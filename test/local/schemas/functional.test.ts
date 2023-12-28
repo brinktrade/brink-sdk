@@ -14,7 +14,8 @@ describe('FunctionalSchema', () => {
     // @ts-ignore
     value.intents[0].segments[0].params = { index: '0' }; // missing value
     const { error } = FunctionalSchema.validate(value);
-    expect(error.message).to.match(/params.value.*is required/);
+    console.log("@@@@message", error.message)
+    expect(error.message).to.match(/"intents\[0\].segments\[0\].params.value" is required/);
   });
 });
 
