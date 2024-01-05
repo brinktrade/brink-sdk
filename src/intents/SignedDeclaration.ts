@@ -32,12 +32,19 @@ class SignedDeclaration {
     }
 
     const { domain, types, value } = await this.EIP712Data()
-    const recoveredAddress = ethers.utils.verifyTypedData(
-      domain,
-      types,
-      value,
-      this.signature
-    )
+
+    let recoveredAddress;
+
+    try {
+      recoveredAddress = ethers.utils.verifyTypedData(
+        domain,
+        types,
+        value,
+        this.signature
+      )
+    } catch (e) {
+      return invalidResult('SIGNATURE_MISMATCH')
+    }
     if (recoveredAddress.toLowerCase() !== this.signer.toLowerCase()) {
       return invalidResult('SIGNATURE_MISMATCH')
     }

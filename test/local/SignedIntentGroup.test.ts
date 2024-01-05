@@ -27,6 +27,18 @@ describe('SignedDeclaration', function () {
       expect(validationResult.valid).to.equal(false)
       expect(validationResult.reason).to.equal('SIGNATURE_MISMATCH')
     })
+
+    it('validate should return false when typed data cannot be verified', async function () {
+      const declarationData = await buildDeclaration()
+      const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
+
+      const invalidSignature = '0x' + Math.floor(Math.random() * 1000).toString(16).padStart(3, '0');
+      signedDeclaration.signature = invalidSignature;
+
+      const validate = await signedDeclaration.validate()
+
+      expect(validate.valid).to.equal(false)
+    })
   })
 })
 
