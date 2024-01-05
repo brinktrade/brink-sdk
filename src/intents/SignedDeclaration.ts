@@ -42,8 +42,14 @@ class SignedDeclaration {
         value,
         this.signature
       )
-    } catch (e) {
-      return invalidResult('SIGNATURE_MISMATCH')
+    } catch (e: any) {
+      // catching exception when signature is invalid
+      // "message signature missing v and recoveryParam (argument="signature", value="0x32f", code=INVALID_ARGUMENT, version=bytes/5.7.0)"
+      if (e.message.includes('signature missing v and recoveryParam')) {
+        return invalidResult('VERIFY_TYPED_DATA_FAILED')
+      } else {
+        throw e
+      }
     }
     if (recoveredAddress.toLowerCase() !== this.signer.toLowerCase()) {
       return invalidResult('SIGNATURE_MISMATCH')
