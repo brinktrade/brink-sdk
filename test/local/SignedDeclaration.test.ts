@@ -28,6 +28,14 @@ describe('SignedDeclaration', function () {
       expect(validationResult.reason).to.equal('SIGNATURE_MISMATCH')
     })
   })
+  describe('EIP712Data()', function () {
+    it('Should store eip712Data', async function () {
+      const declarationData = await buildDeclaration()
+      const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
+      const eip712Data = await signedDeclaration.EIP712Data()
+      expect(signedDeclaration.eip712Data).to.equal(eip712Data)
+    })
+  })
 })
 
 async function buildDeclaration () {
