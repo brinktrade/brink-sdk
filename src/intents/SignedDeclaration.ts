@@ -15,6 +15,7 @@ class SignedDeclaration {
   signature: string
   declaration: Declaration
   declarationContract: string
+  eip712Data?: EIP712TypedData | null
 
   constructor(signedDeclaration: SignedDeclarationArgs) {
     this.signer = signedDeclaration.signer
@@ -23,6 +24,7 @@ class SignedDeclaration {
     this.signature = signedDeclaration.signature
     this.declaration = new Declaration(signedDeclaration.declaration)
     this.declarationContract = signedDeclaration.declarationContract
+    this.eip712Data = signedDeclaration.eip712Data
   }
 
   async validate (): Promise<ValidationResult> {
@@ -50,6 +52,8 @@ class SignedDeclaration {
   }
 
   async EIP712Data (declarationData?: string): Promise<EIP712TypedData> {
+    if (this.eip712Data) return this.eip712Data;
+
     const domain = {
       name: 'BrinkAccount',
       version: '1',
@@ -65,12 +69,15 @@ class SignedDeclaration {
         declarationData || (await this.declaration.toJSON()).data
       ]
     )
-    return {
+
+    this.eip712Data = {
       domain,
       types: typedData.types,
       value: typedData.value,
       hash: typedDataHash
     }
+
+    return this.eip712Data
   }
 
   async toJSON (): Promise<SignedDeclarationJSON> {
