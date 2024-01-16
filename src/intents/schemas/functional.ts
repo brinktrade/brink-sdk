@@ -60,7 +60,7 @@ const OracleSchema = joi.object({
 });
 
 const SwapAmountSchema = joi.object({
-  contractAddress: joi.string().optional(),
+  contractAddress: joi.ethereumAddress().optional(),
   contractName: joi.string().valid('FixedSwapAmount01', 'BlockIntervalDutchAuctionAmount01').optional(),
   paramsBytesData: joi.string().optional(),
   params: joi.array().items(() => ContractCallParamSchema).optional(),
@@ -108,7 +108,7 @@ const priceCurveSchema = joi.object({
 
 const limitSwapExactInputParamsSchema = joi.object({
   priceCurve: priceCurveSchema.required(),
-  signer: joi.string().required(),
+  signer: joi.ethereumAddress().required(),
   tokenIn: TokenSchema.required(),
   tokenOut: TokenSchema.required(),
   tokenInAmount: joi.bigIntish().required(),
@@ -135,7 +135,7 @@ const requireUint256UpperBoundParamsSchema = joi.object({
 });
 
 const swap01ParamsSchema = joi.object({
-  signer: joi.string().required(),
+  signer: joi.ethereumAddress().required(),
   tokenIn: TokenSchema.required(),
   tokenOut: TokenSchema.required(),
   inputAmount: SwapAmountSchema.required(),
