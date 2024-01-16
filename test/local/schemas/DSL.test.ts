@@ -2,7 +2,7 @@ import {
   toTokenWithDecimalsSchema,
   toTokenSchema,
   intentOrArraySchema,
-  singleIntentSchema,
+  singleIntentDSLSchema,
   intervalConditionSchema,
   limitSwapActionSchema,
   marketSwapActionSchema,
@@ -11,9 +11,9 @@ import {
   priceConditionSchema,
   replaySchema,
   TokenSchema
-} from "@brink-sdk/intents/DSL/schema";
+} from "@brink-sdk/intents/schemas/DSL";
 import { expect } from 'chai';
-import { DAI_TOKEN, USDC_TOKEN } from "../helpers/tokens";
+import { DAI_TOKEN, USDC_TOKEN } from "../../helpers/tokens";
 import { Declaration } from "@brink-sdk"
 
 describe('Brink DSL Schema Tests', () => {
@@ -248,7 +248,7 @@ describe('Brink DSL Schema Tests', () => {
           owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A'
         }]
       };
-      const { error } = singleIntentSchema.validate(input, { context: { chainId: 1 } })
+      const { error } = singleIntentDSLSchema.validate(input, { context: { chainId: 1 } })
       expect(error).to.be.undefined;
     });
   });

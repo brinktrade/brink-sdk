@@ -6,10 +6,14 @@ import {
   SegmentArgs,
   declarationEIP712TypedData,
   SignedDeclaration,
-  DeclarationArgs
+  DeclarationArgs,
+  TokenStandard
 } from '@brink-sdk'
 
 const { INTENT_TARGET_01, SEGMENTS_01 } = require('@brinkninja/config').mainnet
+
+const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
 describe('SignedDeclaration', function () {
   describe('validate()', function () {
@@ -51,8 +55,8 @@ async function buildDeclaration () {
                   params: '0x00000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f564000000000000000000000000000000000000000000000000000000000000003e8'
                 },
                 signer: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
-                tokenIn: new Token({ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }) as TokenArgs,
-                tokenOut: new Token({ address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' }) as TokenArgs,
+                tokenIn: { address: USDC_ADDRESS, standard: 0, idsMerkleRoot: '0x0000000000000000000000000000000000000000000000000000000000000000', id: '12345', disallowFlagged: true  } as TokenArgs,
+                tokenOut: { address: WETH_ADDRESS, standard: 0, idsMerkleRoot: '0x0000000000000000000000000000000000000000000000000000000000000000', id: '12345', disallowFlagged: true } as TokenArgs,
                 tokenInAmount: BigInt(1450000000),
                 feePercent: BigInt(10000),
                 feeMin: BigInt(0)

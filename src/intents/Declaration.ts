@@ -19,7 +19,7 @@ import {
   declarationDefinitionArgsToIntentArgs
 } from '../internal'
 import DeclarationIntent from './Intent'
-import { validateDeclarationInput } from './DSL/schema'
+import { validateDeclarationInput } from './schemas/helpers'
 
 export interface DeclarationNonce {
   bit: Bit
@@ -67,6 +67,10 @@ class Declaration {
       declarationArgs.intents = declarationDefinitionArgsToIntentArgs(value as DeclarationDefinitionArgs);
       declarationArgs.segmentsContract = Config['SEGMENTS_01']
     } else if ('intents' in inputArgs && 'segments' in (inputArgs.intents[0])) {
+      const { error, value } = validateDeclarationInput(inputArgs as DeclarationArgs)
+      if (error) {
+        throw new Error(error.message)
+      }
       declarationArgs = inputArgs as DeclarationArgs;
     } else if ('actions' in inputArgs) {
       if (!('chainId' in inputArgs)) {

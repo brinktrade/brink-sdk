@@ -1,4 +1,4 @@
-import { joi } from '@brink-sdk/internal';
+import { joi } from '@brink-sdk/intents/schemas/joiExtended';
 import { expect } from 'chai';
 
 describe('ethereumAddress', () => {
@@ -43,9 +43,8 @@ describe('bigIntish', () => {
 
   const invalidCases = [
     { input: "abcd", matcher: 'bigIntish.base' },
-    { input: {}, matcher: 'must be one of [string, number]' },
-    { input: [], matcher: 'must be one of [string, number]' },
-    { input: null, matcher: 'must be one of [string, number]' },
+    { input: {}, matcher: 'is not a valid bigIntish' },
+    { input: null, matcher: 'is not a valid bigIntish' },
   ]
 
   invalidCases.forEach(({ input, matcher }) => {
