@@ -7,7 +7,7 @@ export default function verifyParams ({
   types,
   values
 }: {
-  functionName: `${SegmentFunctionName}`
+  functionName: SegmentFunctionName
   types: SegmentParamType[],
   values: SegmentParamValue[]
 }) {

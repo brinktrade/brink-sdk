@@ -9,7 +9,7 @@ import {
 import { verifyParams, EthereumJsVm as evm } from '../../internal'
 
 export interface SegmentClassArgs {
-  functionName: `${SegmentFunctionName}`
+  functionName: SegmentFunctionName
   type: SegmentType
   requiresUnsignedCall: boolean
   paramsJSON: Record<string, SegmentParamJSON>
@@ -18,7 +18,7 @@ export interface SegmentClassArgs {
 }
 
 export default class Segment {
-  functionName: `${SegmentFunctionName}`
+  functionName: SegmentFunctionName
   type: SegmentType
   requiresUnsignedCall: boolean
   paramsJSON: Record<string, SegmentParamJSON>
