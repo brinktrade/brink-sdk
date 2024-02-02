@@ -31,7 +31,7 @@ export default async function marketSwapExactOutput_getInput ({
     BigInt(feePercent),
     BigInt(feeMin)
   )
-  const returnValues = defaultAbiCoder.decode(['uint256','uint256','uint256'], `0x${result}`)
+  const returnValues = defaultAbiCoder.decode(['uint256','uint256','uint256'], result)
   return {
     input: BigInt(returnValues[0]),
     fee: BigInt(returnValues[1]),
