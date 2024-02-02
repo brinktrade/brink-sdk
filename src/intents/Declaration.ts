@@ -92,27 +92,32 @@ class Declaration {
     this.segmentsContract = declarationArgs?.segmentsContract
   }
 
-  async toJSON (): Promise<DeclarationJSON> {
+  async toJSON ({ excludeData } = { excludeData: false }): Promise<DeclarationJSON> {
     if (!this.segmentsContract) {
       throw new Error('Segments contract address not set')
     }
 
     const intents = await Promise.all(
-      this.intents.map(async intent => await intent.toJSON())
+      this.intents.map(async intent => await intent.toJSON({ excludeData }))
     )
 
-    return {
-      data: await evm.DeclarationData(
-        intents,
-        this.segmentsContract,
-        this.beforeCalls,
-        this.afterCalls
-      ),
+    const declarationJSON: DeclarationJSON = {
       segmentsContract: this.segmentsContract,
       intents,
       beforeCalls: this.beforeCalls,
       afterCalls: this.afterCalls
+    };
+
+    if (!excludeData) {
+      declarationJSON.data = await evm.DeclarationData(
+        intents,
+        this.segmentsContract,
+        this.beforeCalls,
+        this.afterCalls
+      )
     }
+
+    return declarationJSON
   }
 
   async tokens (): Promise<DeclarationToken[]> {

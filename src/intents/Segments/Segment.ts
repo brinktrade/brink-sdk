@@ -40,13 +40,17 @@ export default class Segment {
     })
   }
 
-  async toJSON (): Promise<SegmentJSON> {
-    const data = await evm.segmentData(this.functionName, ...this.paramValues)
-    return {
-      data: data,
+  async toJSON ({ excludeData } = { excludeData: false }): Promise<SegmentJSON> {
+    const segmentJSON: SegmentJSON = {
       functionName: this.functionName,
       params: this.paramsJSON,
       requiresUnsignedCall: this.requiresUnsignedCall
     }
+
+    if (!excludeData) {
+      segmentJSON.data = await evm.segmentData(this.functionName, ...this.paramValues)
+    }
+
+    return segmentJSON
   }
 }

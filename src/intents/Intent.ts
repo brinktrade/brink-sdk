@@ -111,9 +111,9 @@ class Intent {
     return nonces
   }
 
-  async toJSON (): Promise<IntentJSON> {
+  async toJSON ({ excludeData } = { excludeData: false }): Promise<IntentJSON> {
     const segments = await Promise.all(
-      this.segments.map(async segment => await segment.toJSON())
+      this.segments.map(async segment => await segment.toJSON({ excludeData }))
     )
     return {
       segments

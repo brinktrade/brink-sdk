@@ -6,7 +6,8 @@ import {
   SegmentArgs,
   declarationEIP712TypedData,
   SignedDeclaration,
-  DeclarationArgs
+  DeclarationArgs,
+  SignedDeclarationJSON
 } from '@brink-sdk'
 
 const { INTENT_TARGET_01, SEGMENTS_01 } = require('@brinkninja/config').mainnet
@@ -28,7 +29,53 @@ describe('SignedDeclaration', function () {
       expect(validationResult.reason).to.equal('SIGNATURE_MISMATCH')
     })
   })
+
+  describe('.toJSON()', function () {
+    it('should build SignedDeclaration and convert to JSON', async function () {
+      const declarationData = await buildDeclaration()
+      const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
+      const json = await signedDeclaration.toJSON()
+    })
+
+    it('should build SignedDeclaration and convert to JSON, excludeData and excludeEIP712Data', async function () {
+      const declarationData = await buildDeclaration()
+      const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
+      const signedDeclarationJson = await signedDeclaration.toJSON({ excludeData: true, excludeEIP712Data: true })
+
+      expect(signedDeclarationJson.eip712Data).to.be.undefined
+      expect(signedDeclarationJson.declaration.data).to.be.undefined
+    })
+
+    it('should build SignedDeclaration and convert to JSON, excludeEIP712Data', async function () {
+      const declarationData = await buildDeclaration()
+      const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
+      const signedDeclarationJson = await signedDeclaration.toJSON({ excludeEIP712Data: true })
+      expect(signedDeclarationJson.eip712Data).to.be.undefined
+      expect(signedDeclarationJson.declaration.data).to.be.ok
+
+    })
+
+    it('should build SignedDeclaration and convert to JSON, excludeData', async function () {
+      const declarationData = await buildDeclaration()
+      const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
+      const signedDeclarationJson = await signedDeclaration.toJSON({ excludeData: true })
+
+      expect(signedDeclarationJson.eip712Data).to.be.ok
+      expect(signedDeclarationJson.declaration.data).to.be.undefined
+
+      expectUndefinedSegmentData(signedDeclarationJson)
+    })
+
+  })
 })
+
+function expectUndefinedSegmentData(signedDeclarationJson: SignedDeclarationJSON) {
+  for (let intent of signedDeclarationJson.declaration.intents) {
+    for (let segment of intent.segments) {
+      expect(segment.data).to.be.undefined
+    }
+  }
+}
 
 async function buildDeclaration () {
   const declaration1 = new Declaration(

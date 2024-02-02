@@ -3,7 +3,6 @@ const { getTypedData } = require('@brinkninja/utils')
 import { ethers } from 'ethers'
 import Declaration from './Declaration'
 import { SignedDeclarationArgs, SignedDeclarationJSON, SignatureType, ValidationResult, EIP712TypedData } from '@brinkninja/types'
-import Config from '../Config'
 import { validResult, invalidResult } from '../internal/Validation'
 import getSignerAccount from '../core/getSignerAccount'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
@@ -73,13 +72,11 @@ class SignedDeclaration {
     }
   }
 
-  async toJSON (): Promise<SignedDeclarationJSON> {
+  async toJSON ({ excludeEIP712Data = false, excludeData = false } = {}): Promise<SignedDeclarationJSON> {
 
-    const declaration = await this.declaration.toJSON()
-    const eip712Data = await this.EIP712Data(declaration.data)
+    const declaration = await this.declaration.toJSON({ excludeData })
 
-    return {
-      eip712Data,
+    const signedDeclarationJSON: SignedDeclarationJSON = {
       account: getSignerAccount({ signer: this.signer }),
       chainId: this.chainId,
       signer: this.signer,
@@ -88,6 +85,12 @@ class SignedDeclaration {
       declaration,
       declarationContract: this.declarationContract
     }
+
+    if (!excludeEIP712Data) {
+      signedDeclarationJSON.eip712Data = await this.EIP712Data(declaration.data)
+    }
+
+    return signedDeclarationJSON;
   }
 }
 
