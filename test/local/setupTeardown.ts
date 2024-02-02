@@ -19,7 +19,7 @@ const randomSigner = require('../helpers/randomSigner')
 
 const { MAX_UINT256 } = constants
 
-beforeEach(async function () {
+before(async function () {
   this.accountContract = await deploySaltedContract('Account')
   this.accountFactory = await deploySaltedContract('AccountFactory')
   this.deployAndCall = await deploySaltedContract('DeployAndCall')
