@@ -37,7 +37,7 @@ describe('SignedDeclaration', function () {
       const json = await signedDeclaration.toJSON()
     })
 
-    it('should build SignedDeclaration and convert to JSON, excludeData', async function () {
+    it('should build SignedDeclaration and convert to JSON, excludeData and excludeEIP712Data', async function () {
       const declarationData = await buildDeclaration()
       const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
       const signedDeclarationJson = await signedDeclaration.toJSON({ excludeData: true, excludeEIP712Data: true })
