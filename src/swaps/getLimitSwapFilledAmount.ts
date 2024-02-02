@@ -30,5 +30,5 @@ export default async function getLimitSwapFilledAmount ({
   } catch (err: any) {
     throw new Error(`getFilledAmount reverted: ${err.message}`)
   }
-  return BigInt(`0x${result}`)
+  return BigInt(result)
 }

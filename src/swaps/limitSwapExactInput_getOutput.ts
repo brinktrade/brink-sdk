@@ -41,5 +41,5 @@ export default async function limitSwapExactInput_getOutput ({
       throw new Error(`limitSwapExactInput_getOutput reverted: ${err.message}`)
     }
   }
-  return BigInt(`0x${result}`)
+  return BigInt(result)
 }

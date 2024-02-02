@@ -9,7 +9,7 @@ export type LimitSwapExactOutput_GetInputArgs = {
 	priceCurveParams: string
 }
 
-export default async function limitSwapExactInput_getOutput ({
+export default async function limitSwapExactOutput_getInput ({
 	output,
   filledOutput,
   totalOutput,
@@ -27,7 +27,7 @@ export default async function limitSwapExactInput_getOutput ({
   try {
     result = await evm.callContractFn(
       'SwapIO',
-      'limitSwapExactInput_getOutput',
+      'limitSwapExactOutput_getInput',
       BigInt(output),
       BigInt(filledOutput),
       BigInt(totalOutput),
@@ -38,8 +38,8 @@ export default async function limitSwapExactInput_getOutput ({
     if (tooMuchOutputErr) {
       throw new Error(`output ${output.toString()} is more than unfilled output ${unfilledOutput.toString()}`)
     } else {
-      throw new Error(`limitSwapExactInput_getOutput reverted: ${err.message}`)
+      throw new Error(`limitSwapExactOutput_getInput reverted: ${err.message}`)
     }
   }
-  return BigInt(`0x${result}`)
+  return BigInt(result)
 }

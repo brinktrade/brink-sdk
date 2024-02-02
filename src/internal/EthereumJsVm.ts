@@ -1,10 +1,9 @@
 import { ethers } from 'ethers'
 import { Chain, Common } from '@ethereumjs/common'
-import { Address } from '@ethereumjs/util'
-import { Transaction } from '@ethereumjs/tx'
+import { Address, bytesToHex } from '@ethereumjs/util'
+import { LegacyTransaction } from '@ethereumjs/tx'
 import { EVMResult } from '@ethereumjs/evm'
 import { VM } from '@ethereumjs/vm'
-import config from '../Config'
 import IntentBuilder01 from './contracts/IntentBuilder01.json'
 import SegmentBuilder01 from './contracts/SegmentBuilder01.json'
 import UnsignedDataBuilder01 from './contracts/UnsignedDataBuilder01.json'
@@ -98,7 +97,7 @@ export class EthereumJsVm {
     const { data } = factory.getDeployTransaction(...contractDeployParams)
     const parsedTx = ethers.utils.parseTransaction(await signer.signTransaction({ data }))
 
-    const vmTx = Transaction.fromTxData({
+    const vmTx = LegacyTransaction.fromTxData({
       data: parsedTx.data,
       nonce: BigInt(this._nonce),
       value: BigInt(0),
@@ -123,7 +122,7 @@ export class EthereumJsVm {
 
   async segmentData (functionName: SegmentFunctionName, ...args: ContractCallParam[]): Promise<string> {
     const segmentData = await this.callContractFn('SegmentBuilder', functionName as unknown as string, ...args)
-    return `0x${cleanDynamicBytes(segmentData)}`
+    return cleanDynamicBytes(segmentData)
   }
 
   async DeclarationData (
@@ -136,7 +135,7 @@ export class EthereumJsVm {
       i => i.segments.map(s => s.data as string)
     )
 
-    const declarationIData: string = await this.callContractFn(
+    const declarationData: string = await this.callContractFn(
       'IntentBuilder',
       'declarationData(bytes[][],address,(address,bytes)[],(address,bytes)[])',
       intentsBytesArray,
@@ -149,8 +148,8 @@ export class EthereumJsVm {
     // the declarations break with these extra bytes. it seems to be consistently adding
     // exactly 28 bytes of empty data, so trimming them out fixes the issue
 
-    const declarationIDataTrimmed = declarationIData.slice(0, -56)
-    return `0x${cleanDynamicBytes(declarationIDataTrimmed)}`
+    const declarationDataTrimmed = declarationData.slice(0, -56)
+    return cleanDynamicBytes(declarationDataTrimmed)
   }
 
   async declarationMessageHash (
@@ -169,7 +168,7 @@ export class EthereumJsVm {
       BigInt(chainId),
       intentTarget
     )
-    return `0x${messageHash}`
+    return messageHash
   }
 
   async unsignedSwapData (
@@ -188,7 +187,7 @@ export class EthereumJsVm {
       callData,
       signature
     )
-    return `0x${cleanDynamicBytes(unsignedSwapData)}`
+    return cleanDynamicBytes(unsignedSwapData)
   }
 
   async getAuctionAmount (
@@ -215,7 +214,7 @@ export class EthereumJsVm {
       endPercentE6,
       priceX96
     )
-    return BigInt(`0x${getAuctionAmountData}`)
+    return BigInt(getAuctionAmountData)
   }
 
   async unsignedMarketSwapData (
@@ -232,7 +231,7 @@ export class EthereumJsVm {
       tokenOutIdsProof.toStruct(),
       callData
     )
-    return `0x${cleanDynamicBytes(unsignedMarketSwapData)}`
+    return cleanDynamicBytes(unsignedMarketSwapData)
   }
 
   async unsignedLimitSwapData (
@@ -251,7 +250,7 @@ export class EthereumJsVm {
       tokenOutIdsProof.toStruct(),
       callData
     )
-    return `0x${cleanDynamicBytes(unsignedLimitSwapData)}`
+    return cleanDynamicBytes(unsignedLimitSwapData)
   }
 
   async unsignedSwapDataHash(recipient: string, tokenInIdsProof: IdsProof, tokenOutIdsProof: IdsProof, fillCall: CallStruct): Promise<string> {
@@ -263,7 +262,7 @@ export class EthereumJsVm {
       tokenOutIdsProof.toStruct(),
       fillCall
     )
-    return `0x${unsignedSwapDataHash}`
+    return unsignedSwapDataHash
   }
 
   async unsignedData (intentIndex: number, unsignedCalls: string[]): Promise<string> {
@@ -280,7 +279,7 @@ export class EthereumJsVm {
       intentIndex,
       ...unsignedCalls
     )
-    return `0x${cleanDynamicBytes(unsignedData)}`
+    return cleanDynamicBytes(unsignedData)
   }
 
   async callContractFn (contractName: EvmContractName, fnName: string, ...args: ContractCallParam[]): Promise<any> {
@@ -293,11 +292,12 @@ export class EthereumJsVm {
       to: Address.fromString(contract.address),
       caller: caller,
       origin: caller,
-      data: Buffer.from(tx.data?.slice(2) || '', 'hex')
+      data: Buffer.from(tx.data?.slice(2) || '', 'hex'),
+      isStatic: true
     })
     this.handleEvmResultError(result)
 
-    return result.execResult.returnValue.toString('hex')
+    return bytesToHex(result.execResult.returnValue)
   }
 
   handleEvmResultError(result: EVMResult) {
@@ -310,7 +310,7 @@ export class EthereumJsVm {
 
 function cleanDynamicBytes (bytes: string): string {
   // remove the first 2 bytes32 slots (pointer and length)
-  return bytes.slice(128)
+  return `0x${bytes.slice(128 + 2)}`
 }
 
 export default new EthereumJsVm()
