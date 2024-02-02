@@ -1,6 +1,6 @@
 {
   "name": "@brinkninja/sdk",
-  "version": "5.0.0-beta.56",
+  "version": "5.0.0-beta.57",
   "devDependencies": {
     "@brinkninja/strategies": "0.3.6",
     "@nomiclabs/hardhat-ethers": "^2.0.4",
