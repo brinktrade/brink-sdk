@@ -152,4 +152,28 @@ describe('blockIntervalDutchAuctionSwapAction', function () {
     const validationRes = await declaration.validate()
     expect(validationRes.valid).to.equal(true)
   });
+
+  it('should create an intent declaration that is valid', async function () {
+    const inputParams = {
+      owner: '0x6399ae010188F36e469FB6E62C859dDFc558328A',
+      tokenIn: USDC_TOKEN,
+      tokenOut: WETH_TOKEN,
+      tokenInAmount: 525_000000,
+      intervalId: 12345,
+      firstAuctionStartBlock: 20_000_000,
+      auctionInterval: 10_000,
+      auctionDuration: 100,
+      startPercent: 0.34,
+      endPercent: -0.34,
+      twapFeePool: 500,
+      maxAuctions: 5
+    }
+    const segments = blockIntervalDutchAuctionSwapAction({
+      type: 'blockIntervalDutchAuctionSwap',
+      ...inputParams
+    });
+    const declaration = new Declaration({ intents: [ { segments } ], segmentsContract: SEGMENTS_01 })
+    const validationRes = await declaration.validate()
+    expect(validationRes.valid).to.equal(true)
+  });
 });
