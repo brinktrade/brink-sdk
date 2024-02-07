@@ -53,8 +53,8 @@ function blockIntervalDutchAuctionSwap ({
       firstAuctionStartBlock.toString(),
       auctionInterval.toString(), // auctionDelayBlocks: # of blocks between prev auction end and next auction start
       auctionDuration.toString(), // auctionDurationBlocks: # of blocks
-      toBigint(startPercent * 10 ** 4), // percentage above TWAP to start auction
-      toBigint(endPercent * 10 ** 4), // percentage below TWAP to end auction
+      toBigint(Math.round(startPercent * 10 ** 4)), // percentage above TWAP to start auction
+      toBigint(Math.round(endPercent * 10 ** 4)), // percentage below TWAP to end auction
       twap.address, // priceX96Oracle (TWAP for tokenIn/tokenOut)
       twap.params // priceX96OracleParams (calldata for TWAP)
     ]
