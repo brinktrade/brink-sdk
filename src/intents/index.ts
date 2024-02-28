@@ -51,3 +51,6 @@ export { default as unsignedSwapData } from './unsignedSwapData'
 
 export * from './getBlockIntervalState'
 export { default as getBlockIntervalState } from './getBlockIntervalState'
+
+export * from './createSegment'
+export { default as createSegment } from './createSegment'

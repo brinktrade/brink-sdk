@@ -14,9 +14,6 @@ export { toTokenArgs, toTokenWithDecimalsArgs } from './toTokenArgs'
 
 export * from './constants'
 
-export * from './createSegment'
-export { default as createSegment } from './createSegment'
-
 export { default as encodeFunctionCall } from '../utils/encodeFunctionCall'
 
 export { default as EthereumJsVm } from './EthereumJsVm'
