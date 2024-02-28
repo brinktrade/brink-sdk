@@ -13,8 +13,8 @@ import {
 } from '@brinkninja/types'
 import Segment from './Segments/Segment'
 import TokenSegment from './Segments/TokenSegment'
-import { createSegment, invalidResult, validResult, groupAndSumTokenAmounts, bitJSONToBit } from '../internal'
-import { bitToNonce } from '..'
+import { invalidResult, validResult, groupAndSumTokenAmounts, bitJSONToBit } from '../internal'
+import { bitToNonce, createSegment } from '..'
 
 export type IntentConstructorArgs = {
   segments: SegmentJSON[]
