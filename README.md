@@ -247,7 +247,7 @@ const deployed = await account.isDeployed()
 
 #### bitUsed(bitmapIndex, bit)
 
-Returns true if the given `bitmapIndex` and `bit` have been used for a previou limit swap or cancel transaction
+Returns true if the given `bitmapIndex` and `bit` have been used for a previous limit swap or cancel transaction
 
 ### Transaction Methods
 
@@ -403,7 +403,7 @@ https://github.com/brinktrade/brink-verifiers-v2
 
 ### Custom Verifier Setup
 
-*** WARNING: SIGING MESSAGES WITH UNSECURE VERIFIER CONTRACTS COULD PUT YOUR FUNDS AT RISK ***
+*** WARNING: SIGNING MESSAGES WITH UNSECURE VERIFIER CONTRACTS COULD PUT YOUR FUNDS AT RISK ***
 
 To use custom verifiers, provide an array of verifier definitions:
 
