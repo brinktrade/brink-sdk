@@ -1,7 +1,7 @@
 import { TransactionData } from '@brinkninja/types'
 import SignedDeclaration from './SignedDeclaration'
 import evm from '../internal/EthereumJsVm'
-import { metaDelegateCall } from '../core'
+import { metaDelegateCall, metaDelegateCall_EIP1271 } from '../core'
 
 export type ExecuteIntentArgs = {
   signedDeclaration: SignedDeclaration
@@ -23,14 +23,27 @@ async function executeIntent ({
 
   const DeclarationJSON = (await signedDeclaration.toJSON()).declaration
   const unsignedData = await evm.unsignedData(intentIndex, unsignedCalls)
-  return await metaDelegateCall({
-    signer: signedDeclaration.signer,
-    to: signedDeclaration.declarationContract,
-    data: DeclarationJSON.data as string,
-    signature: signedDeclaration.signature,
-    unsignedData,
-    deployAccount
-  })
+
+  if (signedDeclaration.signatureType == 'EIP1271') {
+    return await metaDelegateCall_EIP1271({
+      signer: signedDeclaration.signer,
+      to: signedDeclaration.declarationContract,
+      data: DeclarationJSON.data as string,
+      signature: signedDeclaration.signature,
+      unsignedData,
+      deployAccount
+    })
+  } else {
+    return await metaDelegateCall({
+      signer: signedDeclaration.signer,
+      to: signedDeclaration.declarationContract,
+      data: DeclarationJSON.data as string,
+      signature: signedDeclaration.signature,
+      unsignedData,
+      deployAccount
+    })
+  }
+
 }
 
 export default executeIntent
