@@ -17,7 +17,28 @@ describe('SignedDeclaration', function () {
     it('should return valid for a valid SignedDeclaration', async function () {
       const declarationData = await buildDeclaration()
       const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
-      expect((await signedDeclaration.validate()).valid).to.equal(true)
+      const { valid, reason, message, signatureType, eip1271ValidationCall } = await signedDeclaration.validate()
+      expect(valid).to.equal(true)
+      expect(reason).to.be.undefined
+      expect(message).to.be.undefined
+      expect(signatureType).to.equal('EIP712')
+      expect(eip1271ValidationCall).to.be.undefined
+    })
+
+    it('should return callData for a valid SignedDeclaration', async function () {
+      const declarationData = await buildDeclaration()
+      const signedDeclaration = await signDeclaration(this.ethersAccountSigner, declarationData)
+      signedDeclaration.signature = '0x'
+      signedDeclaration.signatureType = 'EIP1271'
+      const { valid, reason, message, signatureType, eip1271ValidationCall   } = await signedDeclaration.validate()
+      expect(valid).to.equal(true)
+      expect(reason).to.be.undefined
+      expect(message).to.be.undefined
+      expect(signatureType).to.equal('EIP1271')   
+      expect(eip1271ValidationCall).to.be.ok
+      expect(eip1271ValidationCall?.to).to.eql(signedDeclaration.signer)
+      expect(eip1271ValidationCall?.data).to.be.ok
+      expect(eip1271ValidationCall?.value).to.eql('0')
     })
 
     it('SignedDeclaration where signer does not match signature recovered address should be invalid', async function () {
