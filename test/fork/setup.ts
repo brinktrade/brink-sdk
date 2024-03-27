@@ -1,7 +1,6 @@
 import '@nomicfoundation/hardhat-ethers'
 import { ethers } from 'hardhat'
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
-import { Contract, Wallet } from 'ethers'
+import { Contract } from 'ethers'
 import randomSigner from '../helpers/randomSigner'
 import ERC20_abi from '../../src/internal/contracts/ERC20.abi'
 import impersonate from '../helpers/impersonate'
