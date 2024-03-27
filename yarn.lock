@@ -101,10 +101,10 @@
     axios "^0.25.0"
     chai "^4.3.4"
 
-"@brinkninja/types@0.15.0":
-  version "0.15.0"
-  resolved "https://registry.npmjs.org/@brinkninja/types/-/types-0.15.0.tgz"
-  integrity sha512-a5TuipKTuHyHbacPfnyyijuxNo1VUSkNuCCm2uMwIzgu5VSGuTk0bkbDehmvWTbafBLmoXgfIYBPwXOxoPqUgA==
+"@brinkninja/types@0.16.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@brinkninja/types/-/types-0.16.0.tgz#be4b2d7ec376131ce502b4f8bb0f6f8d430c8b55"
+  integrity sha512-9LGGTa66eSmi6E3MnrXvsEJ0+bnnbb38wHbkEJ14kz+6hhyemwMFK/dFEbmLlJ/ws61zJjccup6J2g3pecR01g==
   dependencies:
     standard-version "^9.5.0"
     typescript "^5.0.4"

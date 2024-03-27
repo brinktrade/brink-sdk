@@ -1,9 +1,7 @@
 const { getTypedData } = require('@brinkninja/utils')
-
-import { ethers } from 'ethers'
 import Declaration from './Declaration'
 import { SignedDeclarationArgs, SignedDeclarationJSON, SignatureType, ValidationResult, EIP712TypedData } from '@brinkninja/types'
-import { validResult, invalidResult } from '../internal/Validation'
+import { validResult, invalidResult, EIP1271TransactionData, validateEIP712Signature } from '../internal/Validation'
 import getSignerAccount from '../core/getSignerAccount'
 import { MetaDelegateCallSignedParamTypes } from '../internal/constants'
 
@@ -29,19 +27,22 @@ class SignedDeclaration {
     if (!declarationValidationResult.valid) {
       return declarationValidationResult
     }
+    
+    const eip712Data = await this.EIP712Data()
 
-    const { domain, types, value } = await this.EIP712Data()
-    const recoveredAddress = ethers.verifyTypedData(
-      domain,
-      types,
-      value,
-      this.signature
-    )
-    if (recoveredAddress.toLowerCase() !== this.signer.toLowerCase()) {
-      return invalidResult('SIGNATURE_MISMATCH')
+    if  (this.signatureType == 'EIP712') {
+      return validateEIP712Signature({ ...eip712Data, signer: this.signer, signature: this.signature })
     }
 
-    return validResult()
+    if (this.signatureType == 'EIP1271' ){  
+      return {
+        ...validResult(),
+        signatureType: this.signatureType,
+        eip1271ValidationCall: await EIP1271TransactionData({ hash: eip712Data.hash, signer: this.signer }),
+      }
+    }
+
+    return invalidResult('INVALID_SIGNATURE_TYPE')
   }
 
   account (): string {
