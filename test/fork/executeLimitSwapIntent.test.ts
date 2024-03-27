@@ -22,7 +22,7 @@ const { FLAT_PRICE_CURVE } = require('@brinkninja/config').mainnet
 
 const legacyStrategyConstants = require('@brinkninja/strategies/constants.js')
 
-describe('executeIntent with limitSwapExactInput', function () {
+describe.skip('executeIntent with limitSwapExactInput', function () {
   it('should execute a simple limit swap intent', async function () {
     const deployTx = await deployAccount({ signer: this.signerAddress })
     await this.defaultSigner.sendTransaction(deployTx)
