@@ -7,6 +7,6 @@ export type blockIntervalPointerArgs = {
 
 const blockIntervalPointer = ({
   id
-}: blockIntervalPointerArgs): string => ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(['uint64', 'string'], [id?.toString(), 'blockInterval']))
+}: blockIntervalPointerArgs): string => ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(['uint64', 'string'], [id?.toString(), 'blockInterval']))
 
 export default blockIntervalPointer

@@ -28,7 +28,7 @@ async function metaDelegateCall ({
   const account = getSignerAccount({ signer })
 
   const accountContract = new ethers.Contract(account as string, AccountAbi)
-  const txData = await accountContract.populateTransaction.metaDelegateCall(
+  const txData = await accountContract.metaDelegateCall.populateTransaction(
     to,
     data,
     sigToValidECDSA(signature).signature,
@@ -42,7 +42,7 @@ async function metaDelegateCall ({
     }
   } else {
     const deployAndCallContract = new ethers.Contract(DEPLOY_AND_CALL, DeployAndCallAbi)
-    const deployAndCallTxData = await deployAndCallContract.populateTransaction.deployAndCall(signer, txData.data)
+    const deployAndCallTxData = await deployAndCallContract.deployAndCall.populateTransaction(signer, txData.data)
     return {
       to: deployAndCallTxData.to as string,
       data: deployAndCallTxData.data as string,

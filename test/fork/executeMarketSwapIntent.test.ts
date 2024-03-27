@@ -134,7 +134,7 @@ async function successfulExecuteDeclaration (this: TestContext): Promise<{
 
   // fund and approve USDC
   await fundWithERC20(this.whale, this.USDC_ADDRESS, this.ethersAccountSigner.address, usdcInput)
-  await this.usdc.connect(this.ethersAccountSigner).approve(this.accountAddress, usdcInput)
+  await this.usdc.connect(this.ethersAccountSigner).getFunction('approve').apply([this.accountAddress, usdcInput])
 
   // use the USDC/WETH price oracle to get the exact expected WETH output
   const priceX96 = await this.defaultSigner.call(await priceOracle.price())
@@ -146,15 +146,15 @@ async function successfulExecuteDeclaration (this: TestContext): Promise<{
   })
 
   // get call data to fill the swap
-  const fillData = (await this.filler.populateTransaction.fulfillTokenOutSwap(
+  const fillData = (await this.filler.fulfillTokenOutSwap.populateTransaction(
     this.WETH_ADDRESS, wethOutput.toString(), this.signerAddress
   )).data
 
   // get unsigned data for the marketSwapExactInput segment
   const unsignedSwapCall = await unsignedMarketSwapData({
-    recipient: this.filler.address,
+    recipient: await this.filler.getAddress(),
     callData: {
-      targetContract: this.filler.address,
+      targetContract: await this.filler.getAddress(),
       data: fillData as string
     }
   })

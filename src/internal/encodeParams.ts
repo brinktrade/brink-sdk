@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { SolidityFunctionParamType, ContractCallParam } from '@brinkninja/types'
 
-const abiCoder = ethers.utils.defaultAbiCoder
+const abiCoder = ethers.AbiCoder.defaultAbiCoder()
 
 function encodeParams (
   { params, paramTypes }: { params: ContractCallParam[], paramTypes: SolidityFunctionParamType[] }

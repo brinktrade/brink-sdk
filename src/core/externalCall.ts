@@ -18,7 +18,7 @@ async function externalCall ({
 }: ExternalCallArgs): Promise<TransactionData> {
   const account = getSignerAccount({ signer })
   const accountContract = new ethers.Contract(account, AccountAbi)
-  const txData = await accountContract.populateTransaction.externalCall(BigInt(value), to, data)
+  const txData = await accountContract.externalCall.populateTransaction(BigInt(value), to, data)
   return {
     to: txData.to as string,
     data: txData.data as string,

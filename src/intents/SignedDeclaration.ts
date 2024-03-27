@@ -31,7 +31,7 @@ class SignedDeclaration {
     }
 
     const { domain, types, value } = await this.EIP712Data()
-    const recoveredAddress = ethers.utils.verifyTypedData(
+    const recoveredAddress = ethers.verifyTypedData(
       domain,
       types,
       value,

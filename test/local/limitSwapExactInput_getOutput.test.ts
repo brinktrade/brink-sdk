@@ -1,8 +1,8 @@
 import { expect } from 'chai'
-import { utils } from 'ethers'
 import { limitSwapExactInput_getOutput } from '@brink-sdk'
+import { ethers } from 'ethers'
 
-const { defaultAbiCoder } = utils
+const defaultAbiCoder = ethers.AbiCoder.defaultAbiCoder()
 
 describe('limitSwapExactInput_getOutput', function () {
   it('should return output', async function () {
