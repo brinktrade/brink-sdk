@@ -16,7 +16,7 @@ export function validResult (): ValidationResult {
 
 export async function EIP1271TransactionData ({ hash, signer }: { hash: string, signer:string }): Promise<TransactionData> {
   const eip1271Contract = new ethers.Contract(signer, EIP1271Abi)
-  const txData = await eip1271Contract.populateTransaction.isValidSignature(hash, '0x')
+  const txData = await eip1271Contract.isValidSignature.populateTransaction(hash, '0x')
   return {
     to: txData.to as string,
     data: txData.data as string,
@@ -25,7 +25,7 @@ export async function EIP1271TransactionData ({ hash, signer }: { hash: string, 
 }
 
 export async function validateEIP712Signature ({ signer, domain, types, value, signature }: { signer: string, domain: ethers.TypedDataDomain, types: any, value: any, signature: string }): Promise<ValidationResult> {
-  const recoveredAddress = ethers.utils.verifyTypedData(
+  const recoveredAddress = ethers.verifyTypedData(
     domain,
     types,
     value,

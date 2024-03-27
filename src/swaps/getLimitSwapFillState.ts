@@ -1,9 +1,9 @@
 import { soliditySha3 } from 'web3-utils'
-import { utils } from 'ethers'
+import { ethers } from 'ethers'
 import { RpcMethodCall, BigIntish } from '@brinkninja/types'
 import { storageLoad } from '../core'
 
-const { defaultAbiCoder } = utils
+const defaultAbiCoder = ethers.AbiCoder.defaultAbiCoder()
 
 export type GetLimitSwapFillStateArgs = {
   signer: string

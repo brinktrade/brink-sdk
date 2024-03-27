@@ -1,7 +1,6 @@
-import '@nomiclabs/hardhat-ethers'
+import '@nomicfoundation/hardhat-ethers'
 import { ethers } from 'hardhat'
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
-import { Contract, Wallet } from 'ethers'
+import { Contract } from 'ethers'
 import randomSigner from '../helpers/randomSigner'
 import ERC20_abi from '../../src/internal/contracts/ERC20.abi'
 import impersonate from '../helpers/impersonate'
@@ -12,15 +11,15 @@ export interface TestContext {
   WHALE: string
   USDC_ADDRESS: string
   WETH_ADDRESS: string
-  defaultSigner: SignerWithAddress
+  defaultSigner: any
   weth: Contract
   usdc: Contract
-  ethersAccountSigner: Wallet
+  ethersAccountSigner: any
   signerAddress: string
   accountAddress: string
-  proxyAccountContract: Contract
+  proxyAccountContract: any
   filler: Contract
-  whale: SignerWithAddress
+  whale: any
 }
 
 declare module 'mocha' {
@@ -39,8 +38,8 @@ beforeEach(async function () {
   const signers = await ethers.getSigners()
   this.defaultSigner = signers[0]
 
-  this.weth = new ethers.Contract(this.WETH_ADDRESS, ERC20_abi, this.defaultSigner)
-  this.usdc = new ethers.Contract(this.USDC_ADDRESS, ERC20_abi, this.defaultSigner)
+  this.weth = new Contract(this.WETH_ADDRESS, ERC20_abi, this.defaultSigner)
+  this.usdc = new Contract(this.USDC_ADDRESS, ERC20_abi, this.defaultSigner)
 
   this.ethersAccountSigner = await randomSigner()
   this.signerAddress = this.ethersAccountSigner.address
@@ -52,6 +51,6 @@ beforeEach(async function () {
   this.filler = await deploySaltedContract('TestFulfillSwap')
 
   this.whale = await impersonate(this.WHALE)
-  await this.weth.connect(this.whale).transfer(this.filler.address, ethers.utils.parseEther('1000'))
-  await fundWithERC20(this.whale, this.WETH_ADDRESS, this.filler.address, ethers.utils.parseEther('1000'))
+  await this.weth.connect(this.whale).getFunction('transfer').apply([await this.filler.getAddress(), ethers.utils.parseEther('1000').toBigInt()])
+  await fundWithERC20(this.whale, this.WETH_ADDRESS, await this.filler.getAddress(), ethers.utils.parseEther('1000').toBigInt())
 })

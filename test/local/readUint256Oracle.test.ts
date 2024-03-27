@@ -1,8 +1,8 @@
-import { ethers } from 'hardhat'
+import { ethers } from 'ethers'
 import { expect } from 'chai'
 import { readUint256Oracle } from '@brink-sdk'
 
-const { defaultAbiCoder } = ethers.utils
+const defaultAbiCoder = ethers.AbiCoder.defaultAbiCoder()
 
 describe('readUint256Oracle()', function () {
   it('should read oracle value', async function () {

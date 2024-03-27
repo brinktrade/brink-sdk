@@ -1,8 +1,8 @@
-import { utils } from 'ethers'
+import { ethers } from 'ethers'
 import { EthereumJsVm as evm, X96 } from '../internal'
 import { BigIntish } from '@brinkninja/types'
 
-const { defaultAbiCoder } = utils
+const defaultAbiCoder = ethers.AbiCoder.defaultAbiCoder()
 
 export type marketSwapExactInput_getOutputArgs = {
   input: BigIntish

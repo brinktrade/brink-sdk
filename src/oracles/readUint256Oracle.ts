@@ -12,7 +12,7 @@ export default async function readUint256Oracle ({
   params
 }: ReadUint256OracleArgs): Promise<CallData> {
   const uint256Oracle = new ethers.Contract(address, IUint256OracleAbi)
-  const tx = await uint256Oracle.populateTransaction.getUint256(params)
+  const tx = await uint256Oracle.getUint256.populateTransaction(params)
   return {
     to: tx.to as string,
     data: tx.data as string

@@ -16,7 +16,7 @@ async function delegateCall ({
 }: DelegateCallArgs): Promise<TransactionData> {
   const account = getSignerAccount({ signer })
   const accountContract = new ethers.Contract(account, AccountAbi)
-  const txData = await accountContract.populateTransaction.delegateCall(to, data)
+  const txData = await accountContract.delegateCall.populateTransaction(to, data)
   return {
     to: txData.to as string,
     data: txData.data as string,

@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { BaseContract, Contract, ethers } from 'ethers'
 import { Chain, Common } from '@ethereumjs/common'
 import { Address, bytesToHex } from '@ethereumjs/util'
 import { LegacyTransaction } from '@ethereumjs/tx'
@@ -94,8 +94,8 @@ export class EthereumJsVm {
 
   async _deployContract (contractJSON: any, ...contractDeployParams: any[]): Promise<ethers.Contract> {
     const factory = new ethers.ContractFactory(contractJSON.abi, contractJSON.bytecode.object)
-    const { data } = factory.getDeployTransaction(...contractDeployParams)
-    const parsedTx = ethers.utils.parseTransaction(await signer.signTransaction({ data }))
+    const { data } = await factory.getDeployTransaction(...contractDeployParams)
+    const parsedTx = ethers.Transaction.from(await signer.signTransaction({ data }))
 
     const vmTx = LegacyTransaction.fromTxData({
       data: parsedTx.data,
@@ -116,8 +116,8 @@ export class EthereumJsVm {
     if(!result.createdAddress) {
       throw new Error('Contract not deployed')
     }
-
-    return factory.attach(result.createdAddress.toString())
+    
+    return factory.attach(result.createdAddress.toString()) as ethers.Contract
   }
 
   async segmentData (functionName: SegmentFunctionName, ...args: ContractCallParam[]): Promise<string> {
@@ -286,10 +286,10 @@ export class EthereumJsVm {
     await this._initVM()
 
     const contract = this[contractName]
-    const tx = await contract.populateTransaction[fnName](...args)
+    const tx = await contract.getFunction(fnName).populateTransaction(...args)
 
     const result = await this._vm.evm.runCall({
-      to: Address.fromString(contract.address),
+      to: Address.fromString(await contract.getAddress()),
       caller: caller,
       origin: caller,
       data: Buffer.from(tx.data?.slice(2) || '', 'hex'),

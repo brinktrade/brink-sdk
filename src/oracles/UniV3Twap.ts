@@ -1,13 +1,12 @@
-import { utils } from 'ethers'
+import { ethers } from 'ethers'
 import { FeeAmount } from '@uniswap/v3-sdk'
 import { TokenArgs } from '@brinkninja/types'
-import { Token } from '../intents'
 import Config from '../Config'
 import { BigIntish } from '@brinkninja/types'
 import getUniV3Pool from '../internal/getUniV3Pool'
 import TokenPairOracle from './TokenPairOracle'
 
-const abiCoder = utils.defaultAbiCoder
+const abiCoder = ethers.AbiCoder.defaultAbiCoder()
 
 export type UniV3TwapConstructorArgs = {
   tokenA: TokenArgs

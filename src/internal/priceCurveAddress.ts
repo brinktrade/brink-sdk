@@ -5,11 +5,11 @@ export default async function priceCurveAddress (priceCurve: PriceCurveType): Pr
   await evm._initVM()
   switch (priceCurve) {
     case 'flat':
-      return evm.FlatPriceCurve.address
+      return await evm.FlatPriceCurve.getAddress()
     case 'linear':
-      return evm.LinearPriceCurve.address
+      return await evm.LinearPriceCurve.getAddress()
     case 'quadratic':
-      return evm.QuadraticPriceCurve.address
+      return await evm.QuadraticPriceCurve.getAddress()
     default:
       throw new Error(`Invalid price curve: ${priceCurve}`)
   }

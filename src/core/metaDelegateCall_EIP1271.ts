@@ -26,7 +26,7 @@ async function metaDelegateCall_EIP1271 ({
 }: MetaDelegateCall_EIP1271Args): Promise<TransactionData> {
   const account = getSignerAccount({ signer })
   const accountContract = new ethers.Contract(account, AccountAbi)
-  const txData = await accountContract.populateTransaction.metaDelegateCall_EIP1271(to, data, signature, unsignedData)
+  const txData = await accountContract.metaDelegateCall_EIP1271.populateTransaction(to, data, signature, unsignedData)
   if (!deployAccount) {
     return {
       to: txData.to as string,
@@ -35,7 +35,7 @@ async function metaDelegateCall_EIP1271 ({
     }
   } else {
     const deployAndCallContract = new ethers.Contract(DEPLOY_AND_CALL, DeployAndCallAbi)
-    const deployAndCallTxData = await deployAndCallContract.populateTransaction.deployAndCall(signer, txData.data)
+    const deployAndCallTxData = await deployAndCallContract.deployAndCall.populateTransaction(signer, txData.data)
     return {
       to: deployAndCallTxData.to as string,
       data: deployAndCallTxData.data as string,
